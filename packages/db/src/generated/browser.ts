@@ -211,3 +211,8 @@ export type Subscription = Prisma.SubscriptionModel;
  *
  */
 export type NoticeVersion = Prisma.NoticeVersionModel;
+/**
+ * Model Lead
+ *
+ */
+export type Lead = Prisma.LeadModel;

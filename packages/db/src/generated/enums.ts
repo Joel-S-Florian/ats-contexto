@@ -211,3 +211,13 @@ export const SubscriptionStatus = {
 } as const;
 
 export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
+
+export const LeadStatus = {
+  new: "new",
+  contacted: "contacted",
+  demo_scheduled: "demo_scheduled",
+  converted: "converted",
+  discarded: "discarded",
+} as const;
+
+export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus];

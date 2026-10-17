@@ -429,6 +429,7 @@ export const ModelName = {
   WebhookDelivery: "WebhookDelivery",
   Subscription: "Subscription",
   NoticeVersion: "NoticeVersion",
+  Lead: "Lead",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -487,7 +488,8 @@ export type TypeMap<
       | "webhookEndpoint"
       | "webhookDelivery"
       | "subscription"
-      | "noticeVersion";
+      | "noticeVersion"
+      | "lead";
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -3402,6 +3404,80 @@ export type TypeMap<
         };
       };
     };
+    Lead: {
+      payload: Prisma.$LeadPayload<ExtArgs>;
+      fields: Prisma.LeadFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.LeadFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.LeadFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        findFirst: {
+          args: Prisma.LeadFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.LeadFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        findMany: {
+          args: Prisma.LeadFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[];
+        };
+        create: {
+          args: Prisma.LeadCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        createMany: {
+          args: Prisma.LeadCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.LeadCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[];
+        };
+        delete: {
+          args: Prisma.LeadDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        update: {
+          args: Prisma.LeadUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        deleteMany: {
+          args: Prisma.LeadDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.LeadUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.LeadUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[];
+        };
+        upsert: {
+          args: Prisma.LeadUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>;
+        };
+        aggregate: {
+          args: Prisma.LeadAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLead>;
+        };
+        groupBy: {
+          args: Prisma.LeadGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.LeadGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.LeadCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.LeadCountAggregateOutputType> | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -4043,6 +4119,25 @@ export const NoticeVersionScalarFieldEnum = {
 export type NoticeVersionScalarFieldEnum =
   (typeof NoticeVersionScalarFieldEnum)[keyof typeof NoticeVersionScalarFieldEnum];
 
+export const LeadScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  company: "company",
+  email: "email",
+  phone: "phone",
+  size: "size",
+  message: "message",
+  source: "source",
+  status: "status",
+  notes: "notes",
+  consentVersion: "consentVersion",
+  ipTruncated: "ipTruncated",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -4486,6 +4581,22 @@ export type ListEnumSubscriptionStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 >;
 
 /**
+ * Reference to a field of type 'LeadStatus'
+ */
+export type EnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "LeadStatus"
+>;
+
+/**
+ * Reference to a field of type 'LeadStatus[]'
+ */
+export type ListEnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "LeadStatus[]"
+>;
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Float">;
@@ -4691,6 +4802,7 @@ export type GlobalOmitConfig = {
   webhookDelivery?: Prisma.WebhookDeliveryOmit;
   subscription?: Prisma.SubscriptionOmit;
   noticeVersion?: Prisma.NoticeVersionOmit;
+  lead?: Prisma.LeadOmit;
 };
 
 /* Types for Logging */

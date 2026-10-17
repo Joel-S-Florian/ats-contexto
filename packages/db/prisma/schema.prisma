@@ -832,3 +832,32 @@ model NoticeVersion {
 
   @@map("notice_versions")
 }
+
+enum LeadStatus {
+  new
+  contacted
+  demo_scheduled
+  converted
+  discarded
+}
+
+// Solicitud de demo captada en la landing. Es de la plataforma (no pertenece a un tenant): solo la ve el super administrador.
+model Lead {
+  id             String     @id @default(uuid()) @db.Uuid
+  name           String
+  company        String
+  email          String
+  phone          String?
+  size           String
+  message        String     @default("")
+  source         String     @default("landing")
+  status         LeadStatus @default(new)
+  notes          String     @default("")
+  consentVersion String     @map("consent_version")
+  ipTruncated    String?    @map("ip_truncated")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("leads")
+}

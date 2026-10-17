@@ -17,3 +17,13 @@ Sin Docker: apunta `DATABASE_URL` y `REDIS_URL` a instancias locales. `GET /heal
 
 Con `pnpm db:dev` activo, usa `DATABASE_URL=postgresql://ats_app:ats_app@localhost:5433/ats` en `.env`.
 Usuarios de ejemplo (contraseña `demo-demo-1234`): `root@demo.test` (operador), `admin@demo.test`, `recruiter@demo.test`, `area_manager@demo.test`; segundo tenant: `*@norte.test`.
+
+## Puertos de desarrollo
+
+| Qué                                                           | URL                                                  |
+| ------------------------------------------------------------- | ---------------------------------------------------- |
+| Panel                                                         | http://localhost:3000                                |
+| API                                                           | http://localhost:4000                                |
+| Sitio de pruebas (empresa ficticia + receptor de contratados) | http://localhost:3100 (y :3101, origen no permitido) |
+| Landing comercial                                             | http://localhost:3200                                |
+| Base de desarrollo (Postgres embebido)                        | localhost:5433                                       |

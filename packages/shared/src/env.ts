@@ -23,6 +23,8 @@ export const apiEnvSchema = z
       .enum(["true", "false"])
       .default("false")
       .transform((v) => v === "true"),
+    LANDING_ORIGIN: z.string().url().default("http://localhost:3200"),
+    OPERATOR_EMAIL: z.preprocess((v) => (v === "" ? undefined : v), z.string().email().optional()),
     EMAIL_PROVIDER: z.enum(["console", "smtp"]).default("console"),
     MAIL_FROM: z.string().default("Reclutamiento <no-responder@localhost>"),
     GOOGLE_CLIENT_ID: z.string().optional(),

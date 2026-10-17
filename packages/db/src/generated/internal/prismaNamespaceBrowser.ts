@@ -87,6 +87,7 @@ export const ModelName = {
   WebhookDelivery: "WebhookDelivery",
   Subscription: "Subscription",
   NoticeVersion: "NoticeVersion",
+  Lead: "Lead",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -706,6 +707,25 @@ export const NoticeVersionScalarFieldEnum = {
 
 export type NoticeVersionScalarFieldEnum =
   (typeof NoticeVersionScalarFieldEnum)[keyof typeof NoticeVersionScalarFieldEnum];
+
+export const LeadScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  company: "company",
+  email: "email",
+  phone: "phone",
+  size: "size",
+  message: "message",
+  source: "source",
+  status: "status",
+  notes: "notes",
+  consentVersion: "consentVersion",
+  ipTruncated: "ipTruncated",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

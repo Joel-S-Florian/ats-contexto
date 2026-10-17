@@ -38,6 +38,7 @@ import { plansPrivacyRoutes } from "./routes/plans-privacy.js";
 import { createPlanService } from "./services/plans.js";
 import { createPrivacyService, type PrivacyService } from "./services/privacy.js";
 import { createNoticeService } from "./services/notice.js";
+import { leadRoutes } from "./routes/leads.js";
 import { assessmentRoutes } from "./routes/assessments.js";
 import { communicationRoutes } from "./routes/communication.js";
 import { noCalendar, type CalendarProvider } from "./ports/calendar.js";
@@ -68,6 +69,10 @@ export interface AppDeps {
   examRateLimit?: number;
   /** Permite webhooks hacia localhost (sitio de pruebas). Nunca en produccion. */
   allowLocalWebhooks?: boolean;
+  /** Origen de la landing comercial (CORS de POST /public/v1/leads) y correo del operador que recibe las solicitudes. */
+  landingOrigin?: string;
+  operatorEmail?: string;
+  leadRateLimit?: number;
   webhookFetch?: typeof fetch;
   webhooks?: WebhookService;
 }
@@ -89,6 +94,9 @@ export function buildApp({
   clock = () => new Date(),
   examRateLimit = 60,
   allowLocalWebhooks = false,
+  landingOrigin,
+  operatorEmail,
+  leadRateLimit = 5,
   webhookFetch,
   email = createEmailService({ prisma, mailer }),
   screening: screeningOverride,
@@ -131,6 +139,13 @@ export function buildApp({
         });
       }
       const origin = req.headers.origin;
+      // Las solicitudes de demo solo se aceptan desde la landing.
+      if (req.url.startsWith("/public/v1/leads"))
+        return cb(null, {
+          origin: landingOrigin && origin === landingOrigin ? origin : false,
+          methods: ["POST", "OPTIONS"],
+          allowedHeaders: ["content-type"],
+        });
       const base = {
         methods: ["GET", "POST", "OPTIONS"],
         allowedHeaders: ["content-type", "x-public-key"],
@@ -189,6 +204,14 @@ export function buildApp({
   app.register(async (scope) => {
     const authenticate = authRoutes(scope, { prisma, mailer, webOrigin, loginRateLimit });
     adminRoutes(scope, { prisma, mailer, webOrigin, authenticate, planSvc });
+    leadRoutes(scope, {
+      prisma,
+      authenticate,
+      captcha,
+      mailer,
+      operatorEmail,
+      rateLimit: leadRateLimit,
+    });
     plansPrivacyRoutes(scope, { prisma, authenticate, planSvc, privacy, notice });
     pipelineRoutes(scope, { prisma, authenticate, planSvc });
     vacancyRoutes(scope, { prisma, authenticate, planSvc });

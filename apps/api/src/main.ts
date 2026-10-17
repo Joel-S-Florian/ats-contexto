@@ -70,6 +70,8 @@ const app = buildApp({
   store: localBlobStore(env.FILE_STORAGE_DIR),
   signingSecret: env.SESSION_SECRET,
   allowLocalWebhooks: env.ALLOW_LOCAL_WEBHOOKS,
+  landingOrigin: env.LANDING_ORIGIN,
+  operatorEmail: env.OPERATOR_EMAIL,
   captcha:
     env.CAPTCHA_PROVIDER === "turnstile" ? turnstileVerifier(env.TURNSTILE_SECRET!) : devCaptcha,
   scanner: env.AV_PROVIDER === "clamav" ? clamdScanner(env.CLAMD_HOST) : eicarScanner,

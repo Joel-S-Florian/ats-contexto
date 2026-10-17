@@ -46,4 +46,5 @@ export type * from "./models/WebhookEndpoint";
 export type * from "./models/WebhookDelivery";
 export type * from "./models/Subscription";
 export type * from "./models/NoticeVersion";
+export type * from "./models/Lead";
 export type * from "./commonInputTypes";
