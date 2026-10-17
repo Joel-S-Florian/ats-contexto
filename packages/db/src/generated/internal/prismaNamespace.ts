@@ -408,6 +408,9 @@ export const ModelName = {
   ApplicationStageHistory: "ApplicationStageHistory",
   Document: "Document",
   ConsentRecord: "ConsentRecord",
+  ScreeningResult: "ScreeningResult",
+  AiUsage: "AiUsage",
+  UsageCounter: "UsageCounter",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -445,7 +448,10 @@ export type TypeMap<
       | "application"
       | "applicationStageHistory"
       | "document"
-      | "consentRecord";
+      | "consentRecord"
+      | "screeningResult"
+      | "aiUsage"
+      | "usageCounter";
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -1788,6 +1794,230 @@ export type TypeMap<
         };
       };
     };
+    ScreeningResult: {
+      payload: Prisma.$ScreeningResultPayload<ExtArgs>;
+      fields: Prisma.ScreeningResultFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.ScreeningResultFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.ScreeningResultFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        findFirst: {
+          args: Prisma.ScreeningResultFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.ScreeningResultFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        findMany: {
+          args: Prisma.ScreeningResultFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>[];
+        };
+        create: {
+          args: Prisma.ScreeningResultCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        createMany: {
+          args: Prisma.ScreeningResultCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.ScreeningResultCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>[];
+        };
+        delete: {
+          args: Prisma.ScreeningResultDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        update: {
+          args: Prisma.ScreeningResultUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        deleteMany: {
+          args: Prisma.ScreeningResultDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.ScreeningResultUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.ScreeningResultUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>[];
+        };
+        upsert: {
+          args: Prisma.ScreeningResultUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreeningResultPayload>;
+        };
+        aggregate: {
+          args: Prisma.ScreeningResultAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateScreeningResult>;
+        };
+        groupBy: {
+          args: Prisma.ScreeningResultGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.ScreeningResultGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.ScreeningResultCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.ScreeningResultCountAggregateOutputType> | number;
+        };
+      };
+    };
+    AiUsage: {
+      payload: Prisma.$AiUsagePayload<ExtArgs>;
+      fields: Prisma.AiUsageFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AiUsageFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AiUsageFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        findFirst: {
+          args: Prisma.AiUsageFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AiUsageFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        findMany: {
+          args: Prisma.AiUsageFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[];
+        };
+        create: {
+          args: Prisma.AiUsageCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        createMany: {
+          args: Prisma.AiUsageCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AiUsageCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[];
+        };
+        delete: {
+          args: Prisma.AiUsageDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        update: {
+          args: Prisma.AiUsageUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        deleteMany: {
+          args: Prisma.AiUsageDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AiUsageUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AiUsageUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[];
+        };
+        upsert: {
+          args: Prisma.AiUsageUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>;
+        };
+        aggregate: {
+          args: Prisma.AiUsageAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiUsage>;
+        };
+        groupBy: {
+          args: Prisma.AiUsageGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AiUsageGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AiUsageCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AiUsageCountAggregateOutputType> | number;
+        };
+      };
+    };
+    UsageCounter: {
+      payload: Prisma.$UsageCounterPayload<ExtArgs>;
+      fields: Prisma.UsageCounterFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.UsageCounterFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.UsageCounterFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        findFirst: {
+          args: Prisma.UsageCounterFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.UsageCounterFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        findMany: {
+          args: Prisma.UsageCounterFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>[];
+        };
+        create: {
+          args: Prisma.UsageCounterCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        createMany: {
+          args: Prisma.UsageCounterCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.UsageCounterCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>[];
+        };
+        delete: {
+          args: Prisma.UsageCounterDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        update: {
+          args: Prisma.UsageCounterUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        deleteMany: {
+          args: Prisma.UsageCounterDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.UsageCounterUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.UsageCounterUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>[];
+        };
+        upsert: {
+          args: Prisma.UsageCounterUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UsageCounterPayload>;
+        };
+        aggregate: {
+          args: Prisma.UsageCounterAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUsageCounter>;
+        };
+        groupBy: {
+          args: Prisma.UsageCounterGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.UsageCounterGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.UsageCounterCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.UsageCounterCountAggregateOutputType> | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -1832,6 +2062,8 @@ export const TenantScalarFieldEnum = {
   name: "name",
   slug: "slug",
   status: "status",
+  screeningMode: "screeningMode",
+  aiMonthlyQuota: "aiMonthlyQuota",
   createdAt: "createdAt",
 } as const;
 
@@ -2089,6 +2321,60 @@ export const ConsentRecordScalarFieldEnum = {
 export type ConsentRecordScalarFieldEnum =
   (typeof ConsentRecordScalarFieldEnum)[keyof typeof ConsentRecordScalarFieldEnum];
 
+export const ScreeningResultScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  vacancyId: "vacancyId",
+  mode: "mode",
+  overall: "overall",
+  recommendation: "recommendation",
+  dimensions: "dimensions",
+  matched: "matched",
+  missing: "missing",
+  reasons: "reasons",
+  knockoutReasons: "knockoutReasons",
+  riskFlags: "riskFlags",
+  confidence: "confidence",
+  notes: "notes",
+  provider: "provider",
+  model: "model",
+  promptVersion: "promptVersion",
+  weightsVersion: "weightsVersion",
+  inputHash: "inputHash",
+  createdAt: "createdAt",
+} as const;
+
+export type ScreeningResultScalarFieldEnum =
+  (typeof ScreeningResultScalarFieldEnum)[keyof typeof ScreeningResultScalarFieldEnum];
+
+export const AiUsageScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  provider: "provider",
+  model: "model",
+  inputTokens: "inputTokens",
+  outputTokens: "outputTokens",
+  costMicros: "costMicros",
+  latencyMs: "latencyMs",
+  result: "result",
+  createdAt: "createdAt",
+} as const;
+
+export type AiUsageScalarFieldEnum =
+  (typeof AiUsageScalarFieldEnum)[keyof typeof AiUsageScalarFieldEnum];
+
+export const UsageCounterScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  month: "month",
+  aiAnalyses: "aiAnalyses",
+} as const;
+
+export type UsageCounterScalarFieldEnum =
+  (typeof UsageCounterScalarFieldEnum)[keyof typeof UsageCounterScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -2163,6 +2449,32 @@ export type ListEnumTenantStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
+ * Reference to a field of type 'ScreeningMode'
+ */
+export type EnumScreeningModeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "ScreeningMode"
+>;
+
+/**
+ * Reference to a field of type 'ScreeningMode[]'
+ */
+export type ListEnumScreeningModeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "ScreeningMode[]"
+>;
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Int">;
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Int[]">;
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "DateTime">;
@@ -2199,16 +2511,6 @@ export type ListEnumStageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
   "StageType[]"
 >;
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Int">;
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Int[]">;
 
 /**
  * Reference to a field of type 'Json'
@@ -2559,6 +2861,9 @@ export type GlobalOmitConfig = {
   applicationStageHistory?: Prisma.ApplicationStageHistoryOmit;
   document?: Prisma.DocumentOmit;
   consentRecord?: Prisma.ConsentRecordOmit;
+  screeningResult?: Prisma.ScreeningResultOmit;
+  aiUsage?: Prisma.AiUsageOmit;
+  usageCounter?: Prisma.UsageCounterOmit;
 };
 
 /* Types for Logging */

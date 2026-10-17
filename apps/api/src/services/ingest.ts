@@ -12,8 +12,9 @@ export function createIngestHandler(deps: {
   prisma: PrismaClient;
   store: BlobStore;
   mailer: Mailer;
+  screen?: (applicationId: string, tenantId: string) => Promise<unknown>;
 }): JobHandler {
-  const { prisma, store, mailer } = deps;
+  const { prisma, store, mailer, screen } = deps;
   return async ({ applicationId, tenantId }) => {
     const info = await withTenant(prisma, tenantId, async (tx) => {
       await tx.application.update({
@@ -60,6 +61,9 @@ export function createIngestHandler(deps: {
         });
       return app;
     });
+
+    // Preselección automática (Fase 4). Un fallo aquí no pierde la postulación: queda recibida y visible.
+    if (outcome === "ready" && screen) await screen(applicationId, tenantId).catch(() => undefined);
 
     const target = await withTenant(prisma, tenantId, (tx) =>
       tx.application.findFirstOrThrow({

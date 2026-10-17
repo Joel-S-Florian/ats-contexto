@@ -132,3 +132,10 @@ export const ScanStatus = {
 } as const;
 
 export type ScanStatus = (typeof ScanStatus)[keyof typeof ScanStatus];
+
+export const ScreeningMode = {
+  rules: "rules",
+  ai: "ai",
+} as const;
+
+export type ScreeningMode = (typeof ScreeningMode)[keyof typeof ScreeningMode];

@@ -19,8 +19,18 @@ export type TenantModel = runtime.Types.Result.DefaultSelection<Prisma.$TenantPa
 
 export type AggregateTenant = {
   _count: TenantCountAggregateOutputType | null;
+  _avg: TenantAvgAggregateOutputType | null;
+  _sum: TenantSumAggregateOutputType | null;
   _min: TenantMinAggregateOutputType | null;
   _max: TenantMaxAggregateOutputType | null;
+};
+
+export type TenantAvgAggregateOutputType = {
+  aiMonthlyQuota: number | null;
+};
+
+export type TenantSumAggregateOutputType = {
+  aiMonthlyQuota: number | null;
 };
 
 export type TenantMinAggregateOutputType = {
@@ -28,6 +38,8 @@ export type TenantMinAggregateOutputType = {
   name: string | null;
   slug: string | null;
   status: $Enums.TenantStatus | null;
+  screeningMode: $Enums.ScreeningMode | null;
+  aiMonthlyQuota: number | null;
   createdAt: Date | null;
 };
 
@@ -36,6 +48,8 @@ export type TenantMaxAggregateOutputType = {
   name: string | null;
   slug: string | null;
   status: $Enums.TenantStatus | null;
+  screeningMode: $Enums.ScreeningMode | null;
+  aiMonthlyQuota: number | null;
   createdAt: Date | null;
 };
 
@@ -44,8 +58,18 @@ export type TenantCountAggregateOutputType = {
   name: number;
   slug: number;
   status: number;
+  screeningMode: number;
+  aiMonthlyQuota: number;
   createdAt: number;
   _all: number;
+};
+
+export type TenantAvgAggregateInputType = {
+  aiMonthlyQuota?: true;
+};
+
+export type TenantSumAggregateInputType = {
+  aiMonthlyQuota?: true;
 };
 
 export type TenantMinAggregateInputType = {
@@ -53,6 +77,8 @@ export type TenantMinAggregateInputType = {
   name?: true;
   slug?: true;
   status?: true;
+  screeningMode?: true;
+  aiMonthlyQuota?: true;
   createdAt?: true;
 };
 
@@ -61,6 +87,8 @@ export type TenantMaxAggregateInputType = {
   name?: true;
   slug?: true;
   status?: true;
+  screeningMode?: true;
+  aiMonthlyQuota?: true;
   createdAt?: true;
 };
 
@@ -69,6 +97,8 @@ export type TenantCountAggregateInputType = {
   name?: true;
   slug?: true;
   status?: true;
+  screeningMode?: true;
+  aiMonthlyQuota?: true;
   createdAt?: true;
   _all?: true;
 };
@@ -113,6 +143,18 @@ export type TenantAggregateArgs<
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    *
+   * Select which fields to average
+   **/
+  _avg?: TenantAvgAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+   **/
+  _sum?: TenantSumAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
    * Select which fields to find the minimum value
    **/
   _min?: TenantMinAggregateInputType;
@@ -142,6 +184,8 @@ export type TenantGroupByArgs<
   take?: number;
   skip?: number;
   _count?: TenantCountAggregateInputType | true;
+  _avg?: TenantAvgAggregateInputType;
+  _sum?: TenantSumAggregateInputType;
   _min?: TenantMinAggregateInputType;
   _max?: TenantMaxAggregateInputType;
 };
@@ -151,8 +195,12 @@ export type TenantGroupByOutputType = {
   name: string;
   slug: string;
   status: $Enums.TenantStatus;
+  screeningMode: $Enums.ScreeningMode;
+  aiMonthlyQuota: number;
   createdAt: Date;
   _count: TenantCountAggregateOutputType | null;
+  _avg: TenantAvgAggregateOutputType | null;
+  _sum: TenantSumAggregateOutputType | null;
   _min: TenantMinAggregateOutputType | null;
   _max: TenantMaxAggregateOutputType | null;
 };
@@ -177,6 +225,8 @@ export type TenantWhereInput = {
   name?: Prisma.StringFilter<"Tenant"> | string;
   slug?: Prisma.StringFilter<"Tenant"> | string;
   status?: Prisma.EnumTenantStatusFilter<"Tenant"> | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFilter<"Tenant"> | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFilter<"Tenant"> | number;
   createdAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string;
   memberships?: Prisma.MembershipListRelationFilter;
   invitations?: Prisma.InvitationListRelationFilter;
@@ -188,6 +238,8 @@ export type TenantOrderByWithRelationInput = {
   name?: Prisma.SortOrder;
   slug?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
+  screeningMode?: Prisma.SortOrder;
+  aiMonthlyQuota?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   memberships?: Prisma.MembershipOrderByRelationAggregateInput;
   invitations?: Prisma.InvitationOrderByRelationAggregateInput;
@@ -203,6 +255,8 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<
     NOT?: Prisma.TenantWhereInput | Prisma.TenantWhereInput[];
     name?: Prisma.StringFilter<"Tenant"> | string;
     status?: Prisma.EnumTenantStatusFilter<"Tenant"> | $Enums.TenantStatus;
+    screeningMode?: Prisma.EnumScreeningModeFilter<"Tenant"> | $Enums.ScreeningMode;
+    aiMonthlyQuota?: Prisma.IntFilter<"Tenant"> | number;
     createdAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string;
     memberships?: Prisma.MembershipListRelationFilter;
     invitations?: Prisma.InvitationListRelationFilter;
@@ -216,10 +270,14 @@ export type TenantOrderByWithAggregationInput = {
   name?: Prisma.SortOrder;
   slug?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
+  screeningMode?: Prisma.SortOrder;
+  aiMonthlyQuota?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   _count?: Prisma.TenantCountOrderByAggregateInput;
+  _avg?: Prisma.TenantAvgOrderByAggregateInput;
   _max?: Prisma.TenantMaxOrderByAggregateInput;
   _min?: Prisma.TenantMinOrderByAggregateInput;
+  _sum?: Prisma.TenantSumOrderByAggregateInput;
 };
 
 export type TenantScalarWhereWithAggregatesInput = {
@@ -230,6 +288,8 @@ export type TenantScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Tenant"> | string;
   slug?: Prisma.StringWithAggregatesFilter<"Tenant"> | string;
   status?: Prisma.EnumTenantStatusWithAggregatesFilter<"Tenant"> | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeWithAggregatesFilter<"Tenant"> | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntWithAggregatesFilter<"Tenant"> | number;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tenant"> | Date | string;
 };
 
@@ -238,6 +298,8 @@ export type TenantCreateInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
@@ -249,6 +311,8 @@ export type TenantUncheckedCreateInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
@@ -260,6 +324,8 @@ export type TenantUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
@@ -271,6 +337,8 @@ export type TenantUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
@@ -282,6 +350,8 @@ export type TenantCreateManyInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
 };
 
@@ -290,6 +360,8 @@ export type TenantUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
@@ -298,6 +370,8 @@ export type TenantUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
@@ -306,7 +380,13 @@ export type TenantCountOrderByAggregateInput = {
   name?: Prisma.SortOrder;
   slug?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
+  screeningMode?: Prisma.SortOrder;
+  aiMonthlyQuota?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
+};
+
+export type TenantAvgOrderByAggregateInput = {
+  aiMonthlyQuota?: Prisma.SortOrder;
 };
 
 export type TenantMaxOrderByAggregateInput = {
@@ -314,6 +394,8 @@ export type TenantMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder;
   slug?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
+  screeningMode?: Prisma.SortOrder;
+  aiMonthlyQuota?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
@@ -322,7 +404,13 @@ export type TenantMinOrderByAggregateInput = {
   name?: Prisma.SortOrder;
   slug?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
+  screeningMode?: Prisma.SortOrder;
+  aiMonthlyQuota?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
+};
+
+export type TenantSumOrderByAggregateInput = {
+  aiMonthlyQuota?: Prisma.SortOrder;
 };
 
 export type TenantScalarRelationFilter = {
@@ -341,6 +429,18 @@ export type StringFieldUpdateOperationsInput = {
 
 export type EnumTenantStatusFieldUpdateOperationsInput = {
   set?: $Enums.TenantStatus;
+};
+
+export type EnumScreeningModeFieldUpdateOperationsInput = {
+  set?: $Enums.ScreeningMode;
+};
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number;
+  increment?: number;
+  decrement?: number;
+  multiply?: number;
+  divide?: number;
 };
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -432,6 +532,8 @@ export type TenantCreateWithoutMembershipsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput;
@@ -442,6 +544,8 @@ export type TenantUncheckedCreateWithoutMembershipsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput;
@@ -480,6 +584,8 @@ export type TenantUpdateWithoutMembershipsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput;
@@ -490,6 +596,8 @@ export type TenantUncheckedUpdateWithoutMembershipsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput;
@@ -500,6 +608,8 @@ export type TenantCreateWithoutInvitationsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput;
@@ -510,6 +620,8 @@ export type TenantUncheckedCreateWithoutInvitationsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput;
@@ -548,6 +660,8 @@ export type TenantUpdateWithoutInvitationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput;
@@ -558,6 +672,8 @@ export type TenantUncheckedUpdateWithoutInvitationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput;
@@ -568,6 +684,8 @@ export type TenantCreateWithoutAuditLogsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
@@ -578,6 +696,8 @@ export type TenantUncheckedCreateWithoutAuditLogsInput = {
   name: string;
   slug: string;
   status?: $Enums.TenantStatus;
+  screeningMode?: $Enums.ScreeningMode;
+  aiMonthlyQuota?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
@@ -616,6 +736,8 @@ export type TenantUpdateWithoutAuditLogsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
@@ -626,6 +748,8 @@ export type TenantUncheckedUpdateWithoutAuditLogsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   slug?: Prisma.StringFieldUpdateOperationsInput | string;
   status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus;
+  screeningMode?: Prisma.EnumScreeningModeFieldUpdateOperationsInput | $Enums.ScreeningMode;
+  aiMonthlyQuota?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
@@ -696,6 +820,8 @@ export type TenantSelect<
     name?: boolean;
     slug?: boolean;
     status?: boolean;
+    screeningMode?: boolean;
+    aiMonthlyQuota?: boolean;
     createdAt?: boolean;
     memberships?: boolean | Prisma.Tenant$membershipsArgs<ExtArgs>;
     invitations?: boolean | Prisma.Tenant$invitationsArgs<ExtArgs>;
@@ -713,6 +839,8 @@ export type TenantSelectCreateManyAndReturn<
     name?: boolean;
     slug?: boolean;
     status?: boolean;
+    screeningMode?: boolean;
+    aiMonthlyQuota?: boolean;
     createdAt?: boolean;
   },
   ExtArgs["result"]["tenant"]
@@ -726,6 +854,8 @@ export type TenantSelectUpdateManyAndReturn<
     name?: boolean;
     slug?: boolean;
     status?: boolean;
+    screeningMode?: boolean;
+    aiMonthlyQuota?: boolean;
     createdAt?: boolean;
   },
   ExtArgs["result"]["tenant"]
@@ -736,13 +866,15 @@ export type TenantSelectScalar = {
   name?: boolean;
   slug?: boolean;
   status?: boolean;
+  screeningMode?: boolean;
+  aiMonthlyQuota?: boolean;
   createdAt?: boolean;
 };
 
 export type TenantOmit<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
-  "id" | "name" | "slug" | "status" | "createdAt",
+  "id" | "name" | "slug" | "status" | "screeningMode" | "aiMonthlyQuota" | "createdAt",
   ExtArgs["result"]["tenant"]
 >;
 export type TenantInclude<
@@ -775,6 +907,8 @@ export type $TenantPayload<
       name: string;
       slug: string;
       status: $Enums.TenantStatus;
+      screeningMode: $Enums.ScreeningMode;
+      aiMonthlyQuota: number;
       createdAt: Date;
     },
     ExtArgs["result"]["tenant"]
@@ -1354,6 +1488,8 @@ export interface TenantFieldRefs {
   readonly name: Prisma.FieldRef<"Tenant", "String">;
   readonly slug: Prisma.FieldRef<"Tenant", "String">;
   readonly status: Prisma.FieldRef<"Tenant", "TenantStatus">;
+  readonly screeningMode: Prisma.FieldRef<"Tenant", "ScreeningMode">;
+  readonly aiMonthlyQuota: Prisma.FieldRef<"Tenant", "Int">;
   readonly createdAt: Prisma.FieldRef<"Tenant", "DateTime">;
 }
 

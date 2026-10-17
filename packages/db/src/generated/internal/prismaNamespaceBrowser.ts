@@ -66,6 +66,9 @@ export const ModelName = {
   ApplicationStageHistory: "ApplicationStageHistory",
   Document: "Document",
   ConsentRecord: "ConsentRecord",
+  ScreeningResult: "ScreeningResult",
+  AiUsage: "AiUsage",
+  UsageCounter: "UsageCounter",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -89,6 +92,8 @@ export const TenantScalarFieldEnum = {
   name: "name",
   slug: "slug",
   status: "status",
+  screeningMode: "screeningMode",
+  aiMonthlyQuota: "aiMonthlyQuota",
   createdAt: "createdAt",
 } as const;
 
@@ -345,6 +350,60 @@ export const ConsentRecordScalarFieldEnum = {
 
 export type ConsentRecordScalarFieldEnum =
   (typeof ConsentRecordScalarFieldEnum)[keyof typeof ConsentRecordScalarFieldEnum];
+
+export const ScreeningResultScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  vacancyId: "vacancyId",
+  mode: "mode",
+  overall: "overall",
+  recommendation: "recommendation",
+  dimensions: "dimensions",
+  matched: "matched",
+  missing: "missing",
+  reasons: "reasons",
+  knockoutReasons: "knockoutReasons",
+  riskFlags: "riskFlags",
+  confidence: "confidence",
+  notes: "notes",
+  provider: "provider",
+  model: "model",
+  promptVersion: "promptVersion",
+  weightsVersion: "weightsVersion",
+  inputHash: "inputHash",
+  createdAt: "createdAt",
+} as const;
+
+export type ScreeningResultScalarFieldEnum =
+  (typeof ScreeningResultScalarFieldEnum)[keyof typeof ScreeningResultScalarFieldEnum];
+
+export const AiUsageScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  provider: "provider",
+  model: "model",
+  inputTokens: "inputTokens",
+  outputTokens: "outputTokens",
+  costMicros: "costMicros",
+  latencyMs: "latencyMs",
+  result: "result",
+  createdAt: "createdAt",
+} as const;
+
+export type AiUsageScalarFieldEnum =
+  (typeof AiUsageScalarFieldEnum)[keyof typeof AiUsageScalarFieldEnum];
+
+export const UsageCounterScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  month: "month",
+  aiAnalyses: "aiAnalyses",
+} as const;
+
+export type UsageCounterScalarFieldEnum =
+  (typeof UsageCounterScalarFieldEnum)[keyof typeof UsageCounterScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

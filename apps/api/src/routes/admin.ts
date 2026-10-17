@@ -78,6 +78,38 @@ export function adminRoutes(
     ),
   );
 
+  // Plan de IA de un tenant (asignacion manual hasta la Fase 9): modo de preseleccion y cuota mensual de analisis.
+  app.patch(
+    "/admin/tenants/:id/screening",
+    { preHandler: [authenticate, requireSuperAdmin] },
+    async (req) => {
+      const { id } = z.object({ id: z.string().uuid() }).parse(req.params);
+      const body = z
+        .object({
+          mode: z.enum(["rules", "ai"]),
+          aiMonthlyQuota: z.number().int().min(0).max(1_000_000),
+        })
+        .parse(req.body);
+      return withPlatform(prisma, async (tx) => {
+        if (!(await tx.tenant.findUnique({ where: { id } })))
+          throw new HttpError(404, "Empresa no encontrada");
+        const t = await tx.tenant.update({
+          where: { id },
+          data: { screeningMode: body.mode, aiMonthlyQuota: body.aiMonthlyQuota },
+        });
+        await tx.auditLog.create({
+          data: {
+            tenantId: id,
+            actorId: req.auth!.userId,
+            action: "tenant.screening_updated",
+            target: `${body.mode}:${body.aiMonthlyQuota}`,
+          },
+        });
+        return { id: t.id, mode: t.screeningMode, aiMonthlyQuota: t.aiMonthlyQuota };
+      });
+    },
+  );
+
   // --- Administrador del tenant ---
   app.get("/users", { preHandler: authenticate }, async (req) => {
     const { tenantId } = requirePermission(req, "users:manage");

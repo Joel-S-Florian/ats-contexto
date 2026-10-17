@@ -19,14 +19,16 @@ enum TenantStatus {
 }
 
 model Tenant {
-  id          String       @id @default(uuid()) @db.Uuid
-  name        String
-  slug        String       @unique
-  status      TenantStatus @default(active)
-  createdAt   DateTime     @default(now()) @map("created_at")
-  memberships Membership[]
-  invitations Invitation[]
-  auditLogs   AuditLog[]
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  slug           String        @unique
+  status         TenantStatus  @default(active)
+  screeningMode  ScreeningMode @default(rules) @map("screening_mode")
+  aiMonthlyQuota Int           @default(0) @map("ai_monthly_quota")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  memberships    Membership[]
+  invitations    Invitation[]
+  auditLogs      AuditLog[]
 
   @@map("tenants")
 }
@@ -402,4 +404,68 @@ model ConsentRecord {
 
   @@index([tenantId, candidateId])
   @@map("consent_records")
+}
+
+enum ScreeningMode {
+  rules
+  ai
+}
+
+// Resultado de preseleccion (docs/03 seccion 2). Mismo objeto para los modos rules y ai.
+// vacancyId es la vacante contra la que se puntuo: la de la postulacion, o una vacante afin si es sugerencia de la bolsa.
+model ScreeningResult {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @map("tenant_id") @db.Uuid
+  applicationId   String        @map("application_id") @db.Uuid
+  vacancyId       String        @map("vacancy_id") @db.Uuid
+  mode            ScreeningMode
+  overall         Int?
+  recommendation  String
+  dimensions      Json          @default("[]")
+  matched         Json          @default("[]")
+  missing         Json          @default("[]")
+  reasons         Json          @default("[]")
+  knockoutReasons Json          @default("[]") @map("knockout_reasons")
+  riskFlags       Json          @default("[]") @map("risk_flags")
+  confidence      String?
+  notes           Json          @default("[]")
+  provider        String?
+  model           String?
+  promptVersion   String?       @map("prompt_version")
+  weightsVersion  String        @map("weights_version")
+  inputHash       String?       @map("input_hash")
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  @@index([tenantId, applicationId, createdAt])
+  @@index([tenantId, vacancyId, overall])
+  @@map("screening_results")
+}
+
+// Una fila por llamada a un proveedor de IA: tokens, costo estimado y latencia (docs/03 7.6). Sin texto del CV.
+model AiUsage {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  applicationId String?  @map("application_id") @db.Uuid
+  provider      String
+  model         String
+  inputTokens   Int      @map("input_tokens")
+  outputTokens  Int      @map("output_tokens")
+  costMicros    Int      @map("cost_micros")
+  latencyMs     Int      @map("latency_ms")
+  result        String
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([createdAt])
+  @@map("ai_usage")
+}
+
+model UsageCounter {
+  id         String @id @default(uuid()) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  month      String
+  aiAnalyses Int    @default(0) @map("ai_analyses")
+
+  @@unique([tenantId, month])
+  @@map("usage_counters")
 }

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { withTenant, type PrismaClient, type Tx } from "@ats/db";
 import { HttpError, requirePermission } from "../auth/plugin.js";
 import { newPublicKey, normalizeOrigin } from "../services/keys.js";
+import type { ScreeningService } from "../services/screening.js";
 
 type Deps = { prisma: PrismaClient; authenticate: preHandlerAsyncHookHandler };
 const idParam = z.object({ id: z.string().uuid() });
@@ -88,7 +89,10 @@ export function apiKeyRoutes(app: FastifyInstance, { prisma, authenticate }: Dep
   });
 }
 
-export function panelApplicationRoutes(app: FastifyInstance, { prisma, authenticate }: Deps) {
+export function panelApplicationRoutes(
+  app: FastifyInstance,
+  { prisma, authenticate, screening }: Deps & { screening: ScreeningService },
+) {
   // El responsable de área solo ve postulaciones a vacantes que tiene asignadas; la bolsa general no le corresponde.
   const scopeFor = async (tx: Tx, tenantId: string, role: string | undefined, userId: string) => {
     if (role !== "area_manager") return {};
@@ -138,10 +142,70 @@ export function panelApplicationRoutes(app: FastifyInstance, { prisma, authentic
         select: { id: true, title: true },
       });
       const title = new Map(vacancies.map((v) => [v.id, v.title]));
-      return rows.map((r) => ({
-        ...r,
-        vacancyTitle: r.vacancyId ? (title.get(r.vacancyId) ?? null) : null,
-      }));
+      const results = await tx.screeningResult.findMany({
+        where: { applicationId: { in: rows.map((r) => r.id) } },
+        orderBy: { createdAt: "desc" },
+        select: {
+          applicationId: true,
+          vacancyId: true,
+          overall: true,
+          recommendation: true,
+          mode: true,
+        },
+      });
+      const latest = new Map<string, (typeof results)[number]>();
+      for (const s of results) if (!latest.has(s.applicationId)) latest.set(s.applicationId, s);
+      return rows.map((r) => {
+        const s = latest.get(r.id);
+        return {
+          ...r,
+          vacancyTitle: r.vacancyId ? (title.get(r.vacancyId) ?? null) : null,
+          screening: s
+            ? { overall: s.overall, recommendation: s.recommendation, mode: s.mode }
+            : null,
+        };
+      });
+    });
+  });
+
+  // Re-ejecuta la preselección (por ejemplo tras cambiar pesos o el modo del tenant).
+  app.post("/applications/:id/screen", { preHandler: authenticate }, async (req) => {
+    const { tenantId, userId } = requirePermission(req, "vacancies:write");
+    const { id } = idParam.parse(req.params);
+    const result = await screening.screen(id, tenantId);
+    await withTenant(prisma, tenantId, (tx) =>
+      tx.auditLog.create({
+        data: { tenantId, actorId: userId, action: "application.rescreened", target: id },
+      }),
+    );
+    return result;
+  });
+
+  // Bolsa de talento: candidatos de postulaciones generales afines a una vacante (prefiltro SQL + puntaje de los mejores N).
+  app.get("/vacancies/:id/suggestions", { preHandler: authenticate }, async (req) => {
+    const { tenantId } = requirePermission(req, "vacancies:write");
+    const { id } = idParam.parse(req.params);
+    const { limit } = z
+      .object({ limit: z.coerce.number().int().min(1).max(50).default(20) })
+      .parse(req.query);
+    return screening.suggest(id, tenantId, limit);
+  });
+
+  // Consumo de IA del mes frente a la cuota del tenant.
+  app.get("/screening/usage", { preHandler: authenticate }, async (req) => {
+    const { tenantId } = requirePermission(req, "users:manage");
+    return withTenant(prisma, tenantId, async (tx) => {
+      const month = new Date().toISOString().slice(0, 7);
+      const [tenant, counter] = await Promise.all([
+        tx.tenant.findUniqueOrThrow({ where: { id: tenantId } }),
+        tx.usageCounter.findUnique({ where: { tenantId_month: { tenantId, month } } }),
+      ]);
+      return {
+        mode: tenant.screeningMode,
+        quota: tenant.aiMonthlyQuota,
+        used: counter?.aiAnalyses ?? 0,
+        month,
+      };
     });
   });
 
@@ -179,7 +243,14 @@ export function panelApplicationRoutes(app: FastifyInstance, { prisma, authentic
             select: { id: true, title: true },
           })
         : null;
-      return { ...a, vacancy };
+      // Último resultado contra la vacante de la postulación, con el "por qué" de cada dimensión.
+      const screeningRow = a.vacancyId
+        ? await tx.screeningResult.findFirst({
+            where: { applicationId: id, vacancyId: a.vacancyId },
+            orderBy: { createdAt: "desc" },
+          })
+        : null;
+      return { ...a, vacancy, screening: screeningRow };
     });
   });
 }

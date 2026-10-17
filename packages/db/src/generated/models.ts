@@ -25,4 +25,7 @@ export type * from "./models/Application";
 export type * from "./models/ApplicationStageHistory";
 export type * from "./models/Document";
 export type * from "./models/ConsentRecord";
+export type * from "./models/ScreeningResult";
+export type * from "./models/AiUsage";
+export type * from "./models/UsageCounter";
 export type * from "./commonInputTypes";

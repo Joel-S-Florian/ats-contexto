@@ -193,6 +193,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@ats/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@ats/db':
         specifier: workspace:*
         version: link:../../packages/db

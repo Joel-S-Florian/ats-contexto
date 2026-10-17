@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ats/ai": "workspace:*",
     "@ats/db": "workspace:*",
     "@ats/shared": "workspace:*",
     "@fastify/cookie": "^11.1.3",

@@ -19,6 +19,14 @@ export const apiEnvSchema = z
     AV_PROVIDER: z.enum(["none", "clamav"]).default("none"),
     CLAMD_HOST: z.string().default("localhost"),
     FILE_STORAGE_DIR: z.string().default(".data/files"),
+    AI_PROVIDER: z.enum(["none", "mock", "claude", "openai", "gemini"]).default("none"),
+    AI_API_KEY: z.string().optional(),
+    AI_MODEL_FAST: z.string().optional(),
+    AI_MODEL_STRONG: z.string().optional(),
+    AI_GLOBAL_DAILY_CAP: z.coerce.number().int().min(0).default(5000),
+    AI_GLOBAL_MONTHLY_CAP: z.coerce.number().int().min(0).default(100000),
+    AI_PRICE_IN_MICROS_PER_M: z.coerce.number().min(0).default(0),
+    AI_PRICE_OUT_MICROS_PER_M: z.coerce.number().min(0).default(0),
   })
   .superRefine((env, ctx) => {
     if (env.CAPTCHA_PROVIDER === "turnstile" && !env.TURNSTILE_SECRET)
@@ -26,6 +34,15 @@ export const apiEnvSchema = z
         code: "custom",
         path: ["TURNSTILE_SECRET"],
         message: "requerido con turnstile",
+      });
+    if (
+      ["claude", "openai", "gemini"].includes(env.AI_PROVIDER) &&
+      !(env.AI_API_KEY && env.AI_MODEL_FAST && env.AI_MODEL_STRONG)
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["AI_API_KEY"],
+        message: "requiere AI_API_KEY, AI_MODEL_FAST y AI_MODEL_STRONG",
       });
     // En produccion no se admiten los adaptadores de desarrollo (captcha de prueba, antivirus EICAR).
     if (env.NODE_ENV === "production") {

@@ -21,6 +21,12 @@ import { devCaptcha, type CaptchaVerifier } from "./ports/captcha.js";
 import { memoryQueue, type JobQueue } from "./ports/queue.js";
 import { eicarScanner, type VirusScanner } from "./ports/scanner.js";
 import { localBlobStore, type BlobStore } from "./ports/storage.js";
+import {
+  createScreeningService,
+  defaultAiConfig,
+  type AiConfig,
+  type ScreeningService,
+} from "./services/screening.js";
 import type { Mailer } from "./mailer.js";
 
 export type HealthCheck = () => Promise<void>;
@@ -36,6 +42,8 @@ export interface AppDeps {
   scanner?: VirusScanner;
   captcha?: CaptchaVerifier;
   queue?: JobQueue;
+  ai?: Partial<AiConfig>;
+  screening?: ScreeningService;
 }
 
 export function buildApp({
@@ -49,7 +57,11 @@ export function buildApp({
   store = localBlobStore(".data/files"),
   scanner = eicarScanner,
   captcha = devCaptcha,
-  queue = memoryQueue(createIngestHandler({ prisma, store, mailer })),
+  ai,
+  screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
+  queue = memoryQueue(
+    createIngestHandler({ prisma, store, mailer, screen: (a, t) => screening.screen(a, t) }),
+  ),
 }: AppDeps) {
   const app = Fastify({ logger: logger ? loggerOptions : false });
   app.register(cors, {
@@ -130,7 +142,7 @@ export function buildApp({
       rateLimit: publicRateLimit,
     });
     apiKeyRoutes(scope, { prisma, authenticate });
-    panelApplicationRoutes(scope, { prisma, authenticate });
+    panelApplicationRoutes(scope, { prisma, authenticate, screening });
   });
 
   app.decorate("queue", queue);

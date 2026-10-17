@@ -106,3 +106,18 @@ export type Document = Prisma.DocumentModel;
  *
  */
 export type ConsentRecord = Prisma.ConsentRecordModel;
+/**
+ * Model ScreeningResult
+ *
+ */
+export type ScreeningResult = Prisma.ScreeningResultModel;
+/**
+ * Model AiUsage
+ *
+ */
+export type AiUsage = Prisma.AiUsageModel;
+/**
+ * Model UsageCounter
+ *
+ */
+export type UsageCounter = Prisma.UsageCounterModel;

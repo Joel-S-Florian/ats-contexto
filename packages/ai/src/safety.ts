@@ -30,10 +30,7 @@ export function anonymize(
   for (const p of parts) swap(new RegExp(`\\b${esc(p)}\\b`, "gi"), "[NOMBRE]", p);
   // Datos personales que no aportan a la evaluación.
   swap(/\b(fecha de nacimiento|nacid[oa] el|edad)\s*[:-]?\s*[^\n,;]{0,30}/gi, "[DATO-PERSONAL]");
-  swap(
-    /\b(estado civil|g[eé]nero|sexo|nacionalidad)\s*[:-]?\s*[^\n,;]{0,30}/gi,
-    "[DATO-PERSONAL]",
-  );
+  swap(/\b(estado civil|g[eé]nero|sexo|nacionalidad)\s*[:-]?\s*[^\n,;]{0,30}/gi, "[DATO-PERSONAL]");
   swap(/\b\d{3}-?\d{7}-?\d\b/g, "[DOCUMENTO]"); // cédula dominicana
   return { text: out, map };
 }
