@@ -1,0 +1,19 @@
+{
+  "name": "@ats/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/main.ts",
+    "typecheck": "tsc -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ats/shared": "workspace:*",
+    "@fastify/cors": "^11.3.1",
+    "fastify": "^5.12.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

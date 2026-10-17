@@ -1,0 +1,15 @@
+{
+  "name": "@ats/widget",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "esbuild src/index.ts --bundle --format=iife --outfile=dist/widget.js --watch",
+    "build": "esbuild src/index.ts --bundle --minify --format=iife --outfile=dist/widget.js",
+    "typecheck": "tsc -p .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
