@@ -24,6 +24,8 @@ export class HttpError extends Error {
   constructor(
     public statusCode: number,
     message: string,
+    /** Código estable para que el panel distinga, p. ej., un límite de plan de un error de validación. */
+    public code?: string,
   ) {
     super(message);
   }

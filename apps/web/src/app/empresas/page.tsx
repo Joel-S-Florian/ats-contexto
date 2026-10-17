@@ -2,22 +2,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { Building2, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { planKeys, plans, type PlanKey } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
 import { api, ApiError } from "@/lib/api";
 
-function AiPlan({ t, onSaved }: { t: Tenant; onSaved: () => void }) {
-  const [mode, setMode] = useState(t.screeningMode);
-  const [quota, setQuota] = useState(t.aiMonthlyQuota);
+function PlanControl({ t, onSaved }: { t: Tenant; onSaved: () => void }) {
+  const [planKey, setPlanKey] = useState<PlanKey>(t.planKey);
   const [saving, setSaving] = useState(false);
-  const dirty = mode !== t.screeningMode || quota !== t.aiMonthlyQuota;
+  const dirty = planKey !== t.planKey;
   async function save() {
     setSaving(true);
     try {
-      await api(`/admin/tenants/${t.id}/screening`, {
-        method: "PATCH",
-        body: { mode, aiMonthlyQuota: quota },
-      });
-      toast.success("Plan de preselección actualizado");
+      await api(`/admin/tenants/${t.id}/plan`, { method: "PATCH", body: { planKey } });
+      toast.success("Plan asignado");
       onSaved();
     } catch (e) {
       toast.error(e instanceof ApiError ? e.message : "Error inesperado");
@@ -27,27 +24,20 @@ function AiPlan({ t, onSaved }: { t: Tenant; onSaved: () => void }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <select
-        aria-label="Modo de preselección"
-        value={mode}
-        onChange={(e) => setMode(e.target.value as Tenant["screeningMode"])}
+        aria-label="Plan"
+        value={planKey}
+        onChange={(e) => setPlanKey(e.target.value as PlanKey)}
         className="field w-auto !py-1.5"
       >
-        <option value="rules">Reglas (sin IA)</option>
-        <option value="ai">IA</option>
+        {planKeys.map((k) => (
+          <option key={k} value={k}>
+            {plans[k].name} · US$ {plans[k].priceUsd}
+          </option>
+        ))}
       </select>
-      <input
-        aria-label="Cuota mensual de análisis"
-        type="number"
-        min={0}
-        value={quota}
-        disabled={mode === "rules"}
-        onChange={(e) => setQuota(Number(e.target.value))}
-        className="field w-24 !py-1.5"
-        title="Cuota mensual de análisis con IA"
-      />
       {dirty && (
         <button onClick={save} disabled={saving} className="btn-primary !px-3 !py-1.5">
-          {saving ? <Loader2 size={14} className="animate-spin" /> : "Guardar"}
+          {saving ? <Loader2 size={14} className="animate-spin" /> : "Asignar"}
         </button>
       )}
     </div>
@@ -59,8 +49,7 @@ interface Tenant {
   name: string;
   slug: string;
   status: "active" | "suspended";
-  screeningMode: "rules" | "ai";
-  aiMonthlyQuota: number;
+  planKey: PlanKey;
 }
 
 const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
@@ -88,7 +77,12 @@ export default function TenantsPage() {
     try {
       await api("/admin/tenants", {
         method: "POST",
-        body: { name: d.get("name"), slug: d.get("slug"), adminEmail: d.get("adminEmail") },
+        body: {
+          name: d.get("name"),
+          slug: d.get("slug"),
+          adminEmail: d.get("adminEmail"),
+          planKey: d.get("planKey"),
+        },
       });
       toast.success("Empresa creada. Se envió la invitación al administrador.");
       form.reset();
@@ -114,7 +108,7 @@ export default function TenantsPage() {
       <form
         onSubmit={create}
         style={stagger(1)}
-        className="rise mb-6 grid gap-3 rounded-card border border-border bg-surface p-5 shadow-sm sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end"
+        className="rise mb-6 grid gap-3 rounded-card border border-border bg-surface p-5 shadow-sm sm:grid-cols-[1fr_1fr_1fr_auto_auto] sm:items-end"
       >
         <label className="text-sm font-medium">
           Nombre
@@ -133,6 +127,16 @@ export default function TenantsPage() {
         <label className="text-sm font-medium">
           Correo del administrador
           <input name="adminEmail" type="email" required className="field mt-1.5" />
+        </label>
+        <label className="text-sm font-medium">
+          Plan
+          <select name="planKey" defaultValue="essential" className="field mt-1.5">
+            {planKeys.map((k) => (
+              <option key={k} value={k}>
+                {plans[k].name}
+              </option>
+            ))}
+          </select>
         </label>
         <button type="submit" disabled={saving} className="btn-primary">
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
@@ -162,7 +166,7 @@ export default function TenantsPage() {
                   <p className="text-sm font-medium">{t.name}</p>
                   <p className="text-xs text-muted">{t.slug}</p>
                 </div>
-                <AiPlan t={t} onSaved={load} />
+                <PlanControl t={t} onSaved={load} />
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${t.status === "active" ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}
                 >

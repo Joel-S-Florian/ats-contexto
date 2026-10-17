@@ -28,11 +28,13 @@ export type AggregateTenant = {
 export type TenantAvgAggregateOutputType = {
   aiMonthlyQuota: number | null;
   rejectionDelayHours: number | null;
+  retentionMonths: number | null;
 };
 
 export type TenantSumAggregateOutputType = {
   aiMonthlyQuota: number | null;
   rejectionDelayHours: number | null;
+  retentionMonths: number | null;
 };
 
 export type TenantMinAggregateOutputType = {
@@ -45,6 +47,8 @@ export type TenantMinAggregateOutputType = {
   rejectionNotice: $Enums.RejectionNotice | null;
   rejectionDelayHours: number | null;
   autoConfirmHire: boolean | null;
+  planKey: $Enums.PlanKey | null;
+  retentionMonths: number | null;
   createdAt: Date | null;
 };
 
@@ -58,6 +62,8 @@ export type TenantMaxAggregateOutputType = {
   rejectionNotice: $Enums.RejectionNotice | null;
   rejectionDelayHours: number | null;
   autoConfirmHire: boolean | null;
+  planKey: $Enums.PlanKey | null;
+  retentionMonths: number | null;
   createdAt: Date | null;
 };
 
@@ -71,6 +77,8 @@ export type TenantCountAggregateOutputType = {
   rejectionNotice: number;
   rejectionDelayHours: number;
   autoConfirmHire: number;
+  planKey: number;
+  retentionMonths: number;
   createdAt: number;
   _all: number;
 };
@@ -78,11 +86,13 @@ export type TenantCountAggregateOutputType = {
 export type TenantAvgAggregateInputType = {
   aiMonthlyQuota?: true;
   rejectionDelayHours?: true;
+  retentionMonths?: true;
 };
 
 export type TenantSumAggregateInputType = {
   aiMonthlyQuota?: true;
   rejectionDelayHours?: true;
+  retentionMonths?: true;
 };
 
 export type TenantMinAggregateInputType = {
@@ -95,6 +105,8 @@ export type TenantMinAggregateInputType = {
   rejectionNotice?: true;
   rejectionDelayHours?: true;
   autoConfirmHire?: true;
+  planKey?: true;
+  retentionMonths?: true;
   createdAt?: true;
 };
 
@@ -108,6 +120,8 @@ export type TenantMaxAggregateInputType = {
   rejectionNotice?: true;
   rejectionDelayHours?: true;
   autoConfirmHire?: true;
+  planKey?: true;
+  retentionMonths?: true;
   createdAt?: true;
 };
 
@@ -121,6 +135,8 @@ export type TenantCountAggregateInputType = {
   rejectionNotice?: true;
   rejectionDelayHours?: true;
   autoConfirmHire?: true;
+  planKey?: true;
+  retentionMonths?: true;
   createdAt?: true;
   _all?: true;
 };
@@ -222,6 +238,8 @@ export type TenantGroupByOutputType = {
   rejectionNotice: $Enums.RejectionNotice;
   rejectionDelayHours: number;
   autoConfirmHire: boolean;
+  planKey: $Enums.PlanKey;
+  retentionMonths: number;
   createdAt: Date;
   _count: TenantCountAggregateOutputType | null;
   _avg: TenantAvgAggregateOutputType | null;
@@ -255,6 +273,8 @@ export type TenantWhereInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFilter<"Tenant"> | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFilter<"Tenant"> | number;
   autoConfirmHire?: Prisma.BoolFilter<"Tenant"> | boolean;
+  planKey?: Prisma.EnumPlanKeyFilter<"Tenant"> | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFilter<"Tenant"> | number;
   createdAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string;
   memberships?: Prisma.MembershipListRelationFilter;
   invitations?: Prisma.InvitationListRelationFilter;
@@ -271,6 +291,8 @@ export type TenantOrderByWithRelationInput = {
   rejectionNotice?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
   autoConfirmHire?: Prisma.SortOrder;
+  planKey?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   memberships?: Prisma.MembershipOrderByRelationAggregateInput;
   invitations?: Prisma.InvitationOrderByRelationAggregateInput;
@@ -291,6 +313,8 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<
     rejectionNotice?: Prisma.EnumRejectionNoticeFilter<"Tenant"> | $Enums.RejectionNotice;
     rejectionDelayHours?: Prisma.IntFilter<"Tenant"> | number;
     autoConfirmHire?: Prisma.BoolFilter<"Tenant"> | boolean;
+    planKey?: Prisma.EnumPlanKeyFilter<"Tenant"> | $Enums.PlanKey;
+    retentionMonths?: Prisma.IntFilter<"Tenant"> | number;
     createdAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string;
     memberships?: Prisma.MembershipListRelationFilter;
     invitations?: Prisma.InvitationListRelationFilter;
@@ -309,6 +333,8 @@ export type TenantOrderByWithAggregationInput = {
   rejectionNotice?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
   autoConfirmHire?: Prisma.SortOrder;
+  planKey?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   _count?: Prisma.TenantCountOrderByAggregateInput;
   _avg?: Prisma.TenantAvgOrderByAggregateInput;
@@ -331,6 +357,8 @@ export type TenantScalarWhereWithAggregatesInput = {
     Prisma.EnumRejectionNoticeWithAggregatesFilter<"Tenant"> | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntWithAggregatesFilter<"Tenant"> | number;
   autoConfirmHire?: Prisma.BoolWithAggregatesFilter<"Tenant"> | boolean;
+  planKey?: Prisma.EnumPlanKeyWithAggregatesFilter<"Tenant"> | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntWithAggregatesFilter<"Tenant"> | number;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tenant"> | Date | string;
 };
 
@@ -344,6 +372,8 @@ export type TenantCreateInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
@@ -360,6 +390,8 @@ export type TenantUncheckedCreateInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
@@ -376,6 +408,8 @@ export type TenantUpdateInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
@@ -392,6 +426,8 @@ export type TenantUncheckedUpdateInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
@@ -408,6 +444,8 @@ export type TenantCreateManyInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
 };
 
@@ -421,6 +459,8 @@ export type TenantUpdateManyMutationInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
@@ -434,6 +474,8 @@ export type TenantUncheckedUpdateManyInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
@@ -447,12 +489,15 @@ export type TenantCountOrderByAggregateInput = {
   rejectionNotice?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
   autoConfirmHire?: Prisma.SortOrder;
+  planKey?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
 export type TenantAvgOrderByAggregateInput = {
   aiMonthlyQuota?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
 };
 
 export type TenantMaxOrderByAggregateInput = {
@@ -465,6 +510,8 @@ export type TenantMaxOrderByAggregateInput = {
   rejectionNotice?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
   autoConfirmHire?: Prisma.SortOrder;
+  planKey?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
@@ -478,12 +525,15 @@ export type TenantMinOrderByAggregateInput = {
   rejectionNotice?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
   autoConfirmHire?: Prisma.SortOrder;
+  planKey?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
 export type TenantSumOrderByAggregateInput = {
   aiMonthlyQuota?: Prisma.SortOrder;
   rejectionDelayHours?: Prisma.SortOrder;
+  retentionMonths?: Prisma.SortOrder;
 };
 
 export type TenantScalarRelationFilter = {
@@ -522,6 +572,10 @@ export type EnumRejectionNoticeFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean;
+};
+
+export type EnumPlanKeyFieldUpdateOperationsInput = {
+  set?: $Enums.PlanKey;
 };
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -618,6 +672,8 @@ export type TenantCreateWithoutMembershipsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput;
@@ -633,6 +689,8 @@ export type TenantUncheckedCreateWithoutMembershipsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput;
@@ -676,6 +734,8 @@ export type TenantUpdateWithoutMembershipsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput;
@@ -691,6 +751,8 @@ export type TenantUncheckedUpdateWithoutMembershipsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput;
@@ -706,6 +768,8 @@ export type TenantCreateWithoutInvitationsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput;
@@ -721,6 +785,8 @@ export type TenantUncheckedCreateWithoutInvitationsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput;
@@ -764,6 +830,8 @@ export type TenantUpdateWithoutInvitationsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput;
@@ -779,6 +847,8 @@ export type TenantUncheckedUpdateWithoutInvitationsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput;
@@ -794,6 +864,8 @@ export type TenantCreateWithoutAuditLogsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationCreateNestedManyWithoutTenantInput;
@@ -809,6 +881,8 @@ export type TenantUncheckedCreateWithoutAuditLogsInput = {
   rejectionNotice?: $Enums.RejectionNotice;
   rejectionDelayHours?: number;
   autoConfirmHire?: boolean;
+  planKey?: $Enums.PlanKey;
+  retentionMonths?: number;
   createdAt?: Date | string;
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput;
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutTenantInput;
@@ -852,6 +926,8 @@ export type TenantUpdateWithoutAuditLogsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUpdateManyWithoutTenantNestedInput;
@@ -867,6 +943,8 @@ export type TenantUncheckedUpdateWithoutAuditLogsInput = {
   rejectionNotice?: Prisma.EnumRejectionNoticeFieldUpdateOperationsInput | $Enums.RejectionNotice;
   rejectionDelayHours?: Prisma.IntFieldUpdateOperationsInput | number;
   autoConfirmHire?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  planKey?: Prisma.EnumPlanKeyFieldUpdateOperationsInput | $Enums.PlanKey;
+  retentionMonths?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput;
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutTenantNestedInput;
@@ -942,6 +1020,8 @@ export type TenantSelect<
     rejectionNotice?: boolean;
     rejectionDelayHours?: boolean;
     autoConfirmHire?: boolean;
+    planKey?: boolean;
+    retentionMonths?: boolean;
     createdAt?: boolean;
     memberships?: boolean | Prisma.Tenant$membershipsArgs<ExtArgs>;
     invitations?: boolean | Prisma.Tenant$invitationsArgs<ExtArgs>;
@@ -964,6 +1044,8 @@ export type TenantSelectCreateManyAndReturn<
     rejectionNotice?: boolean;
     rejectionDelayHours?: boolean;
     autoConfirmHire?: boolean;
+    planKey?: boolean;
+    retentionMonths?: boolean;
     createdAt?: boolean;
   },
   ExtArgs["result"]["tenant"]
@@ -982,6 +1064,8 @@ export type TenantSelectUpdateManyAndReturn<
     rejectionNotice?: boolean;
     rejectionDelayHours?: boolean;
     autoConfirmHire?: boolean;
+    planKey?: boolean;
+    retentionMonths?: boolean;
     createdAt?: boolean;
   },
   ExtArgs["result"]["tenant"]
@@ -997,6 +1081,8 @@ export type TenantSelectScalar = {
   rejectionNotice?: boolean;
   rejectionDelayHours?: boolean;
   autoConfirmHire?: boolean;
+  planKey?: boolean;
+  retentionMonths?: boolean;
   createdAt?: boolean;
 };
 
@@ -1012,6 +1098,8 @@ export type TenantOmit<
   | "rejectionNotice"
   | "rejectionDelayHours"
   | "autoConfirmHire"
+  | "planKey"
+  | "retentionMonths"
   | "createdAt",
   ExtArgs["result"]["tenant"]
 >;
@@ -1050,6 +1138,8 @@ export type $TenantPayload<
       rejectionNotice: $Enums.RejectionNotice;
       rejectionDelayHours: number;
       autoConfirmHire: boolean;
+      planKey: $Enums.PlanKey;
+      retentionMonths: number;
       createdAt: Date;
     },
     ExtArgs["result"]["tenant"]
@@ -1634,6 +1724,8 @@ export interface TenantFieldRefs {
   readonly rejectionNotice: Prisma.FieldRef<"Tenant", "RejectionNotice">;
   readonly rejectionDelayHours: Prisma.FieldRef<"Tenant", "Int">;
   readonly autoConfirmHire: Prisma.FieldRef<"Tenant", "Boolean">;
+  readonly planKey: Prisma.FieldRef<"Tenant", "PlanKey">;
+  readonly retentionMonths: Prisma.FieldRef<"Tenant", "Int">;
   readonly createdAt: Prisma.FieldRef<"Tenant", "DateTime">;
 }
 

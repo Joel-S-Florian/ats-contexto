@@ -47,6 +47,7 @@ export type CandidateMinAggregateOutputType = {
   portfolioUrl: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
+  anonymizedAt: Date | null;
 };
 
 export type CandidateMaxAggregateOutputType = {
@@ -63,6 +64,7 @@ export type CandidateMaxAggregateOutputType = {
   portfolioUrl: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
+  anonymizedAt: Date | null;
 };
 
 export type CandidateCountAggregateOutputType = {
@@ -81,6 +83,7 @@ export type CandidateCountAggregateOutputType = {
   portfolioUrl: number;
   createdAt: number;
   updatedAt: number;
+  anonymizedAt: number;
   _all: number;
 };
 
@@ -106,6 +109,7 @@ export type CandidateMinAggregateInputType = {
   portfolioUrl?: true;
   createdAt?: true;
   updatedAt?: true;
+  anonymizedAt?: true;
 };
 
 export type CandidateMaxAggregateInputType = {
@@ -122,6 +126,7 @@ export type CandidateMaxAggregateInputType = {
   portfolioUrl?: true;
   createdAt?: true;
   updatedAt?: true;
+  anonymizedAt?: true;
 };
 
 export type CandidateCountAggregateInputType = {
@@ -140,6 +145,7 @@ export type CandidateCountAggregateInputType = {
   portfolioUrl?: true;
   createdAt?: true;
   updatedAt?: true;
+  anonymizedAt?: true;
   _all?: true;
 };
 
@@ -247,6 +253,7 @@ export type CandidateGroupByOutputType = {
   portfolioUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
+  anonymizedAt: Date | null;
   _count: CandidateCountAggregateOutputType | null;
   _avg: CandidateAvgAggregateOutputType | null;
   _sum: CandidateSumAggregateOutputType | null;
@@ -285,6 +292,7 @@ export type CandidateWhereInput = {
   portfolioUrl?: Prisma.StringNullableFilter<"Candidate"> | string | null;
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string;
+  anonymizedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null;
   applications?: Prisma.ApplicationListRelationFilter;
   consents?: Prisma.ConsentRecordListRelationFilter;
 };
@@ -305,6 +313,7 @@ export type CandidateOrderByWithRelationInput = {
   portfolioUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  anonymizedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   applications?: Prisma.ApplicationOrderByRelationAggregateInput;
   consents?: Prisma.ConsentRecordOrderByRelationAggregateInput;
 };
@@ -330,6 +339,7 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<
     portfolioUrl?: Prisma.StringNullableFilter<"Candidate"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string;
+    anonymizedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null;
     applications?: Prisma.ApplicationListRelationFilter;
     consents?: Prisma.ConsentRecordListRelationFilter;
   },
@@ -352,6 +362,7 @@ export type CandidateOrderByWithAggregationInput = {
   portfolioUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  anonymizedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   _count?: Prisma.CandidateCountOrderByAggregateInput;
   _avg?: Prisma.CandidateAvgOrderByAggregateInput;
   _max?: Prisma.CandidateMaxOrderByAggregateInput;
@@ -383,6 +394,7 @@ export type CandidateScalarWhereWithAggregatesInput = {
   portfolioUrl?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string;
+  anonymizedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Candidate"> | Date | string | null;
 };
 
 export type CandidateCreateInput = {
@@ -401,6 +413,7 @@ export type CandidateCreateInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   applications?: Prisma.ApplicationCreateNestedManyWithoutCandidateInput;
   consents?: Prisma.ConsentRecordCreateNestedManyWithoutCandidateInput;
 };
@@ -421,6 +434,7 @@ export type CandidateUncheckedCreateInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   applications?: Prisma.ApplicationUncheckedCreateNestedManyWithoutCandidateInput;
   consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutCandidateInput;
 };
@@ -441,6 +455,7 @@ export type CandidateUpdateInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   applications?: Prisma.ApplicationUpdateManyWithoutCandidateNestedInput;
   consents?: Prisma.ConsentRecordUpdateManyWithoutCandidateNestedInput;
 };
@@ -461,6 +476,7 @@ export type CandidateUncheckedUpdateInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   applications?: Prisma.ApplicationUncheckedUpdateManyWithoutCandidateNestedInput;
   consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutCandidateNestedInput;
 };
@@ -481,6 +497,7 @@ export type CandidateCreateManyInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
 };
 
 export type CandidateUpdateManyMutationInput = {
@@ -499,6 +516,7 @@ export type CandidateUpdateManyMutationInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
 };
 
 export type CandidateUncheckedUpdateManyInput = {
@@ -517,6 +535,7 @@ export type CandidateUncheckedUpdateManyInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
 };
 
 export type CandidateTenantIdEmailCompoundUniqueInput = {
@@ -540,6 +559,7 @@ export type CandidateCountOrderByAggregateInput = {
   portfolioUrl?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  anonymizedAt?: Prisma.SortOrder;
 };
 
 export type CandidateAvgOrderByAggregateInput = {
@@ -560,6 +580,7 @@ export type CandidateMaxOrderByAggregateInput = {
   portfolioUrl?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  anonymizedAt?: Prisma.SortOrder;
 };
 
 export type CandidateMinOrderByAggregateInput = {
@@ -576,6 +597,7 @@ export type CandidateMinOrderByAggregateInput = {
   portfolioUrl?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  anonymizedAt?: Prisma.SortOrder;
 };
 
 export type CandidateSumOrderByAggregateInput = {
@@ -677,6 +699,7 @@ export type CandidateCreateWithoutApplicationsInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   consents?: Prisma.ConsentRecordCreateNestedManyWithoutCandidateInput;
 };
 
@@ -696,6 +719,7 @@ export type CandidateUncheckedCreateWithoutApplicationsInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutCandidateInput;
 };
 
@@ -743,6 +767,7 @@ export type CandidateUpdateWithoutApplicationsInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   consents?: Prisma.ConsentRecordUpdateManyWithoutCandidateNestedInput;
 };
 
@@ -762,6 +787,7 @@ export type CandidateUncheckedUpdateWithoutApplicationsInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutCandidateNestedInput;
 };
 
@@ -781,6 +807,7 @@ export type CandidateCreateWithoutConsentsInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   applications?: Prisma.ApplicationCreateNestedManyWithoutCandidateInput;
 };
 
@@ -800,6 +827,7 @@ export type CandidateUncheckedCreateWithoutConsentsInput = {
   portfolioUrl?: string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  anonymizedAt?: Date | string | null;
   applications?: Prisma.ApplicationUncheckedCreateNestedManyWithoutCandidateInput;
 };
 
@@ -847,6 +875,7 @@ export type CandidateUpdateWithoutConsentsInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   applications?: Prisma.ApplicationUpdateManyWithoutCandidateNestedInput;
 };
 
@@ -866,6 +895,7 @@ export type CandidateUncheckedUpdateWithoutConsentsInput = {
   portfolioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   applications?: Prisma.ApplicationUncheckedUpdateManyWithoutCandidateNestedInput;
 };
 
@@ -934,6 +964,7 @@ export type CandidateSelect<
     portfolioUrl?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    anonymizedAt?: boolean;
     applications?: boolean | Prisma.Candidate$applicationsArgs<ExtArgs>;
     consents?: boolean | Prisma.Candidate$consentsArgs<ExtArgs>;
     _count?: boolean | Prisma.CandidateCountOutputTypeDefaultArgs<ExtArgs>;
@@ -960,6 +991,7 @@ export type CandidateSelectCreateManyAndReturn<
     portfolioUrl?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    anonymizedAt?: boolean;
   },
   ExtArgs["result"]["candidate"]
 >;
@@ -983,6 +1015,7 @@ export type CandidateSelectUpdateManyAndReturn<
     portfolioUrl?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    anonymizedAt?: boolean;
   },
   ExtArgs["result"]["candidate"]
 >;
@@ -1003,6 +1036,7 @@ export type CandidateSelectScalar = {
   portfolioUrl?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
+  anonymizedAt?: boolean;
 };
 
 export type CandidateOmit<
@@ -1022,7 +1056,8 @@ export type CandidateOmit<
   | "availability"
   | "portfolioUrl"
   | "createdAt"
-  | "updatedAt",
+  | "updatedAt"
+  | "anonymizedAt",
   ExtArgs["result"]["candidate"]
 >;
 export type CandidateInclude<
@@ -1064,6 +1099,7 @@ export type $CandidatePayload<
       portfolioUrl: string | null;
       createdAt: Date;
       updatedAt: Date;
+      anonymizedAt: Date | null;
     },
     ExtArgs["result"]["candidate"]
   >;
@@ -1670,6 +1706,7 @@ export interface CandidateFieldRefs {
   readonly portfolioUrl: Prisma.FieldRef<"Candidate", "String">;
   readonly createdAt: Prisma.FieldRef<"Candidate", "DateTime">;
   readonly updatedAt: Prisma.FieldRef<"Candidate", "DateTime">;
+  readonly anonymizedAt: Prisma.FieldRef<"Candidate", "DateTime">;
 }
 
 // Custom InputTypes

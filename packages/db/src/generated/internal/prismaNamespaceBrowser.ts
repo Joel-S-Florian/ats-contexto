@@ -85,6 +85,8 @@ export const ModelName = {
   Hire: "Hire",
   WebhookEndpoint: "WebhookEndpoint",
   WebhookDelivery: "WebhookDelivery",
+  Subscription: "Subscription",
+  NoticeVersion: "NoticeVersion",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -113,6 +115,8 @@ export const TenantScalarFieldEnum = {
   rejectionNotice: "rejectionNotice",
   rejectionDelayHours: "rejectionDelayHours",
   autoConfirmHire: "autoConfirmHire",
+  planKey: "planKey",
+  retentionMonths: "retentionMonths",
   createdAt: "createdAt",
 } as const;
 
@@ -304,6 +308,7 @@ export const CandidateScalarFieldEnum = {
   portfolioUrl: "portfolioUrl",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
+  anonymizedAt: "anonymizedAt",
 } as const;
 
 export type CandidateScalarFieldEnum =
@@ -420,6 +425,8 @@ export const UsageCounterScalarFieldEnum = {
   tenantId: "tenantId",
   month: "month",
   aiAnalyses: "aiAnalyses",
+  applications: "applications",
+  alertsSent: "alertsSent",
 } as const;
 
 export type UsageCounterScalarFieldEnum =
@@ -672,6 +679,33 @@ export const WebhookDeliveryScalarFieldEnum = {
 
 export type WebhookDeliveryScalarFieldEnum =
   (typeof WebhookDeliveryScalarFieldEnum)[keyof typeof WebhookDeliveryScalarFieldEnum];
+
+export const SubscriptionScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  planKey: "planKey",
+  status: "status",
+  periodStart: "periodStart",
+  extraAiAnalyses: "extraAiAnalyses",
+  notes: "notes",
+  assignedBy: "assignedBy",
+  updatedAt: "updatedAt",
+} as const;
+
+export type SubscriptionScalarFieldEnum =
+  (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum];
+
+export const NoticeVersionScalarFieldEnum = {
+  id: "id",
+  label: "label",
+  title: "title",
+  body: "body",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type NoticeVersionScalarFieldEnum =
+  (typeof NoticeVersionScalarFieldEnum)[keyof typeof NoticeVersionScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

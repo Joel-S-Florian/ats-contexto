@@ -80,3 +80,11 @@ Pasarela de pago pendiente de decisión. Opciones a evaluar: procesadores locale
 2. Comparar con sistemas de reclutamiento que operen en la región.
 3. Probar el plan Esencial gratis por un periodo corto con 2 o 3 empresas piloto.
 4. Medir el costo real de IA con los pilotos y ajustar.
+
+## 8. Implementación (Fase 9)
+
+- La fuente única de planes, límites y precios es `packages/shared/src/plans.ts`; la usan la API (límites reales), el panel (uso) y la landing (precios). No dupliques cifras.
+- Se miden: vacantes activas (publicadas y pausadas, en vivo), usuarios (incluye invitaciones pendientes, en vivo), postulaciones del mes y análisis de IA del mes (`UsageCounter`).
+- Al 80 % y al 100 % se envía un correo a los administradores, una vez por mes y límite. Al 100 %: vacantes y usuarios se rechazan con mensaje claro (código `plan_limit`); postulaciones nuevas reciben un mensaje neutro para el candidato (código `applications_closed`, sin hablar del plan); la IA cae a reglas.
+- Funciones por plan: Esencial no usa IA ni webhooks, tiene 1 plantilla de examen y un embudo fijo (solo activar/desactivar etapas y renombrar); Profesional tiene un embudo configurable y un destino de webhook; Empresa, varias plantillas de embudo y varios destinos.
+- Hasta tener pasarela de pago, el super administrador asigna el plan a mano (`PATCH /admin/tenants/:id/plan`), con bloques extra de IA opcionales.

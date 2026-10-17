@@ -28,6 +28,8 @@ model Tenant {
   rejectionNotice     RejectionNotice @default(manual) @map("rejection_notice")
   rejectionDelayHours Int             @default(24) @map("rejection_delay_hours")
   autoConfirmHire     Boolean         @default(false) @map("auto_confirm_hire")
+  planKey             PlanKey         @default(essential) @map("plan_key")
+  retentionMonths     Int             @default(12) @map("retention_months")
   createdAt           DateTime        @default(now()) @map("created_at")
   memberships         Membership[]
   invitations         Invitation[]
@@ -331,6 +333,7 @@ model Candidate {
   portfolioUrl    String?         @map("portfolio_url")
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
+  anonymizedAt    DateTime?       @map("anonymized_at")
   applications    Application[]
   consents        ConsentRecord[]
 
@@ -466,10 +469,12 @@ model AiUsage {
 }
 
 model UsageCounter {
-  id         String @id @default(uuid()) @db.Uuid
-  tenantId   String @map("tenant_id") @db.Uuid
-  month      String
-  aiAnalyses Int    @default(0) @map("ai_analyses")
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  month        String
+  aiAnalyses   Int      @default(0) @map("ai_analyses")
+  applications Int      @default(0)
+  alertsSent   String[] @default([]) @map("alerts_sent")
 
   @@unique([tenantId, month])
   @@map("usage_counters")
@@ -786,4 +791,44 @@ model WebhookDelivery {
   @@index([status, nextAttemptAt])
   @@index([tenantId, endpointId, createdAt])
   @@map("webhook_deliveries")
+}
+
+enum PlanKey {
+  essential
+  professional
+  enterprise
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+}
+
+// Plan asignado a un tenant. Los limites y caracteristicas de cada plan viven en @ats/shared (fuente unica compartida con la landing).
+// La pasarela de pago esta pendiente: por ahora el super administrador asigna el plan a mano.
+model Subscription {
+  id              String             @id @default(uuid()) @db.Uuid
+  tenantId        String             @unique @map("tenant_id") @db.Uuid
+  planKey         PlanKey            @map("plan_key")
+  status          SubscriptionStatus @default(active)
+  periodStart     DateTime           @default(now()) @map("period_start")
+  extraAiAnalyses Int                @default(0) @map("extra_ai_analyses")
+  notes           String             @default("")
+  assignedBy      String?            @map("assigned_by") @db.Uuid
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  @@map("subscriptions")
+}
+
+// Texto del aviso de tratamiento de datos, versionado y editable por el super administrador (nivel plataforma, sin tenant).
+model NoticeVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  label     String   @unique
+  title     String
+  body      Json
+  createdBy String?  @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notice_versions")
 }

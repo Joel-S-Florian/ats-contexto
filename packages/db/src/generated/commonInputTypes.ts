@@ -76,6 +76,13 @@ export type BoolFilter<$PrismaModel = never> = {
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean;
 };
 
+export type EnumPlanKeyFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanKey | Prisma.EnumPlanKeyFieldRefInput<$PrismaModel>;
+  in?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel> | $Enums.PlanKey;
+};
+
 export type DateTimeFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>;
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>;
@@ -172,6 +179,16 @@ export type BoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
   _min?: Prisma.NestedBoolFilter<$PrismaModel>;
   _max?: Prisma.NestedBoolFilter<$PrismaModel>;
+};
+
+export type EnumPlanKeyWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanKey | Prisma.EnumPlanKeyFieldRefInput<$PrismaModel>;
+  in?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumPlanKeyWithAggregatesFilter<$PrismaModel> | $Enums.PlanKey;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel>;
 };
 
 export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -782,6 +799,27 @@ export type EnumDeliveryStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumDeliveryStatusFilter<$PrismaModel>;
 };
 
+export type EnumSubscriptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SubscriptionStatus | Prisma.EnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  notIn?:
+    $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel> | $Enums.SubscriptionStatus;
+};
+
+export type EnumSubscriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SubscriptionStatus | Prisma.EnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  notIn?:
+    $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel>
+    | $Enums.SubscriptionStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel>;
+};
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>;
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>;
@@ -842,6 +880,13 @@ export type NestedEnumRejectionNoticeFilter<$PrismaModel = never> = {
 export type NestedBoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>;
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean;
+};
+
+export type NestedEnumPlanKeyFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanKey | Prisma.EnumPlanKeyFieldRefInput<$PrismaModel>;
+  in?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel> | $Enums.PlanKey;
 };
 
 export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -949,6 +994,16 @@ export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
   _min?: Prisma.NestedBoolFilter<$PrismaModel>;
   _max?: Prisma.NestedBoolFilter<$PrismaModel>;
+};
+
+export type NestedEnumPlanKeyWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanKey | Prisma.EnumPlanKeyFieldRefInput<$PrismaModel>;
+  in?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.PlanKey[] | Prisma.ListEnumPlanKeyFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumPlanKeyWithAggregatesFilter<$PrismaModel> | $Enums.PlanKey;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumPlanKeyFilter<$PrismaModel>;
 };
 
 export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -1495,4 +1550,25 @@ export type NestedEnumDeliveryStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
   _min?: Prisma.NestedEnumDeliveryStatusFilter<$PrismaModel>;
   _max?: Prisma.NestedEnumDeliveryStatusFilter<$PrismaModel>;
+};
+
+export type NestedEnumSubscriptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SubscriptionStatus | Prisma.EnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  notIn?:
+    $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel> | $Enums.SubscriptionStatus;
+};
+
+export type NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SubscriptionStatus | Prisma.EnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  notIn?:
+    $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel>
+    | $Enums.SubscriptionStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumSubscriptionStatusFilter<$PrismaModel>;
 };

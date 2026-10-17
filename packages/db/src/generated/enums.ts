@@ -195,3 +195,19 @@ export const DeliveryStatus = {
 } as const;
 
 export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus];
+
+export const PlanKey = {
+  essential: "essential",
+  professional: "professional",
+  enterprise: "enterprise",
+} as const;
+
+export type PlanKey = (typeof PlanKey)[keyof typeof PlanKey];
+
+export const SubscriptionStatus = {
+  active: "active",
+  past_due: "past_due",
+  canceled: "canceled",
+} as const;
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];

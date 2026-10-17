@@ -105,8 +105,12 @@ function scoringConfig(v: VacancyWithSkills): { weights: Weights; thresholds: Th
   };
 }
 
-export function createScreeningService(deps: { prisma: PrismaClient; ai: AiConfig }) {
-  const { prisma, ai } = deps;
+export function createScreeningService(deps: {
+  prisma: PrismaClient;
+  ai: AiConfig;
+  onAiUsage?: (tenantId: string) => Promise<unknown>;
+}) {
+  const { prisma, ai, onAiUsage } = deps;
   // Corte de circuito en memoria (por proceso). shortcut: con varias instancias se mueve a Redis.
   const breaker = { failures: 0, openUntil: 0 };
 
@@ -351,6 +355,7 @@ export function createScreeningService(deps: { prisma: PrismaClient; ai: AiConfi
             update: { aiAnalyses: { increment: 1 } },
           });
         });
+        void onAiUsage?.(tenantId)?.catch?.(() => undefined);
       } catch (e) {
         const failure =
           e instanceof AnalysisFailed ? e : new AnalysisFailed("Fallo inesperado", "provider");

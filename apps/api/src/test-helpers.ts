@@ -32,8 +32,9 @@ export async function setupTestApp(port: number) {
       },
     ) => void mails.push({ to, subject, text, ...opts }),
   };
+  const store = localBlobStore(mkdtempSync(join(tmpdir(), "ats-files-")));
   const baseDeps = {
-    store: localBlobStore(mkdtempSync(join(tmpdir(), "ats-files-"))),
+    store,
     webOrigin: "http://localhost:3000",
     checks: {},
     logger: false,
@@ -46,10 +47,12 @@ export async function setupTestApp(port: number) {
   const build = (over: Partial<Parameters<typeof buildApp>[0]>) =>
     buildApp({ ...baseDeps, ...over });
   const ids: Record<string, string> = {};
+  // Las pruebas de otros modulos usan el plan Empresa (limites amplios e IA); las pruebas de planes lo cambian.
   const tenants = await withPlatform(prisma, async (tx) => ({
     a: (await tx.tenant.create({ data: { name: "Empresa A", slug: "a" } })).id,
     b: (await tx.tenant.create({ data: { name: "Empresa B", slug: "b" } })).id,
   }));
+  await withPlatform(prisma, (tx) => tx.tenant.updateMany({ data: { planKey: "enterprise" } }));
 
   const origins = { a: "https://empleo-a.test", b: "https://empleo-b.test" };
   const keys = { a: "pk_test_a", b: "pk_test_b" };
@@ -110,6 +113,7 @@ export async function setupTestApp(port: number) {
     mails,
     ids,
     build,
+    storeGet: (key: string) => store.get(key),
     tenants,
     keys,
     origins,

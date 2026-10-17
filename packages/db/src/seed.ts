@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import { plans, type PlanKey } from "@ats/shared";
 import { withPlatform, type PrismaClient } from "./index.js";
 import { ensureDefaultPipeline } from "./pipelines.js";
 
@@ -94,11 +95,21 @@ export async function seed(prisma: PrismaClient) {
     await tx.user.create({
       data: { email: "root@demo.test", name: "Operador", passwordHash, isSuperAdmin: true },
     });
-    for (const [slug, name] of [
-      ["demo", "Empresa Demo"],
-      ["norte", "Distribuidora Norte"],
-    ] as const) {
-      const tenant = await tx.tenant.create({ data: { name, slug } });
+    for (const [slug, name, planKey] of [
+      ["demo", "Empresa Demo", "professional"],
+      ["norte", "Distribuidora Norte", "essential"],
+    ] as [string, string, PlanKey][]) {
+      const plan = plans[planKey];
+      const tenant = await tx.tenant.create({
+        data: {
+          name,
+          slug,
+          planKey,
+          screeningMode: plan.features.ai ? "ai" : "rules",
+          aiMonthlyQuota: plan.limits.aiAnalysesPerMonth,
+        },
+      });
+      await tx.subscription.create({ data: { tenantId: tenant.id, planKey } });
       for (const role of ["admin", "recruiter", "area_manager"] as const) {
         const u = await tx.user.create({
           data: { email: `${role}@${slug}.test`, name: `${role} ${slug}`, passwordHash },

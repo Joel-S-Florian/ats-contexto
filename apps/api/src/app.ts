@@ -34,6 +34,10 @@ import { hiringRoutes } from "./routes/hiring.js";
 import { metricsRoutes } from "./routes/metrics.js";
 import { createSelectionService } from "./services/selection.js";
 import { createWebhookService, type WebhookService } from "./services/webhooks.js";
+import { plansPrivacyRoutes } from "./routes/plans-privacy.js";
+import { createPlanService } from "./services/plans.js";
+import { createPrivacyService, type PrivacyService } from "./services/privacy.js";
+import { createNoticeService } from "./services/notice.js";
 import { assessmentRoutes } from "./routes/assessments.js";
 import { communicationRoutes } from "./routes/communication.js";
 import { noCalendar, type CalendarProvider } from "./ports/calendar.js";
@@ -87,11 +91,24 @@ export function buildApp({
   allowLocalWebhooks = false,
   webhookFetch,
   email = createEmailService({ prisma, mailer }),
-  screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
-  queue = memoryQueue(
-    createIngestHandler({ prisma, store, email, screen: (a, t) => screening.screen(a, t) }),
-  ),
+  screening: screeningOverride,
+  queue: queueOverride,
 }: AppDeps) {
+  const planSvc = createPlanService({ prisma, mailer, clock });
+  const screening =
+    screeningOverride ??
+    createScreeningService({
+      prisma,
+      ai: { ...defaultAiConfig, ...ai },
+      onAiUsage: (t) => planSvc.checkAlerts(t),
+    });
+  const queue =
+    queueOverride ??
+    memoryQueue(
+      createIngestHandler({ prisma, store, email, screen: (a, t) => screening.screen(a, t) }),
+    );
+  const privacy = createPrivacyService({ prisma, store, clock });
+  const notice = createNoticeService(prisma);
   const notifications = createNotificationService({ prisma, email });
   const ssrf = { allowLocalhost: allowLocalWebhooks };
   const webhooks = createWebhookService({
@@ -136,7 +153,10 @@ export function buildApp({
       return reply
         .code(400)
         .send({ error: "Datos inválidos", issues: err.issues.map((i) => i.message) });
-    if (err instanceof HttpError) return reply.code(err.statusCode).send({ error: err.message });
+    if (err instanceof HttpError)
+      return reply
+        .code(err.statusCode)
+        .send({ error: err.message, ...(err.code ? { code: err.code } : {}) });
     if ((err as { statusCode?: number }).statusCode === 429)
       return reply.code(429).send({ error: "Demasiados intentos, espera un momento" });
     const code = (err as { code?: string }).code;
@@ -168,9 +188,10 @@ export function buildApp({
   // Los plugins se registran de forma asincrona: las rutas van dentro de un plugin que espera a cookie y rate-limit.
   app.register(async (scope) => {
     const authenticate = authRoutes(scope, { prisma, mailer, webOrigin, loginRateLimit });
-    adminRoutes(scope, { prisma, mailer, webOrigin, authenticate });
-    pipelineRoutes(scope, { prisma, authenticate });
-    vacancyRoutes(scope, { prisma, authenticate });
+    adminRoutes(scope, { prisma, mailer, webOrigin, authenticate, planSvc });
+    plansPrivacyRoutes(scope, { prisma, authenticate, planSvc, privacy, notice });
+    pipelineRoutes(scope, { prisma, authenticate, planSvc });
+    vacancyRoutes(scope, { prisma, authenticate, planSvc });
     publicRoutes(scope, { prisma });
     publicApplicationRoutes(scope, {
       prisma,
@@ -179,6 +200,8 @@ export function buildApp({
       captcha,
       queue: () => queue,
       rateLimit: publicRateLimit,
+      planSvc,
+      notice,
     });
     apiKeyRoutes(scope, { prisma, authenticate });
     candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret, notifications });
@@ -191,6 +214,7 @@ export function buildApp({
       clock,
       examRateLimit,
       selection,
+      planSvc,
     });
     hiringRoutes(scope, {
       prisma,
@@ -198,6 +222,7 @@ export function buildApp({
       selection,
       webhooks,
       notifications,
+      planSvc,
       appSecret: signingSecret,
       ssrf,
     });
@@ -208,6 +233,7 @@ export function buildApp({
   app.decorate("queue", queue);
   app.decorate("notifications", notifications);
   app.decorate("webhooks", webhooks);
+  app.decorate("privacy", privacy);
   return app;
 }
 
@@ -216,5 +242,6 @@ declare module "fastify" {
     queue: JobQueue;
     notifications: NotificationService;
     webhooks: WebhookService;
+    privacy: PrivacyService;
   }
 }

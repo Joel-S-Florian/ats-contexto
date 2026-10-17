@@ -11,6 +11,7 @@ import {
 import { newToken, sha256 } from "../auth/crypto.js";
 import { HttpError, requirePermission } from "../auth/plugin.js";
 import { formatDate, type EmailService } from "../services/email.js";
+import type { PlanService } from "../services/plans.js";
 import type { SelectionService } from "../services/selection.js";
 import { visibleApplication } from "./candidates.js";
 
@@ -22,6 +23,7 @@ type Deps = {
   clock: () => Date;
   examRateLimit: number;
   selection: SelectionService;
+  planSvc: PlanService;
 };
 const asSnap = (v: unknown) => (Array.isArray(v) ? (v as SnapshotQuestion[]) : []);
 const idParam = z.object({ id: z.string().uuid() });
@@ -34,7 +36,7 @@ const answersSchema = z.record(z.string().uuid(), answerValue);
 
 export function assessmentRoutes(
   app: FastifyInstance,
-  { prisma, authenticate, email, webOrigin, clock, examRateLimit, selection }: Deps,
+  { prisma, authenticate, email, webOrigin, clock, examRateLimit, selection, planSvc }: Deps,
 ) {
   // ------------------------------------------------------------------ plantillas
   const templateSelect = {
@@ -110,6 +112,14 @@ export function assessmentRoutes(
     const { tenantId, userId } = requirePermission(req, "assessments:manage");
     const body = assessmentTemplateSchema.parse(req.body);
     const t = await withTenant(prisma, tenantId, async (tx) => {
+      const { plan } = await planSvc.planOf(tx, tenantId);
+      const limit = plan.features.assessmentTemplates;
+      if (limit !== null && (await tx.assessmentTemplate.count({ where: { tenantId } })) >= limit)
+        throw new HttpError(
+          403,
+          `Tu plan permite ${limit} plantilla de examen. Pide un cambio de plan para crear más.`,
+          "plan_feature",
+        );
       const created = await tx.assessmentTemplate.create({
         data: {
           tenantId,

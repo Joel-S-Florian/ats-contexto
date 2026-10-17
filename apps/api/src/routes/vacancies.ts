@@ -3,6 +3,7 @@ import { z } from "zod";
 import { withTenant, type PrismaClient } from "@ats/db";
 import { vacancyInputSchema, vacancyPatchSchema, vacancyStatuses } from "@ats/shared";
 import { HttpError, requirePermission } from "../auth/plugin.js";
+import type { PlanService } from "../services/plans.js";
 import {
   assertPublishable,
   assertTransition,
@@ -18,7 +19,11 @@ const idParam = z.object({ id: z.string().uuid() });
 
 export function vacancyRoutes(
   app: FastifyInstance,
-  { prisma, authenticate }: { prisma: PrismaClient; authenticate: preHandlerAsyncHookHandler },
+  {
+    prisma,
+    authenticate,
+    planSvc,
+  }: { prisma: PrismaClient; authenticate: preHandlerAsyncHookHandler; planSvc: PlanService },
 ) {
   app.get("/vacancies", { preHandler: authenticate }, async (req) => {
     const { tenantId, userId, role } = requirePermission(req, "vacancies:read");
@@ -129,6 +134,9 @@ export function vacancyRoutes(
       const v = await tx.vacancy.findFirst({ where: { id, tenantId }, include: { skills: true } });
       if (!v) throw new HttpError(404, "Vacante no encontrada");
       assertTransition(v.status, status);
+      // Solo pasar de borrador a publicada suma una vacante activa (pausada ya cuenta).
+      if (status === "published" && v.status === "draft")
+        await planSvc.assertCanPublish(tx, tenantId);
       if (status === "published")
         await assertPublishable(tx, v, v.skills.filter((s) => s.kind === "required").length);
       await tx.vacancy.update({

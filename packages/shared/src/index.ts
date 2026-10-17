@@ -4,3 +4,4 @@ export * from "./pipeline";
 export * from "./application";
 export * from "./email";
 export * from "./assessment";
+export * from "./plans";

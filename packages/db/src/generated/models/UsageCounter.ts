@@ -27,10 +27,12 @@ export type AggregateUsageCounter = {
 
 export type UsageCounterAvgAggregateOutputType = {
   aiAnalyses: number | null;
+  applications: number | null;
 };
 
 export type UsageCounterSumAggregateOutputType = {
   aiAnalyses: number | null;
+  applications: number | null;
 };
 
 export type UsageCounterMinAggregateOutputType = {
@@ -38,6 +40,7 @@ export type UsageCounterMinAggregateOutputType = {
   tenantId: string | null;
   month: string | null;
   aiAnalyses: number | null;
+  applications: number | null;
 };
 
 export type UsageCounterMaxAggregateOutputType = {
@@ -45,6 +48,7 @@ export type UsageCounterMaxAggregateOutputType = {
   tenantId: string | null;
   month: string | null;
   aiAnalyses: number | null;
+  applications: number | null;
 };
 
 export type UsageCounterCountAggregateOutputType = {
@@ -52,15 +56,19 @@ export type UsageCounterCountAggregateOutputType = {
   tenantId: number;
   month: number;
   aiAnalyses: number;
+  applications: number;
+  alertsSent: number;
   _all: number;
 };
 
 export type UsageCounterAvgAggregateInputType = {
   aiAnalyses?: true;
+  applications?: true;
 };
 
 export type UsageCounterSumAggregateInputType = {
   aiAnalyses?: true;
+  applications?: true;
 };
 
 export type UsageCounterMinAggregateInputType = {
@@ -68,6 +76,7 @@ export type UsageCounterMinAggregateInputType = {
   tenantId?: true;
   month?: true;
   aiAnalyses?: true;
+  applications?: true;
 };
 
 export type UsageCounterMaxAggregateInputType = {
@@ -75,6 +84,7 @@ export type UsageCounterMaxAggregateInputType = {
   tenantId?: true;
   month?: true;
   aiAnalyses?: true;
+  applications?: true;
 };
 
 export type UsageCounterCountAggregateInputType = {
@@ -82,6 +92,8 @@ export type UsageCounterCountAggregateInputType = {
   tenantId?: true;
   month?: true;
   aiAnalyses?: true;
+  applications?: true;
+  alertsSent?: true;
   _all?: true;
 };
 
@@ -180,6 +192,8 @@ export type UsageCounterGroupByOutputType = {
   tenantId: string;
   month: string;
   aiAnalyses: number;
+  applications: number;
+  alertsSent: string[];
   _count: UsageCounterCountAggregateOutputType | null;
   _avg: UsageCounterAvgAggregateOutputType | null;
   _sum: UsageCounterSumAggregateOutputType | null;
@@ -207,6 +221,8 @@ export type UsageCounterWhereInput = {
   tenantId?: Prisma.UuidFilter<"UsageCounter"> | string;
   month?: Prisma.StringFilter<"UsageCounter"> | string;
   aiAnalyses?: Prisma.IntFilter<"UsageCounter"> | number;
+  applications?: Prisma.IntFilter<"UsageCounter"> | number;
+  alertsSent?: Prisma.StringNullableListFilter<"UsageCounter">;
 };
 
 export type UsageCounterOrderByWithRelationInput = {
@@ -214,6 +230,8 @@ export type UsageCounterOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder;
   month?: Prisma.SortOrder;
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
+  alertsSent?: Prisma.SortOrder;
 };
 
 export type UsageCounterWhereUniqueInput = Prisma.AtLeast<
@@ -226,6 +244,8 @@ export type UsageCounterWhereUniqueInput = Prisma.AtLeast<
     tenantId?: Prisma.UuidFilter<"UsageCounter"> | string;
     month?: Prisma.StringFilter<"UsageCounter"> | string;
     aiAnalyses?: Prisma.IntFilter<"UsageCounter"> | number;
+    applications?: Prisma.IntFilter<"UsageCounter"> | number;
+    alertsSent?: Prisma.StringNullableListFilter<"UsageCounter">;
   },
   "id" | "tenantId_month"
 >;
@@ -235,6 +255,8 @@ export type UsageCounterOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder;
   month?: Prisma.SortOrder;
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
+  alertsSent?: Prisma.SortOrder;
   _count?: Prisma.UsageCounterCountOrderByAggregateInput;
   _avg?: Prisma.UsageCounterAvgOrderByAggregateInput;
   _max?: Prisma.UsageCounterMaxOrderByAggregateInput;
@@ -254,6 +276,8 @@ export type UsageCounterScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.UuidWithAggregatesFilter<"UsageCounter"> | string;
   month?: Prisma.StringWithAggregatesFilter<"UsageCounter"> | string;
   aiAnalyses?: Prisma.IntWithAggregatesFilter<"UsageCounter"> | number;
+  applications?: Prisma.IntWithAggregatesFilter<"UsageCounter"> | number;
+  alertsSent?: Prisma.StringNullableListFilter<"UsageCounter">;
 };
 
 export type UsageCounterCreateInput = {
@@ -261,6 +285,8 @@ export type UsageCounterCreateInput = {
   tenantId: string;
   month: string;
   aiAnalyses?: number;
+  applications?: number;
+  alertsSent?: Prisma.UsageCounterCreatealertsSentInput | string[];
 };
 
 export type UsageCounterUncheckedCreateInput = {
@@ -268,6 +294,8 @@ export type UsageCounterUncheckedCreateInput = {
   tenantId: string;
   month: string;
   aiAnalyses?: number;
+  applications?: number;
+  alertsSent?: Prisma.UsageCounterCreatealertsSentInput | string[];
 };
 
 export type UsageCounterUpdateInput = {
@@ -275,6 +303,8 @@ export type UsageCounterUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string;
   month?: Prisma.StringFieldUpdateOperationsInput | string;
   aiAnalyses?: Prisma.IntFieldUpdateOperationsInput | number;
+  applications?: Prisma.IntFieldUpdateOperationsInput | number;
+  alertsSent?: Prisma.UsageCounterUpdatealertsSentInput | string[];
 };
 
 export type UsageCounterUncheckedUpdateInput = {
@@ -282,6 +312,8 @@ export type UsageCounterUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string;
   month?: Prisma.StringFieldUpdateOperationsInput | string;
   aiAnalyses?: Prisma.IntFieldUpdateOperationsInput | number;
+  applications?: Prisma.IntFieldUpdateOperationsInput | number;
+  alertsSent?: Prisma.UsageCounterUpdatealertsSentInput | string[];
 };
 
 export type UsageCounterCreateManyInput = {
@@ -289,6 +321,8 @@ export type UsageCounterCreateManyInput = {
   tenantId: string;
   month: string;
   aiAnalyses?: number;
+  applications?: number;
+  alertsSent?: Prisma.UsageCounterCreatealertsSentInput | string[];
 };
 
 export type UsageCounterUpdateManyMutationInput = {
@@ -296,6 +330,8 @@ export type UsageCounterUpdateManyMutationInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string;
   month?: Prisma.StringFieldUpdateOperationsInput | string;
   aiAnalyses?: Prisma.IntFieldUpdateOperationsInput | number;
+  applications?: Prisma.IntFieldUpdateOperationsInput | number;
+  alertsSent?: Prisma.UsageCounterUpdatealertsSentInput | string[];
 };
 
 export type UsageCounterUncheckedUpdateManyInput = {
@@ -303,6 +339,8 @@ export type UsageCounterUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string;
   month?: Prisma.StringFieldUpdateOperationsInput | string;
   aiAnalyses?: Prisma.IntFieldUpdateOperationsInput | number;
+  applications?: Prisma.IntFieldUpdateOperationsInput | number;
+  alertsSent?: Prisma.UsageCounterUpdatealertsSentInput | string[];
 };
 
 export type UsageCounterTenantIdMonthCompoundUniqueInput = {
@@ -315,10 +353,13 @@ export type UsageCounterCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder;
   month?: Prisma.SortOrder;
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
+  alertsSent?: Prisma.SortOrder;
 };
 
 export type UsageCounterAvgOrderByAggregateInput = {
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
 };
 
 export type UsageCounterMaxOrderByAggregateInput = {
@@ -326,6 +367,7 @@ export type UsageCounterMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder;
   month?: Prisma.SortOrder;
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
 };
 
 export type UsageCounterMinOrderByAggregateInput = {
@@ -333,10 +375,21 @@ export type UsageCounterMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder;
   month?: Prisma.SortOrder;
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
 };
 
 export type UsageCounterSumOrderByAggregateInput = {
   aiAnalyses?: Prisma.SortOrder;
+  applications?: Prisma.SortOrder;
+};
+
+export type UsageCounterCreatealertsSentInput = {
+  set: string[];
+};
+
+export type UsageCounterUpdatealertsSentInput = {
+  set?: string[];
+  push?: string | string[];
 };
 
 export type UsageCounterSelect<
@@ -347,6 +400,8 @@ export type UsageCounterSelect<
     tenantId?: boolean;
     month?: boolean;
     aiAnalyses?: boolean;
+    applications?: boolean;
+    alertsSent?: boolean;
   },
   ExtArgs["result"]["usageCounter"]
 >;
@@ -359,6 +414,8 @@ export type UsageCounterSelectCreateManyAndReturn<
     tenantId?: boolean;
     month?: boolean;
     aiAnalyses?: boolean;
+    applications?: boolean;
+    alertsSent?: boolean;
   },
   ExtArgs["result"]["usageCounter"]
 >;
@@ -371,6 +428,8 @@ export type UsageCounterSelectUpdateManyAndReturn<
     tenantId?: boolean;
     month?: boolean;
     aiAnalyses?: boolean;
+    applications?: boolean;
+    alertsSent?: boolean;
   },
   ExtArgs["result"]["usageCounter"]
 >;
@@ -380,12 +439,14 @@ export type UsageCounterSelectScalar = {
   tenantId?: boolean;
   month?: boolean;
   aiAnalyses?: boolean;
+  applications?: boolean;
+  alertsSent?: boolean;
 };
 
 export type UsageCounterOmit<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
-  "id" | "tenantId" | "month" | "aiAnalyses",
+  "id" | "tenantId" | "month" | "aiAnalyses" | "applications" | "alertsSent",
   ExtArgs["result"]["usageCounter"]
 >;
 
@@ -400,6 +461,8 @@ export type $UsageCounterPayload<
       tenantId: string;
       month: string;
       aiAnalyses: number;
+      applications: number;
+      alertsSent: string[];
     },
     ExtArgs["result"]["usageCounter"]
   >;
@@ -973,6 +1036,8 @@ export interface UsageCounterFieldRefs {
   readonly tenantId: Prisma.FieldRef<"UsageCounter", "String">;
   readonly month: Prisma.FieldRef<"UsageCounter", "String">;
   readonly aiAnalyses: Prisma.FieldRef<"UsageCounter", "Int">;
+  readonly applications: Prisma.FieldRef<"UsageCounter", "Int">;
+  readonly alertsSent: Prisma.FieldRef<"UsageCounter", "String[]">;
 }
 
 // Custom InputTypes

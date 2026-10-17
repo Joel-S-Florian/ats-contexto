@@ -5,6 +5,7 @@ import { HttpError, requirePermission } from "../auth/plugin.js";
 import { encryptSecret, newWebhookSecret } from "../services/secrets.js";
 import type { SelectionService } from "../services/selection.js";
 import { UnsafeUrlError, assertSafeUrl, type SsrfOptions } from "../services/ssrf.js";
+import type { PlanService } from "../services/plans.js";
 import type { WebhookService } from "../services/webhooks.js";
 import type { NotificationService } from "../services/notifications.js";
 import { visibleApplication } from "./candidates.js";
@@ -15,6 +16,7 @@ type Deps = {
   selection: SelectionService;
   webhooks: WebhookService;
   notifications: NotificationService;
+  planSvc: PlanService;
   appSecret: string;
   ssrf: SsrfOptions;
 };
@@ -33,7 +35,7 @@ export const csvCell = (v: unknown) => {
 
 export function hiringRoutes(
   app: FastifyInstance,
-  { prisma, authenticate, selection, webhooks, notifications, appSecret, ssrf }: Deps,
+  { prisma, authenticate, selection, webhooks, notifications, planSvc, appSecret, ssrf }: Deps,
 ) {
   // ------------------------------------------------------------------ selección
   app.post(
@@ -344,6 +346,22 @@ export function hiringRoutes(
         events: z.array(z.enum(EVENTS)).min(1).default(["candidate.hired"]),
       })
       .parse(req.body);
+    await withTenant(prisma, tenantId, async (tx) => {
+      await planSvc.assertFeature(tx, tenantId, (p) =>
+        p.features.webhooks === "none"
+          ? "Tu plan no incluye la API de contratados (webhooks). Puedes usar la exportación en JSON y CSV."
+          : null,
+      );
+      const { plan } = await planSvc.planOf(tx, tenantId);
+      const active = await tx.webhookEndpoint.count({ where: { tenantId, active: true } });
+      if (plan.features.webhooks === "single" && active >= 1)
+        throw new HttpError(
+          403,
+          "Tu plan permite un solo destino de webhook. El plan Empresa permite varios.",
+          "plan_feature",
+        );
+      if (active >= 10) throw new HttpError(422, "Máximo de 10 destinos activos.");
+    });
     const url = await safeUrl(body.url);
     const secret = newWebhookSecret();
     const ep = await withTenant(prisma, tenantId, async (tx) => {

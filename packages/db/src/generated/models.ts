@@ -44,4 +44,6 @@ export type * from "./models/SelectionDecision";
 export type * from "./models/Hire";
 export type * from "./models/WebhookEndpoint";
 export type * from "./models/WebhookDelivery";
+export type * from "./models/Subscription";
+export type * from "./models/NoticeVersion";
 export type * from "./commonInputTypes";

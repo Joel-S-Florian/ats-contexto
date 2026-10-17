@@ -61,8 +61,10 @@ beforeAll(async () => {
     loginRateLimit: 1000,
   });
   await withPlatform(prisma, async (tx) => {
-    tenantA = (await tx.tenant.create({ data: { name: "A", slug: "a" } })).id;
-    tenantB = (await tx.tenant.create({ data: { name: "B", slug: "b" } })).id;
+    tenantA = (await tx.tenant.create({ data: { name: "A", slug: "a", planKey: "enterprise" } }))
+      .id;
+    tenantB = (await tx.tenant.create({ data: { name: "B", slug: "b", planKey: "enterprise" } }))
+      .id;
   });
   await addUser("root@x.com", null, undefined, true);
   await addUser("admin-a@x.com", "admin", tenantA);

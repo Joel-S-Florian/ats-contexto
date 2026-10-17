@@ -1,8 +1,9 @@
 import type { FastifyInstance, preHandlerAsyncHookHandler } from "fastify";
 import { z } from "zod";
 import { withTenant, type PrismaClient } from "@ats/db";
-import { pipelineInputSchema, validateStages } from "@ats/shared";
+import { defaultStages, pipelineInputSchema, validateStages } from "@ats/shared";
 import { HttpError, requirePermission } from "../auth/plugin.js";
+import type { PlanService } from "../services/plans.js";
 import { createPipeline, ensureDefaultPipeline, pipelineSelect } from "../services/pipelines.js";
 
 const idParam = z.object({ id: z.string().uuid() });
@@ -14,7 +15,11 @@ function assertValid(stages: Parameters<typeof validateStages>[0]) {
 
 export function pipelineRoutes(
   app: FastifyInstance,
-  { prisma, authenticate }: { prisma: PrismaClient; authenticate: preHandlerAsyncHookHandler },
+  {
+    prisma,
+    authenticate,
+    planSvc,
+  }: { prisma: PrismaClient; authenticate: preHandlerAsyncHookHandler; planSvc: PlanService },
 ) {
   app.get("/pipelines", { preHandler: authenticate }, async (req) => {
     const { tenantId } = requirePermission(req, "vacancies:read");
@@ -31,6 +36,23 @@ export function pipelineRoutes(
     const { tenantId, userId } = requirePermission(req, "pipelines:manage");
     const body = pipelineInputSchema.parse(req.body);
     assertValid(body.stages);
+    await withTenant(prisma, tenantId, async (tx) => {
+      await planSvc.assertFeature(tx, tenantId, (plan) => {
+        if (plan.features.pipelines === "fixed")
+          return "Tu plan usa la plantilla de embudo fija: puedes activar o desactivar etapas, pero no crear otro embudo.";
+        return null;
+      });
+      const { plan } = await planSvc.planOf(tx, tenantId);
+      if (
+        plan.features.pipelines === "configurable" &&
+        (await tx.pipeline.count({ where: { tenantId } })) >= 1
+      )
+        throw new HttpError(
+          403,
+          "Tu plan incluye un embudo configurable. El plan Empresa permite varias plantillas.",
+          "plan_feature",
+        );
+    });
     const created = await withTenant(prisma, tenantId, async (tx) => {
       const p = await createPipeline(tx, tenantId, body.name, body.stages);
       await tx.auditLog.create({
@@ -47,6 +69,18 @@ export function pipelineRoutes(
     const { id } = idParam.parse(req.params);
     const body = pipelineInputSchema.parse(req.body);
     assertValid(body.stages);
+    await withTenant(prisma, tenantId, async (tx) => {
+      const { plan } = await planSvc.planOf(tx, tenantId);
+      const same =
+        body.stages.length === defaultStages.length &&
+        body.stages.every((s, i) => s.type === defaultStages[i]!.type);
+      if (plan.features.pipelines === "fixed" && !same)
+        throw new HttpError(
+          403,
+          "Tu plan usa la plantilla fija: solo puedes activar o desactivar etapas y cambiar sus nombres.",
+          "plan_feature",
+        );
+    });
     return withTenant(prisma, tenantId, async (tx) => {
       const current = await tx.pipeline.findFirst({ where: { id, tenantId } });
       if (!current) throw new HttpError(404, "Embudo no encontrado");

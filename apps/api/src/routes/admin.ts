@@ -1,8 +1,10 @@
 import type { FastifyInstance, preHandlerAsyncHookHandler } from "fastify";
 import { z } from "zod";
 import { withPlatform, withTenant, type PrismaClient, type Tx } from "@ats/db";
+import { planKeys, plans } from "@ats/shared";
 import { newToken, sha256 } from "../auth/crypto.js";
 import { HttpError, requirePermission, requireSuperAdmin } from "../auth/plugin.js";
+import type { PlanService } from "../services/plans.js";
 import type { Mailer } from "../mailer.js";
 
 const role = z.enum(["admin", "recruiter", "area_manager"]);
@@ -10,6 +12,7 @@ const email = z.string().email().toLowerCase();
 const INVITE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 export interface AdminDeps {
+  planSvc: PlanService;
   prisma: PrismaClient;
   mailer: Mailer;
   webOrigin: string;
@@ -41,7 +44,7 @@ async function invite(
 
 export function adminRoutes(
   app: FastifyInstance,
-  { prisma, mailer, webOrigin, authenticate }: AdminDeps,
+  { prisma, mailer, webOrigin, authenticate, planSvc }: AdminDeps,
 ) {
   // --- Super administrador: camino de plataforma, siempre auditado ---
   app.post(
@@ -53,12 +56,25 @@ export function adminRoutes(
           name: z.string().min(1).max(120),
           slug: z.string().regex(/^[a-z0-9-]{2,40}$/),
           adminEmail: email,
+          planKey: z.enum(planKeys).default("essential"),
         })
         .parse(req.body);
+      const plan = plans[body.planKey];
       const tenant = await withPlatform(prisma, async (tx) => {
         if (await tx.tenant.findUnique({ where: { slug: body.slug } }))
           throw new HttpError(409, "El identificador ya existe");
-        const t = await tx.tenant.create({ data: { name: body.name, slug: body.slug } });
+        const t = await tx.tenant.create({
+          data: {
+            name: body.name,
+            slug: body.slug,
+            planKey: body.planKey,
+            screeningMode: plan.features.ai ? "ai" : "rules",
+            aiMonthlyQuota: plan.limits.aiAnalysesPerMonth,
+          },
+        });
+        await tx.subscription.create({
+          data: { tenantId: t.id, planKey: body.planKey, assignedBy: req.auth!.userId },
+        });
         await tx.auditLog.create({
           data: { tenantId: t.id, actorId: req.auth!.userId, action: "tenant.created" },
         });
@@ -79,6 +95,7 @@ export function adminRoutes(
           status: true,
           screeningMode: true,
           aiMonthlyQuota: true,
+          planKey: true,
         },
         orderBy: { createdAt: "desc" },
       }),
@@ -98,8 +115,14 @@ export function adminRoutes(
         })
         .parse(req.body);
       return withPlatform(prisma, async (tx) => {
-        if (!(await tx.tenant.findUnique({ where: { id } })))
-          throw new HttpError(404, "Empresa no encontrada");
+        const current = await tx.tenant.findUnique({ where: { id } });
+        if (!current) throw new HttpError(404, "Empresa no encontrada");
+        if (body.mode === "ai" && !plans[current.planKey].features.ai)
+          throw new HttpError(
+            409,
+            "El plan de esta empresa no incluye IA. Asigna primero un plan con IA.",
+            "plan_feature",
+          );
         const t = await tx.tenant.update({
           where: { id },
           data: { screeningMode: body.mode, aiMonthlyQuota: body.aiMonthlyQuota },
@@ -132,9 +155,11 @@ export function adminRoutes(
   app.post("/users/invitations", { preHandler: authenticate }, async (req, reply) => {
     const { tenantId, userId } = requirePermission(req, "users:manage");
     const body = z.object({ email, role }).parse(req.body);
-    await withTenant(prisma, tenantId, (tx) =>
-      invite(tx, mailer, webOrigin, tenantId, userId, body.email, body.role),
-    );
+    await withTenant(prisma, tenantId, async (tx) => {
+      await planSvc.assertCanAddUser(tx, tenantId);
+      await invite(tx, mailer, webOrigin, tenantId, userId, body.email, body.role);
+    });
+    void planSvc.checkAlerts(tenantId).catch(() => undefined);
     reply.code(201).send();
   });
 

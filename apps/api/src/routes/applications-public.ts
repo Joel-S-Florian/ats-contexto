@@ -2,8 +2,10 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { withTenant, type PrismaClient } from "@ats/db";
-import { applicationFormSchema, noticeText, NOTICE_VERSION } from "@ats/shared";
+import { applicationFormSchema } from "@ats/shared";
 import { HttpError } from "../auth/plugin.js";
+import type { PlanService } from "../services/plans.js";
+import type { NoticeService } from "../services/notice.js";
 import type { CaptchaVerifier } from "../ports/captcha.js";
 import type { JobQueue } from "../ports/queue.js";
 import type { VirusScanner } from "../ports/scanner.js";
@@ -18,6 +20,8 @@ export interface PublicApplicationDeps {
   captcha: CaptchaVerifier;
   queue: () => JobQueue;
   rateLimit: number;
+  planSvc: PlanService;
+  notice: NoticeService;
 }
 
 /** IP truncada para el registro de consentimiento (docs/04 8.1): IPv4 a /24, IPv6 a los primeros 3 grupos. */
@@ -31,9 +35,9 @@ export function truncateIp(ip: string | undefined): string | null {
 const DUPLICATE_WINDOW_MS = 30 * 24 * 3600_000;
 
 export function publicApplicationRoutes(app: FastifyInstance, deps: PublicApplicationDeps) {
-  const { prisma, store, scanner, captcha, queue } = deps;
+  const { prisma, store, scanner, captcha, queue, planSvc, notice } = deps;
 
-  app.get("/public/v1/notice", async () => noticeText);
+  app.get("/public/v1/notice", async () => notice.current());
 
   app.post(
     "/public/v1/applications",
@@ -68,7 +72,7 @@ export function publicApplicationRoutes(app: FastifyInstance, deps: PublicApplic
         throw new HttpError(400, "Adjunta tu CV en PDF o Word (.docx)");
 
       const form = applicationFormSchema.parse(fields);
-      if (form.noticeVersion !== NOTICE_VERSION)
+      if (form.noticeVersion !== (await notice.current()).version)
         throw new HttpError(409, "El aviso de datos cambió; recarga el formulario");
       if (!(await captcha.verify(form.captchaToken, req.ip)))
         throw new HttpError(400, "No pudimos verificar que eres una persona. Intenta de nuevo.");
@@ -126,7 +130,9 @@ export function publicApplicationRoutes(app: FastifyInstance, deps: PublicApplic
         });
         if (dup)
           return { trackingId: dup.trackingId, duplicate: true as const, applicationId: dup.id };
+        await planSvc.assertCanReceiveApplication(tx, tenant.id);
 
+        await planSvc.countApplication(tx, tenant.id);
         const trackingId = randomBytes(16).toString("base64url");
         const application = await tx.application.create({
           data: {
@@ -171,8 +177,10 @@ export function publicApplicationRoutes(app: FastifyInstance, deps: PublicApplic
         return { trackingId, duplicate: false as const, applicationId: application.id };
       });
 
-      if (!result.duplicate)
+      if (!result.duplicate) {
+        void planSvc.checkAlerts(tenant.id).catch(() => undefined); // aviso al 80 % / 100 % en segundo plano
         await queue().enqueue({ applicationId: result.applicationId, tenantId: tenant.id });
+      }
       reply.code(result.duplicate ? 200 : 202).send({ trackingId: result.trackingId });
     },
   );

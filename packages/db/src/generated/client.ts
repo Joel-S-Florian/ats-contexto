@@ -229,3 +229,13 @@ export type WebhookEndpoint = Prisma.WebhookEndpointModel;
  *
  */
 export type WebhookDelivery = Prisma.WebhookDeliveryModel;
+/**
+ * Model Subscription
+ *
+ */
+export type Subscription = Prisma.SubscriptionModel;
+/**
+ * Model NoticeVersion
+ *
+ */
+export type NoticeVersion = Prisma.NoticeVersionModel;

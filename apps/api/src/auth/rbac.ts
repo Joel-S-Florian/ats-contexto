@@ -13,6 +13,8 @@ export const permissions = {
   "selection:decide": ["admin", "recruiter", "area_manager"],
   "hiring:confirm": ["admin", "recruiter"],
   "hires:export": ["admin", "recruiter"],
+  "candidates:export": ["admin", "recruiter"],
+  "candidates:erase": ["admin"],
   "integrations:manage": ["admin"],
   "metrics:read": ["admin", "recruiter"],
   "templates:read": ["admin", "recruiter"],

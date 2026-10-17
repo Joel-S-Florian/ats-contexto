@@ -82,4 +82,9 @@ const app = buildApp({
 setInterval(() => void app.notifications.processDue().catch(() => undefined), 60_000).unref();
 // Entregas de webhook pendientes y reintentos: cada 15 s. shortcut: temporizador en proceso; con varias instancias va a una cola (BullMQ).
 setInterval(() => void app.webhooks.processDue().catch(() => undefined), 15_000).unref();
+// Retención de datos: una pasada diaria (anonimiza lo vencido según el plazo de cada empresa).
+setInterval(
+  () => void app.privacy.processRetention().catch(() => undefined),
+  24 * 3600_000,
+).unref();
 await app.listen({ port: env.API_PORT, host: env.API_HOST });

@@ -427,6 +427,8 @@ export const ModelName = {
   Hire: "Hire",
   WebhookEndpoint: "WebhookEndpoint",
   WebhookDelivery: "WebhookDelivery",
+  Subscription: "Subscription",
+  NoticeVersion: "NoticeVersion",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -483,7 +485,9 @@ export type TypeMap<
       | "selectionDecision"
       | "hire"
       | "webhookEndpoint"
-      | "webhookDelivery";
+      | "webhookDelivery"
+      | "subscription"
+      | "noticeVersion";
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -3248,6 +3252,156 @@ export type TypeMap<
         };
       };
     };
+    Subscription: {
+      payload: Prisma.$SubscriptionPayload<ExtArgs>;
+      fields: Prisma.SubscriptionFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.SubscriptionFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.SubscriptionFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        findFirst: {
+          args: Prisma.SubscriptionFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.SubscriptionFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        findMany: {
+          args: Prisma.SubscriptionFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>[];
+        };
+        create: {
+          args: Prisma.SubscriptionCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        createMany: {
+          args: Prisma.SubscriptionCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.SubscriptionCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>[];
+        };
+        delete: {
+          args: Prisma.SubscriptionDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        update: {
+          args: Prisma.SubscriptionUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        deleteMany: {
+          args: Prisma.SubscriptionDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.SubscriptionUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.SubscriptionUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>[];
+        };
+        upsert: {
+          args: Prisma.SubscriptionUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubscriptionPayload>;
+        };
+        aggregate: {
+          args: Prisma.SubscriptionAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubscription>;
+        };
+        groupBy: {
+          args: Prisma.SubscriptionGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.SubscriptionGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.SubscriptionCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.SubscriptionCountAggregateOutputType> | number;
+        };
+      };
+    };
+    NoticeVersion: {
+      payload: Prisma.$NoticeVersionPayload<ExtArgs>;
+      fields: Prisma.NoticeVersionFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.NoticeVersionFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.NoticeVersionFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        findFirst: {
+          args: Prisma.NoticeVersionFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.NoticeVersionFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        findMany: {
+          args: Prisma.NoticeVersionFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>[];
+        };
+        create: {
+          args: Prisma.NoticeVersionCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        createMany: {
+          args: Prisma.NoticeVersionCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.NoticeVersionCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>[];
+        };
+        delete: {
+          args: Prisma.NoticeVersionDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        update: {
+          args: Prisma.NoticeVersionUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        deleteMany: {
+          args: Prisma.NoticeVersionDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.NoticeVersionUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.NoticeVersionUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>[];
+        };
+        upsert: {
+          args: Prisma.NoticeVersionUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoticeVersionPayload>;
+        };
+        aggregate: {
+          args: Prisma.NoticeVersionAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoticeVersion>;
+        };
+        groupBy: {
+          args: Prisma.NoticeVersionGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.NoticeVersionGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.NoticeVersionCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.NoticeVersionCountAggregateOutputType> | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -3297,6 +3451,8 @@ export const TenantScalarFieldEnum = {
   rejectionNotice: "rejectionNotice",
   rejectionDelayHours: "rejectionDelayHours",
   autoConfirmHire: "autoConfirmHire",
+  planKey: "planKey",
+  retentionMonths: "retentionMonths",
   createdAt: "createdAt",
 } as const;
 
@@ -3488,6 +3644,7 @@ export const CandidateScalarFieldEnum = {
   portfolioUrl: "portfolioUrl",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
+  anonymizedAt: "anonymizedAt",
 } as const;
 
 export type CandidateScalarFieldEnum =
@@ -3604,6 +3761,8 @@ export const UsageCounterScalarFieldEnum = {
   tenantId: "tenantId",
   month: "month",
   aiAnalyses: "aiAnalyses",
+  applications: "applications",
+  alertsSent: "alertsSent",
 } as const;
 
 export type UsageCounterScalarFieldEnum =
@@ -3857,6 +4016,33 @@ export const WebhookDeliveryScalarFieldEnum = {
 export type WebhookDeliveryScalarFieldEnum =
   (typeof WebhookDeliveryScalarFieldEnum)[keyof typeof WebhookDeliveryScalarFieldEnum];
 
+export const SubscriptionScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  planKey: "planKey",
+  status: "status",
+  periodStart: "periodStart",
+  extraAiAnalyses: "extraAiAnalyses",
+  notes: "notes",
+  assignedBy: "assignedBy",
+  updatedAt: "updatedAt",
+} as const;
+
+export type SubscriptionScalarFieldEnum =
+  (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum];
+
+export const NoticeVersionScalarFieldEnum = {
+  id: "id",
+  label: "label",
+  title: "title",
+  body: "body",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type NoticeVersionScalarFieldEnum =
+  (typeof NoticeVersionScalarFieldEnum)[keyof typeof NoticeVersionScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -3976,6 +4162,19 @@ export type ListEnumRejectionNoticeFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Boolean">;
+
+/**
+ * Reference to a field of type 'PlanKey'
+ */
+export type EnumPlanKeyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "PlanKey">;
+
+/**
+ * Reference to a field of type 'PlanKey[]'
+ */
+export type ListEnumPlanKeyFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "PlanKey[]"
+>;
 
 /**
  * Reference to a field of type 'DateTime'
@@ -4271,6 +4470,22 @@ export type ListEnumDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 >;
 
 /**
+ * Reference to a field of type 'SubscriptionStatus'
+ */
+export type EnumSubscriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "SubscriptionStatus"
+>;
+
+/**
+ * Reference to a field of type 'SubscriptionStatus[]'
+ */
+export type ListEnumSubscriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "SubscriptionStatus[]"
+>;
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Float">;
@@ -4474,6 +4689,8 @@ export type GlobalOmitConfig = {
   hire?: Prisma.HireOmit;
   webhookEndpoint?: Prisma.WebhookEndpointOmit;
   webhookDelivery?: Prisma.WebhookDeliveryOmit;
+  subscription?: Prisma.SubscriptionOmit;
+  noticeVersion?: Prisma.NoticeVersionOmit;
 };
 
 /* Types for Logging */

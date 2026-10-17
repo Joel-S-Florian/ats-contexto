@@ -1,9 +1,11 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 
 export interface BlobStore {
   put(key: string, data: Buffer): Promise<void>;
   get(key: string): Promise<Buffer>;
+  /** Borra el archivo (retención y derecho de eliminación). No falla si ya no existe. */
+  delete(key: string): Promise<void>;
 }
 
 /** Adaptador de desarrollo/pruebas: disco local. El adaptador S3/MinIO (bucket privado) se agrega al desplegar. */
@@ -21,5 +23,6 @@ export function localBlobStore(root: string): BlobStore {
       await writeFile(p, data);
     },
     get: (key) => readFile(pathOf(key)),
+    delete: (key) => rm(pathOf(key), { force: true }),
   };
 }

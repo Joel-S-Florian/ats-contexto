@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Download, FileText, Loader2, MessageSquarePlus, Undo2, X } from "lucide-react";
 import { toast } from "sonner";
+import { ShieldAlert } from "lucide-react";
 import { discardStatuses, manualStatuses, statusLabels, type ApplicationStatus } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
 import { AssessmentPanel } from "@/components/assessment-panel";
@@ -13,6 +14,7 @@ import { api, ApiError } from "@/lib/api";
 
 interface Detail {
   id: string;
+  candidateId: string;
   status: ApplicationStatus;
   processing: string;
   vacancy: { title: string } | null;
@@ -102,6 +104,30 @@ export function CandidateDrawer({
 
   const isDiscard = target !== "" && discardStatuses.includes(target);
   const discarded = d && discardStatuses.includes(d.status);
+
+  async function exportData() {
+    if (!d) return;
+    const res = await fetch(`${API}/candidates/${d.candidateId}/export`, {
+      credentials: "include",
+    });
+    if (!res.ok) return toast.error("No se pudo exportar");
+    const url = URL.createObjectURL(await res.blob());
+    Object.assign(document.createElement("a"), {
+      href: url,
+      download: `datos-${d.candidateId.slice(0, 8)}.json`,
+    }).click();
+    URL.revokeObjectURL(url);
+  }
+  async function eraseData() {
+    if (
+      !d ||
+      !confirm(
+        `Se eliminarán los datos personales y el CV de ${d.candidate.fullName}. Esta acción no se puede deshacer. ¿Continuar?`,
+      )
+    )
+      return;
+    await run(() => api(`/candidates/${d.candidateId}`, { method: "DELETE" }), "Datos eliminados");
+  }
 
   async function download(docId: string) {
     try {
@@ -386,6 +412,21 @@ export function CandidateDrawer({
                 </li>
               ))}
             </ol>
+            {(me.role === "admin" || me.role === "recruiter") && (
+              <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+                <span className="mr-auto text-xs text-muted">Datos personales</span>
+                <button onClick={() => exportData()} className="btn-ghost !px-2.5 !py-1 text-xs">
+                  <Download size={12} />
+                  Exportar datos
+                </button>
+                {me.role === "admin" && (
+                  <button onClick={() => eraseData()} className="btn-danger !px-2.5 !py-1 text-xs">
+                    <ShieldAlert size={12} />
+                    Eliminar datos
+                  </button>
+                )}
+              </div>
+            )}
             {d.consents[0] && (
               <p className="mt-6 text-xs text-muted">
                 Aviso de datos aceptado (versión {d.consents[0].noticeVersion}) el{" "}
