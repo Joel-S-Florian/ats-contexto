@@ -36,6 +36,7 @@ export interface VacancyForm {
   ownerId: string;
   requiredSkills: string[];
   desirableSkills: string[];
+  autoSelect: boolean;
 }
 type Saved = Partial<VacancyForm> & {
   id: string;
@@ -82,6 +83,7 @@ const empty: VacancyForm = {
   ownerId: "",
   requiredSkills: [],
   desirableSkills: [],
+  autoSelect: false,
 };
 
 const Section = ({
@@ -437,6 +439,24 @@ export function VacancyEditor({ id }: { id?: string }) {
               ))}
             </select>
           </Field>
+          {me.role === "admin" && (
+            <label className="flex items-start gap-3 rounded-xl border border-border bg-bg p-3 text-sm sm:col-span-2">
+              <input
+                type="checkbox"
+                checked={form.autoSelect}
+                onChange={(e) => set("autoSelect", e.target.checked)}
+                className="mt-0.5 size-4 accent-[var(--accent)]"
+              />
+              <span>
+                <b>Selección automática</b>
+                <br />
+                <span className="text-xs text-muted">
+                  Quien apruebe el examen queda seleccionado sin intervención y la decisión se marca
+                  como automática. Contratar sigue pidiendo confirmación. Apagado por defecto.
+                </span>
+              </span>
+            </label>
+          )}
           {me.role === "admin" && (
             <Field label="Responsable de área">
               <select

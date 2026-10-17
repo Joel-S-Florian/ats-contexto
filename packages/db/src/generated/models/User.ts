@@ -352,10 +352,6 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput;
 };
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean;
-};
-
 export type UserCreateNestedOneWithoutMembershipsInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutMembershipsInput,

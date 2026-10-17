@@ -118,6 +118,15 @@ export async function seed(prisma: PrismaClient) {
           allowedOrigins: ["http://localhost:3100"],
         },
       });
+      // Receptor de contratados del sitio de pruebas (apps/demo-site). Secreto conocido solo para desarrollo.
+      await tx.webhookEndpoint.create({
+        data: {
+          tenantId: tenant.id,
+          url: "http://localhost:3100/webhooks/hired",
+          events: ["candidate.hired"],
+          secretEnc: "plain:whsec_demo_local_secret_0001",
+        },
+      });
       for (const d of demoVacancies) {
         await tx.vacancy.create({
           data: {

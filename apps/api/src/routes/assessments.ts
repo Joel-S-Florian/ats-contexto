@@ -11,6 +11,7 @@ import {
 import { newToken, sha256 } from "../auth/crypto.js";
 import { HttpError, requirePermission } from "../auth/plugin.js";
 import { formatDate, type EmailService } from "../services/email.js";
+import type { SelectionService } from "../services/selection.js";
 import { visibleApplication } from "./candidates.js";
 
 type Deps = {
@@ -20,6 +21,7 @@ type Deps = {
   webOrigin: string;
   clock: () => Date;
   examRateLimit: number;
+  selection: SelectionService;
 };
 const asSnap = (v: unknown) => (Array.isArray(v) ? (v as SnapshotQuestion[]) : []);
 const idParam = z.object({ id: z.string().uuid() });
@@ -32,7 +34,7 @@ const answersSchema = z.record(z.string().uuid(), answerValue);
 
 export function assessmentRoutes(
   app: FastifyInstance,
-  { prisma, authenticate, email, webOrigin, clock, examRateLimit }: Deps,
+  { prisma, authenticate, email, webOrigin, clock, examRateLimit, selection }: Deps,
 ) {
   // ------------------------------------------------------------------ plantillas
   const templateSelect = {
@@ -186,7 +188,7 @@ export function assessmentRoutes(
     if (!a?.vacancyId || a.status !== "assessment") return;
     const v = await tx.vacancy.findFirst({
       where: { id: a.vacancyId },
-      select: { pipelineId: true },
+      select: { pipelineId: true, autoSelect: true },
     });
     const stage =
       v &&
@@ -210,6 +212,14 @@ export function assessmentRoutes(
           : `${label}: puntaje ${score} por debajo del mínimo ${rule.minScore}; queda en revisión de RRHH (no se descarta).`,
       },
     });
+    // Interruptor por vacante (apagado por defecto): quien aprueba queda seleccionado de forma automática y marcada como tal.
+    if (pass && v?.autoSelect)
+      await selection.autoSelect(tx, {
+        tenantId,
+        applicationId,
+        status: "selection",
+        reason: `Selección automática: examen aprobado con ${score} (mínimo ${rule.minScore}).`,
+      });
   }
 
   // ------------------------------------------------------------------ invitación

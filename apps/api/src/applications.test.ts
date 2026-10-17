@@ -272,11 +272,17 @@ describe("panel: postulaciones y aislamiento", () => {
   it("el admin ve postulaciones con el texto extraído y queda auditado", async () => {
     const list = (await t.call(adminA, "GET", "/applications")).json() as {
       id: string;
+      processing: string;
       candidate: { fullName: string };
       vacancyTitle: string | null;
     }[];
     expect(list.length).toBeGreaterThan(3);
-    const detail = await t.call(adminA, "GET", `/applications/${list[0]!.id}`);
+    // una postulación ya procesada (algunas del conjunto son PDF sin texto a propósito)
+    const detail = await t.call(
+      adminA,
+      "GET",
+      `/applications/${list.find((a) => a.processing === "ready")!.id}`,
+    );
     expect(detail.statusCode).toBe(200);
     expect(detail.json().documents[0].extractedText).toBeTruthy();
     const logs = await withPlatform(t.prisma, (tx) =>

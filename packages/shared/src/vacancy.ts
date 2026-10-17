@@ -51,6 +51,8 @@ export const vacancyInputSchema = z
     salaryMax: z.number().int().min(0).nullish(),
     showSalary: z.boolean().default(false),
     openings: z.number().int().min(1).max(500).default(1),
+    /** Seleccion automatica por examen aprobado. Apagado por defecto; solo un administrador puede cambiarlo. */
+    autoSelect: z.boolean().default(false),
     closesAt: z.coerce.date().nullish(),
     pipelineId: z.string().uuid().optional(),
     ownerId: z.string().uuid().nullish(),

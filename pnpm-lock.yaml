@@ -229,6 +229,9 @@ importers:
       nodemailer:
         specifier: ^10.1.1
         version: 10.1.1
+      undici:
+        specifier: ^8.12.2
+        version: 8.12.2
       unpdf:
         specifier: ^1.9.0
         version: 1.9.0
@@ -244,6 +247,10 @@ importers:
         version: 4.23.15
 
   apps/demo-site:
+    dependencies:
+      '@ats/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
     devDependencies:
       tsx:
         specifier: ^4.23.15

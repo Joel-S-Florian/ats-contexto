@@ -66,6 +66,7 @@ export type VacancyMinAggregateOutputType = {
   closesAt: Date | null;
   pipelineId: string | null;
   ownerId: string | null;
+  autoSelect: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -97,6 +98,7 @@ export type VacancyMaxAggregateOutputType = {
   closesAt: Date | null;
   pipelineId: string | null;
   ownerId: string | null;
+  autoSelect: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -131,6 +133,7 @@ export type VacancyCountAggregateOutputType = {
   ownerId: number;
   knockoutRules: number;
   scoringOverrides: number;
+  autoSelect: number;
   createdAt: number;
   updatedAt: number;
   _all: number;
@@ -177,6 +180,7 @@ export type VacancyMinAggregateInputType = {
   closesAt?: true;
   pipelineId?: true;
   ownerId?: true;
+  autoSelect?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -208,6 +212,7 @@ export type VacancyMaxAggregateInputType = {
   closesAt?: true;
   pipelineId?: true;
   ownerId?: true;
+  autoSelect?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -242,6 +247,7 @@ export type VacancyCountAggregateInputType = {
   ownerId?: true;
   knockoutRules?: true;
   scoringOverrides?: true;
+  autoSelect?: true;
   createdAt?: true;
   updatedAt?: true;
   _all?: true;
@@ -364,6 +370,7 @@ export type VacancyGroupByOutputType = {
   ownerId: string | null;
   knockoutRules: runtime.JsonValue;
   scoringOverrides: runtime.JsonValue | null;
+  autoSelect: boolean;
   createdAt: Date;
   updatedAt: Date;
   _count: VacancyCountAggregateOutputType | null;
@@ -418,6 +425,7 @@ export type VacancyWhereInput = {
   ownerId?: Prisma.UuidNullableFilter<"Vacancy"> | string | null;
   knockoutRules?: Prisma.JsonFilter<"Vacancy">;
   scoringOverrides?: Prisma.JsonNullableFilter<"Vacancy">;
+  autoSelect?: Prisma.BoolFilter<"Vacancy"> | boolean;
   createdAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
   pipeline?: Prisma.XOR<Prisma.PipelineScalarRelationFilter, Prisma.PipelineWhereInput>;
@@ -455,6 +463,7 @@ export type VacancyOrderByWithRelationInput = {
   ownerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   knockoutRules?: Prisma.SortOrder;
   scoringOverrides?: Prisma.SortOrderInput | Prisma.SortOrder;
+  autoSelect?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   pipeline?: Prisma.PipelineOrderByWithRelationInput;
@@ -496,6 +505,7 @@ export type VacancyWhereUniqueInput = Prisma.AtLeast<
     ownerId?: Prisma.UuidNullableFilter<"Vacancy"> | string | null;
     knockoutRules?: Prisma.JsonFilter<"Vacancy">;
     scoringOverrides?: Prisma.JsonNullableFilter<"Vacancy">;
+    autoSelect?: Prisma.BoolFilter<"Vacancy"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
     pipeline?: Prisma.XOR<Prisma.PipelineScalarRelationFilter, Prisma.PipelineWhereInput>;
@@ -535,6 +545,7 @@ export type VacancyOrderByWithAggregationInput = {
   ownerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   knockoutRules?: Prisma.SortOrder;
   scoringOverrides?: Prisma.SortOrderInput | Prisma.SortOrder;
+  autoSelect?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   _count?: Prisma.VacancyCountOrderByAggregateInput;
@@ -579,6 +590,7 @@ export type VacancyScalarWhereWithAggregatesInput = {
   ownerId?: Prisma.UuidNullableWithAggregatesFilter<"Vacancy"> | string | null;
   knockoutRules?: Prisma.JsonWithAggregatesFilter<"Vacancy">;
   scoringOverrides?: Prisma.JsonNullableWithAggregatesFilter<"Vacancy">;
+  autoSelect?: Prisma.BoolWithAggregatesFilter<"Vacancy"> | boolean;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Vacancy"> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Vacancy"> | Date | string;
 };
@@ -612,6 +624,7 @@ export type VacancyCreateInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   pipeline: Prisma.PipelineCreateNestedOneWithoutVacanciesInput;
@@ -649,6 +662,7 @@ export type VacancyUncheckedCreateInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   skills?: Prisma.VacancySkillUncheckedCreateNestedManyWithoutVacancyInput;
@@ -684,6 +698,7 @@ export type VacancyUpdateInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutVacanciesNestedInput;
@@ -721,6 +736,7 @@ export type VacancyUncheckedUpdateInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   skills?: Prisma.VacancySkillUncheckedUpdateManyWithoutVacancyNestedInput;
@@ -757,6 +773,7 @@ export type VacancyCreateManyInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -790,6 +807,7 @@ export type VacancyUpdateManyMutationInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -824,6 +842,7 @@ export type VacancyUncheckedUpdateManyInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -876,6 +895,7 @@ export type VacancyCountOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder;
   knockoutRules?: Prisma.SortOrder;
   scoringOverrides?: Prisma.SortOrder;
+  autoSelect?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
@@ -914,6 +934,7 @@ export type VacancyMaxOrderByAggregateInput = {
   closesAt?: Prisma.SortOrder;
   pipelineId?: Prisma.SortOrder;
   ownerId?: Prisma.SortOrder;
+  autoSelect?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
@@ -945,6 +966,7 @@ export type VacancyMinOrderByAggregateInput = {
   closesAt?: Prisma.SortOrder;
   pipelineId?: Prisma.SortOrder;
   ownerId?: Prisma.SortOrder;
+  autoSelect?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
@@ -1165,6 +1187,7 @@ export type VacancyCreateWithoutPipelineInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   skills?: Prisma.VacancySkillCreateNestedManyWithoutVacancyInput;
@@ -1200,6 +1223,7 @@ export type VacancyUncheckedCreateWithoutPipelineInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   skills?: Prisma.VacancySkillUncheckedCreateNestedManyWithoutVacancyInput;
@@ -1280,6 +1304,7 @@ export type VacancyScalarWhereInput = {
   ownerId?: Prisma.UuidNullableFilter<"Vacancy"> | string | null;
   knockoutRules?: Prisma.JsonFilter<"Vacancy">;
   scoringOverrides?: Prisma.JsonNullableFilter<"Vacancy">;
+  autoSelect?: Prisma.BoolFilter<"Vacancy"> | boolean;
   createdAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<"Vacancy"> | Date | string;
 };
@@ -1313,6 +1338,7 @@ export type VacancyCreateWithoutSkillsInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   pipeline: Prisma.PipelineCreateNestedOneWithoutVacanciesInput;
@@ -1349,6 +1375,7 @@ export type VacancyUncheckedCreateWithoutSkillsInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   evaluators?: Prisma.VacancyEvaluatorUncheckedCreateNestedManyWithoutVacancyInput;
@@ -1411,6 +1438,7 @@ export type VacancyUpdateWithoutSkillsInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutVacanciesNestedInput;
@@ -1447,6 +1475,7 @@ export type VacancyUncheckedUpdateWithoutSkillsInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   evaluators?: Prisma.VacancyEvaluatorUncheckedUpdateManyWithoutVacancyNestedInput;
@@ -1481,6 +1510,7 @@ export type VacancyCreateWithoutEvaluatorsInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   pipeline: Prisma.PipelineCreateNestedOneWithoutVacanciesInput;
@@ -1517,6 +1547,7 @@ export type VacancyUncheckedCreateWithoutEvaluatorsInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   skills?: Prisma.VacancySkillUncheckedCreateNestedManyWithoutVacancyInput;
@@ -1579,6 +1610,7 @@ export type VacancyUpdateWithoutEvaluatorsInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutVacanciesNestedInput;
@@ -1615,6 +1647,7 @@ export type VacancyUncheckedUpdateWithoutEvaluatorsInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   skills?: Prisma.VacancySkillUncheckedUpdateManyWithoutVacancyNestedInput;
@@ -1649,6 +1682,7 @@ export type VacancyCreateManyPipelineInput = {
   ownerId?: string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -1682,6 +1716,7 @@ export type VacancyUpdateWithoutPipelineInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   skills?: Prisma.VacancySkillUpdateManyWithoutVacancyNestedInput;
@@ -1717,6 +1752,7 @@ export type VacancyUncheckedUpdateWithoutPipelineInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   skills?: Prisma.VacancySkillUncheckedUpdateManyWithoutVacancyNestedInput;
@@ -1752,6 +1788,7 @@ export type VacancyUncheckedUpdateManyWithoutPipelineInput = {
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   knockoutRules?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
   scoringOverrides?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  autoSelect?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -1835,6 +1872,7 @@ export type VacancySelect<
     ownerId?: boolean;
     knockoutRules?: boolean;
     scoringOverrides?: boolean;
+    autoSelect?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     pipeline?: boolean | Prisma.PipelineDefaultArgs<ExtArgs>;
@@ -1878,6 +1916,7 @@ export type VacancySelectCreateManyAndReturn<
     ownerId?: boolean;
     knockoutRules?: boolean;
     scoringOverrides?: boolean;
+    autoSelect?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     pipeline?: boolean | Prisma.PipelineDefaultArgs<ExtArgs>;
@@ -1918,6 +1957,7 @@ export type VacancySelectUpdateManyAndReturn<
     ownerId?: boolean;
     knockoutRules?: boolean;
     scoringOverrides?: boolean;
+    autoSelect?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     pipeline?: boolean | Prisma.PipelineDefaultArgs<ExtArgs>;
@@ -1955,6 +1995,7 @@ export type VacancySelectScalar = {
   ownerId?: boolean;
   knockoutRules?: boolean;
   scoringOverrides?: boolean;
+  autoSelect?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
 };
@@ -1991,6 +2032,7 @@ export type VacancyOmit<
   | "ownerId"
   | "knockoutRules"
   | "scoringOverrides"
+  | "autoSelect"
   | "createdAt"
   | "updatedAt",
   ExtArgs["result"]["vacancy"]
@@ -2054,6 +2096,7 @@ export type $VacancyPayload<
       ownerId: string | null;
       knockoutRules: runtime.JsonValue;
       scoringOverrides: runtime.JsonValue | null;
+      autoSelect: boolean;
       createdAt: Date;
       updatedAt: Date;
     },
@@ -2667,6 +2710,7 @@ export interface VacancyFieldRefs {
   readonly ownerId: Prisma.FieldRef<"Vacancy", "String">;
   readonly knockoutRules: Prisma.FieldRef<"Vacancy", "Json">;
   readonly scoringOverrides: Prisma.FieldRef<"Vacancy", "Json">;
+  readonly autoSelect: Prisma.FieldRef<"Vacancy", "Boolean">;
   readonly createdAt: Prisma.FieldRef<"Vacancy", "DateTime">;
   readonly updatedAt: Prisma.FieldRef<"Vacancy", "DateTime">;
 }

@@ -176,3 +176,28 @@ export type AssessmentAttempt = Prisma.AssessmentAttemptModel;
  *
  */
 export type ExternalAssessmentRecord = Prisma.ExternalAssessmentRecordModel;
+/**
+ * Model SelectionComment
+ *
+ */
+export type SelectionComment = Prisma.SelectionCommentModel;
+/**
+ * Model SelectionDecision
+ *
+ */
+export type SelectionDecision = Prisma.SelectionDecisionModel;
+/**
+ * Model Hire
+ *
+ */
+export type Hire = Prisma.HireModel;
+/**
+ * Model WebhookEndpoint
+ *
+ */
+export type WebhookEndpoint = Prisma.WebhookEndpointModel;
+/**
+ * Model WebhookDelivery
+ *
+ */
+export type WebhookDelivery = Prisma.WebhookDeliveryModel;

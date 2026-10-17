@@ -179,3 +179,19 @@ export const AttemptStatus = {
 } as const;
 
 export type AttemptStatus = (typeof AttemptStatus)[keyof typeof AttemptStatus];
+
+export const SelectionStance = {
+  favor: "favor",
+  against: "against",
+  neutral: "neutral",
+} as const;
+
+export type SelectionStance = (typeof SelectionStance)[keyof typeof SelectionStance];
+
+export const DeliveryStatus = {
+  pending: "pending",
+  success: "success",
+  failed: "failed",
+} as const;
+
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus];

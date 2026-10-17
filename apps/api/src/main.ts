@@ -69,6 +69,7 @@ const app = buildApp({
   },
   store: localBlobStore(env.FILE_STORAGE_DIR),
   signingSecret: env.SESSION_SECRET,
+  allowLocalWebhooks: env.ALLOW_LOCAL_WEBHOOKS,
   captcha:
     env.CAPTCHA_PROVIDER === "turnstile" ? turnstileVerifier(env.TURNSTILE_SECRET!) : devCaptcha,
   scanner: env.AV_PROVIDER === "clamav" ? clamdScanner(env.CLAMD_HOST) : eicarScanner,
@@ -79,4 +80,6 @@ const app = buildApp({
 });
 // Avisos de rechazo diferidos: revisa los vencidos cada minuto. shortcut: temporizador en proceso; con varias instancias va a una cola (BullMQ).
 setInterval(() => void app.notifications.processDue().catch(() => undefined), 60_000).unref();
+// Entregas de webhook pendientes y reintentos: cada 15 s. shortcut: temporizador en proceso; con varias instancias va a una cola (BullMQ).
+setInterval(() => void app.webhooks.processDue().catch(() => undefined), 15_000).unref();
 await app.listen({ port: env.API_PORT, host: env.API_HOST });

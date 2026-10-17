@@ -80,6 +80,11 @@ export const ModelName = {
   Question: "Question",
   AssessmentAttempt: "AssessmentAttempt",
   ExternalAssessmentRecord: "ExternalAssessmentRecord",
+  SelectionComment: "SelectionComment",
+  SelectionDecision: "SelectionDecision",
+  Hire: "Hire",
+  WebhookEndpoint: "WebhookEndpoint",
+  WebhookDelivery: "WebhookDelivery",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -107,6 +112,7 @@ export const TenantScalarFieldEnum = {
   aiMonthlyQuota: "aiMonthlyQuota",
   rejectionNotice: "rejectionNotice",
   rejectionDelayHours: "rejectionDelayHours",
+  autoConfirmHire: "autoConfirmHire",
   createdAt: "createdAt",
 } as const;
 
@@ -238,6 +244,7 @@ export const VacancyScalarFieldEnum = {
   ownerId: "ownerId",
   knockoutRules: "knockoutRules",
   scoringOverrides: "scoringOverrides",
+  autoSelect: "autoSelect",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
 } as const;
@@ -590,6 +597,81 @@ export const ExternalAssessmentRecordScalarFieldEnum = {
 
 export type ExternalAssessmentRecordScalarFieldEnum =
   (typeof ExternalAssessmentRecordScalarFieldEnum)[keyof typeof ExternalAssessmentRecordScalarFieldEnum];
+
+export const SelectionCommentScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  authorId: "authorId",
+  stance: "stance",
+  body: "body",
+  createdAt: "createdAt",
+} as const;
+
+export type SelectionCommentScalarFieldEnum =
+  (typeof SelectionCommentScalarFieldEnum)[keyof typeof SelectionCommentScalarFieldEnum];
+
+export const SelectionDecisionScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  decision: "decision",
+  decidedBy: "decidedBy",
+  automatic: "automatic",
+  reason: "reason",
+  createdAt: "createdAt",
+} as const;
+
+export type SelectionDecisionScalarFieldEnum =
+  (typeof SelectionDecisionScalarFieldEnum)[keyof typeof SelectionDecisionScalarFieldEnum];
+
+export const HireScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  candidateId: "candidateId",
+  vacancyId: "vacancyId",
+  hiredBy: "hiredBy",
+  automatic: "automatic",
+  startDate: "startDate",
+  hiredAt: "hiredAt",
+  payload: "payload",
+} as const;
+
+export type HireScalarFieldEnum = (typeof HireScalarFieldEnum)[keyof typeof HireScalarFieldEnum];
+
+export const WebhookEndpointScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  url: "url",
+  secretEnc: "secretEnc",
+  events: "events",
+  active: "active",
+  createdAt: "createdAt",
+  rotatedAt: "rotatedAt",
+} as const;
+
+export type WebhookEndpointScalarFieldEnum =
+  (typeof WebhookEndpointScalarFieldEnum)[keyof typeof WebhookEndpointScalarFieldEnum];
+
+export const WebhookDeliveryScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  endpointId: "endpointId",
+  eventId: "eventId",
+  event: "event",
+  payload: "payload",
+  status: "status",
+  attempts: "attempts",
+  nextAttemptAt: "nextAttemptAt",
+  lastStatus: "lastStatus",
+  lastError: "lastError",
+  deliveredAt: "deliveredAt",
+  createdAt: "createdAt",
+} as const;
+
+export type WebhookDeliveryScalarFieldEnum =
+  (typeof WebhookDeliveryScalarFieldEnum)[keyof typeof WebhookDeliveryScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

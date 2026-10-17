@@ -44,7 +44,11 @@ export function createNotificationService(deps: { prisma: PrismaClient; email: E
     for (const s of due) {
       const still = await withTenant(prisma, s.tenantId, (tx) =>
         tx.application.findFirst({
-          where: { id: s.applicationId, tenantId: s.tenantId, status: "not_selected" },
+          where: {
+            id: s.applicationId,
+            tenantId: s.tenantId,
+            status: s.templateKey === "hired" ? "hired" : "not_selected",
+          },
         }),
       );
       if (!still) {
@@ -56,7 +60,7 @@ export function createNotificationService(deps: { prisma: PrismaClient; email: E
       const r = await email.send({
         tenantId: s.tenantId,
         applicationId: s.applicationId,
-        key: "rejection",
+        key: s.templateKey as "rejection" | "hired",
       });
       if (r !== "failed") {
         await withTenant(prisma, s.tenantId, (tx) =>

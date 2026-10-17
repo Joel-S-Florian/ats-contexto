@@ -13,7 +13,9 @@ import {
   Inbox,
   KeyRound,
   ClipboardCheck,
+  BarChart3,
   Mail,
+  PlugZap,
   Settings,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -66,6 +68,13 @@ export function Sidebar() {
       icon: ClipboardCheck,
       show: me.role === "admin" || me.role === "recruiter",
     },
+    {
+      href: "/seguimiento",
+      label: "Seguimiento",
+      icon: BarChart3,
+      show: me.role === "admin" || me.role === "recruiter",
+    },
+    { href: "/integraciones", label: "Integraciones", icon: PlugZap, show: me.role === "admin" },
     { href: "/configuracion", label: "Configuración", icon: Settings, show: me.role === "admin" },
     { href: "/empresas", label: "Empresas", icon: Building2, show: me.isSuperAdmin },
     { href: "/usuarios", label: "Usuarios", icon: UserCog, show: me.role === "admin" },

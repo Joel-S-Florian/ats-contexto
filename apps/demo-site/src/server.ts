@@ -5,6 +5,7 @@
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
+import { handleReceiver } from "./receiver.js";
 import { fileURLToPath } from "node:url";
 
 const API = process.env.DEMO_API_URL ?? "http://localhost:4000";
@@ -37,7 +38,7 @@ const page = (opts: { title: string; banner: string; allowed: boolean }) => `<!d
 </head>
 <body>
 <header><div class="wrap">
-  <nav><span>Empresa Demo</span><span>Sitio de pruebas</span></nav>
+  <nav><span>Empresa Demo</span><span>Sitio de pruebas · <a href="/receptor" style="color:#fff">Receptor de contratados</a></span></nav>
   <div class="hero"><h1>Trabaja con nosotros</h1><p>Somos una empresa ficticia. Esta página existe para probar el widget de postulación de punta a punta.</p></div>
 </div></header>
 <main><div class="wrap">
@@ -51,6 +52,9 @@ const page = (opts: { title: string; banner: string; allowed: boolean }) => `<!d
 
 function serve(port: number, allowed: boolean) {
   createServer(async (req, res) => {
+    // El receptor de contratados vive solo en el origen principal.
+    if (allowed && (await handleReceiver(req, res, `http://localhost:${port}`).catch(() => false)))
+      return;
     if (req.url === "/widget.js") {
       try {
         res

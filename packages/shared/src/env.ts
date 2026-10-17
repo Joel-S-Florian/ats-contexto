@@ -19,6 +19,10 @@ export const apiEnvSchema = z
     AV_PROVIDER: z.enum(["none", "clamav"]).default("none"),
     CLAMD_HOST: z.string().default("localhost"),
     FILE_STORAGE_DIR: z.string().default(".data/files"),
+    ALLOW_LOCAL_WEBHOOKS: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((v) => v === "true"),
     EMAIL_PROVIDER: z.enum(["console", "smtp"]).default("console"),
     MAIL_FROM: z.string().default("Reclutamiento <no-responder@localhost>"),
     GOOGLE_CLIENT_ID: z.string().optional(),
@@ -48,6 +52,12 @@ export const apiEnvSchema = z
         code: "custom",
         path: ["AI_API_KEY"],
         message: "requiere AI_API_KEY, AI_MODEL_FAST y AI_MODEL_STRONG",
+      });
+    if (env.NODE_ENV === "production" && env.ALLOW_LOCAL_WEBHOOKS)
+      ctx.addIssue({
+        code: "custom",
+        path: ["ALLOW_LOCAL_WEBHOOKS"],
+        message: "no se permite en produccion",
       });
     // En produccion no se admiten los adaptadores de desarrollo (captcha de prueba, antivirus EICAR).
     if (env.NODE_ENV === "production") {

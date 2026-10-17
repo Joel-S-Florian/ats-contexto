@@ -34,6 +34,7 @@ export default function SettingsPage() {
   const [hours, setHours] = useState(24);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [autoHire, setAutoHire] = useState(false);
 
   useEffect(() => {
     if (me.role !== "admin") return;
@@ -44,6 +45,9 @@ export default function SettingsPage() {
         setLoaded(true);
       })
       .catch((e: ApiError) => toast.error(e.message));
+    api<{ autoConfirmHire: boolean }>("/settings/hiring")
+      .then((h) => setAutoHire(h.autoConfirmHire))
+      .catch(() => undefined);
   }, [me.role]);
 
   async function save() {
@@ -116,6 +120,39 @@ export default function SettingsPage() {
             </div>
           </>
         )}
+      </section>
+
+      <section
+        className="rise mt-5 rounded-card border border-border bg-surface p-5 shadow-sm"
+        style={{ "--i": 2 } as React.CSSProperties}
+      >
+        <h2 className="mb-1 text-sm font-semibold">Contratación</h2>
+        <label className="mt-3 flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={autoHire}
+            onChange={async (e) => {
+              const v = e.target.checked;
+              setAutoHire(v);
+              try {
+                await api("/settings/hiring", { method: "PATCH", body: { autoConfirmHire: v } });
+                toast.success("Configuración guardada");
+              } catch {
+                setAutoHire(!v);
+                toast.error("No se pudo guardar");
+              }
+            }}
+            className="mt-0.5 size-4 accent-[var(--accent)]"
+          />
+          <span>
+            <b>Confirmar la contratación automáticamente</b>
+            <br />
+            <span className="text-xs text-muted">
+              Solo aplica a vacantes con selección automática: quien queda seleccionado se contrata
+              sin confirmación manual y se envía el webhook. Apagado por defecto.
+            </span>
+          </span>
+        </label>
       </section>
     </div>
   );

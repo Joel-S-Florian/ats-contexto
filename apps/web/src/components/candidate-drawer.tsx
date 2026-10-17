@@ -6,6 +6,7 @@ import { discardStatuses, manualStatuses, statusLabels, type ApplicationStatus }
 import { useAuth } from "@/components/app-shell";
 import { AssessmentPanel } from "@/components/assessment-panel";
 import { InterviewPanel } from "@/components/interview-panel";
+import { SelectionPanel } from "@/components/selection-panel";
 import { ScreeningCard, type Screening } from "@/components/screening";
 import { Badge } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
@@ -314,6 +315,19 @@ export function CandidateDrawer({
             <AssessmentPanel
               applicationId={id}
               canManage={canMove}
+              onChanged={() => {
+                void load();
+                onChanged();
+              }}
+            />
+
+            <SelectionPanel
+              applicationId={id}
+              status={d.status}
+              canDecide={
+                me.role === "admin" || me.role === "recruiter" || me.role === "area_manager"
+              }
+              canHire={canMove}
               onChanged={() => {
                 void load();
                 onChanged();

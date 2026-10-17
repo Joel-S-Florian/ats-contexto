@@ -64,8 +64,10 @@ export function vacancyRoutes(
   });
 
   app.post("/vacancies", { preHandler: authenticate }, async (req, reply) => {
-    const { tenantId, userId } = requirePermission(req, "vacancies:write");
+    const { tenantId, userId, role } = requirePermission(req, "vacancies:write");
     const input = vacancyInputSchema.parse(req.body);
+    if (input.autoSelect && role !== "admin")
+      throw new HttpError(403, "Solo un administrador puede activar la selección automática.");
     const created = await withTenant(prisma, tenantId, async (tx) => {
       const pipelineId = await resolvePipelineId(tx, tenantId, input.pipelineId);
       const v = await tx.vacancy.create({ data: { ...vacancyData(input), tenantId, pipelineId } });
@@ -81,7 +83,7 @@ export function vacancyRoutes(
   });
 
   app.patch("/vacancies/:id", { preHandler: authenticate }, async (req) => {
-    const { tenantId, userId } = requirePermission(req, "vacancies:write");
+    const { tenantId, userId, role } = requirePermission(req, "vacancies:write");
     const { id } = idParam.parse(req.params);
     const patch = vacancyPatchSchema.parse(req.body);
     return withTenant(prisma, tenantId, async (tx) => {
@@ -95,6 +97,8 @@ export function vacancyRoutes(
       // El estado cambia solo por /status; se ignora aqui para no saltarse las reglas de transicion.
       const { status: _ignored, ...fields } = patch;
       const input = vacancyInputSchema.parse({ ...toInput(toVacancyDto(current)), ...fields });
+      if (input.autoSelect !== current.autoSelect && role !== "admin")
+        throw new HttpError(403, "Solo un administrador puede cambiar la selección automática.");
       const pipelineId = await resolvePipelineId(tx, tenantId, input.pipelineId);
       if (current.status === "published")
         await assertPublishable(

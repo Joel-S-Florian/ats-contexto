@@ -30,6 +30,10 @@ import {
   type ScreeningService,
 } from "./services/screening.js";
 import type { Mailer } from "./mailer.js";
+import { hiringRoutes } from "./routes/hiring.js";
+import { metricsRoutes } from "./routes/metrics.js";
+import { createSelectionService } from "./services/selection.js";
+import { createWebhookService, type WebhookService } from "./services/webhooks.js";
 import { assessmentRoutes } from "./routes/assessments.js";
 import { communicationRoutes } from "./routes/communication.js";
 import { noCalendar, type CalendarProvider } from "./ports/calendar.js";
@@ -58,6 +62,10 @@ export interface AppDeps {
   /** Reloj inyectable: las pruebas controlan el tiempo del examen. */
   clock?: () => Date;
   examRateLimit?: number;
+  /** Permite webhooks hacia localhost (sitio de pruebas). Nunca en produccion. */
+  allowLocalWebhooks?: boolean;
+  webhookFetch?: typeof fetch;
+  webhooks?: WebhookService;
 }
 
 export function buildApp({
@@ -76,6 +84,8 @@ export function buildApp({
   calendar = noCalendar,
   clock = () => new Date(),
   examRateLimit = 60,
+  allowLocalWebhooks = false,
+  webhookFetch,
   email = createEmailService({ prisma, mailer }),
   screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
   queue = memoryQueue(
@@ -83,6 +93,15 @@ export function buildApp({
   ),
 }: AppDeps) {
   const notifications = createNotificationService({ prisma, email });
+  const ssrf = { allowLocalhost: allowLocalWebhooks };
+  const webhooks = createWebhookService({
+    prisma,
+    appSecret: signingSecret,
+    ssrf,
+    clock,
+    fetch: webhookFetch,
+  });
+  const selection = createSelectionService({ webhooks });
   const app = Fastify({ logger: logger ? loggerOptions : false, maxParamLength: 1000 });
   app.register(cors, {
     // Widget: se refleja el origen solo si alguna clave publica activa lo permite. Panel: solo webOrigin con credenciales.
@@ -164,12 +183,31 @@ export function buildApp({
     apiKeyRoutes(scope, { prisma, authenticate });
     candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret, notifications });
     communicationRoutes(scope, { prisma, authenticate, email, calendar });
-    assessmentRoutes(scope, { prisma, authenticate, email, webOrigin, clock, examRateLimit });
+    assessmentRoutes(scope, {
+      prisma,
+      authenticate,
+      email,
+      webOrigin,
+      clock,
+      examRateLimit,
+      selection,
+    });
+    hiringRoutes(scope, {
+      prisma,
+      authenticate,
+      selection,
+      webhooks,
+      notifications,
+      appSecret: signingSecret,
+      ssrf,
+    });
+    metricsRoutes(scope, { prisma, authenticate });
     panelApplicationRoutes(scope, { prisma, authenticate, screening });
   });
 
   app.decorate("queue", queue);
   app.decorate("notifications", notifications);
+  app.decorate("webhooks", webhooks);
   return app;
 }
 
@@ -177,5 +215,6 @@ declare module "fastify" {
   interface FastifyInstance {
     queue: JobQueue;
     notifications: NotificationService;
+    webhooks: WebhookService;
   }
 }
