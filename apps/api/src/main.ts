@@ -50,6 +50,7 @@ const aiProvider: AIProvider | null = {
 // shortcut: Redis solo se comprueba por TCP hasta que lleguen las colas (Fase 3).
 const app = buildApp({
   webOrigin: env.WEB_ORIGIN,
+  publicRateLimit: env.PUBLIC_RATE_LIMIT,
   prisma,
   mailer: env.EMAIL_PROVIDER === "smtp" ? smtpMailer(env.SMTP_URL, env.MAIL_FROM) : consoleMailer,
   calendar:

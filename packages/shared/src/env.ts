@@ -15,6 +15,7 @@ export const apiEnvSchema = z
     SMTP_URL: z.string().min(1),
     WEB_ORIGIN: z.string().url(),
     CAPTCHA_PROVIDER: z.enum(["none", "turnstile"]).default("none"),
+    PUBLIC_RATE_LIMIT: z.coerce.number().int().positive().default(10), // postulaciones por hora por IP y clave
     TURNSTILE_SECRET: z.string().optional(),
     AV_PROVIDER: z.enum(["none", "clamav"]).default("none"),
     CLAMD_HOST: z.string().default("localhost"),
