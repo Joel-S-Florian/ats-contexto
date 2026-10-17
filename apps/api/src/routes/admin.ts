@@ -16,38 +16,76 @@ export interface AdminDeps {
   authenticate: preHandlerAsyncHookHandler;
 }
 
-async function invite(tx: Tx, mailer: Mailer, webOrigin: string, tenantId: string, actorId: string, to: string, r: z.infer<typeof role>) {
+async function invite(
+  tx: Tx,
+  mailer: Mailer,
+  webOrigin: string,
+  tenantId: string,
+  actorId: string,
+  to: string,
+  r: z.infer<typeof role>,
+) {
   const token = newToken();
-  await tx.invitation.create({ data: { tenantId, email: to, role: r, tokenHash: sha256(token), expiresAt: new Date(Date.now() + INVITE_TTL_MS) } });
+  await tx.invitation.create({
+    data: {
+      tenantId,
+      email: to,
+      role: r,
+      tokenHash: sha256(token),
+      expiresAt: new Date(Date.now() + INVITE_TTL_MS),
+    },
+  });
   await tx.auditLog.create({ data: { tenantId, actorId, action: "user.invited", target: r } });
   await mailer.send(to, "Invitación a la plataforma", `${webOrigin}/invitacion?token=${token}`);
 }
 
-export function adminRoutes(app: FastifyInstance, { prisma, mailer, webOrigin, authenticate }: AdminDeps) {
+export function adminRoutes(
+  app: FastifyInstance,
+  { prisma, mailer, webOrigin, authenticate }: AdminDeps,
+) {
   // --- Super administrador: camino de plataforma, siempre auditado ---
-  app.post("/admin/tenants", { preHandler: [authenticate, requireSuperAdmin] }, async (req, reply) => {
-    const body = z
-      .object({ name: z.string().min(1).max(120), slug: z.string().regex(/^[a-z0-9-]{2,40}$/), adminEmail: email })
-      .parse(req.body);
-    const tenant = await withPlatform(prisma, async (tx) => {
-      if (await tx.tenant.findUnique({ where: { slug: body.slug } })) throw new HttpError(409, "El identificador ya existe");
-      const t = await tx.tenant.create({ data: { name: body.name, slug: body.slug } });
-      await tx.auditLog.create({ data: { tenantId: t.id, actorId: req.auth!.userId, action: "tenant.created" } });
-      await invite(tx, mailer, webOrigin, t.id, req.auth!.userId, body.adminEmail, "admin");
-      return t;
-    });
-    reply.code(201).send({ id: tenant.id, name: tenant.name, slug: tenant.slug });
-  });
+  app.post(
+    "/admin/tenants",
+    { preHandler: [authenticate, requireSuperAdmin] },
+    async (req, reply) => {
+      const body = z
+        .object({
+          name: z.string().min(1).max(120),
+          slug: z.string().regex(/^[a-z0-9-]{2,40}$/),
+          adminEmail: email,
+        })
+        .parse(req.body);
+      const tenant = await withPlatform(prisma, async (tx) => {
+        if (await tx.tenant.findUnique({ where: { slug: body.slug } }))
+          throw new HttpError(409, "El identificador ya existe");
+        const t = await tx.tenant.create({ data: { name: body.name, slug: body.slug } });
+        await tx.auditLog.create({
+          data: { tenantId: t.id, actorId: req.auth!.userId, action: "tenant.created" },
+        });
+        await invite(tx, mailer, webOrigin, t.id, req.auth!.userId, body.adminEmail, "admin");
+        return t;
+      });
+      reply.code(201).send({ id: tenant.id, name: tenant.name, slug: tenant.slug });
+    },
+  );
 
   app.get("/admin/tenants", { preHandler: [authenticate, requireSuperAdmin] }, () =>
-    withPlatform(prisma, (tx) => tx.tenant.findMany({ select: { id: true, name: true, slug: true, status: true }, orderBy: { createdAt: "desc" } })),
+    withPlatform(prisma, (tx) =>
+      tx.tenant.findMany({
+        select: { id: true, name: true, slug: true, status: true },
+        orderBy: { createdAt: "desc" },
+      }),
+    ),
   );
 
   // --- Administrador del tenant ---
   app.get("/users", { preHandler: authenticate }, async (req) => {
     const { tenantId } = requirePermission(req, "users:manage");
     return withTenant(prisma, tenantId, async (tx) => {
-      const ms = await tx.membership.findMany({ include: { user: { select: { id: true, name: true, email: true } } }, orderBy: { createdAt: "asc" } });
+      const ms = await tx.membership.findMany({
+        include: { user: { select: { id: true, name: true, email: true } } },
+        orderBy: { createdAt: "asc" },
+      });
       return ms.map((m) => ({ ...m.user, role: m.role }));
     });
   });
@@ -55,7 +93,9 @@ export function adminRoutes(app: FastifyInstance, { prisma, mailer, webOrigin, a
   app.post("/users/invitations", { preHandler: authenticate }, async (req, reply) => {
     const { tenantId, userId } = requirePermission(req, "users:manage");
     const body = z.object({ email, role }).parse(req.body);
-    await withTenant(prisma, tenantId, (tx) => invite(tx, mailer, webOrigin, tenantId, userId, body.email, body.role));
+    await withTenant(prisma, tenantId, (tx) =>
+      invite(tx, mailer, webOrigin, tenantId, userId, body.email, body.role),
+    );
     reply.code(201).send();
   });
 
@@ -66,10 +106,16 @@ export function adminRoutes(app: FastifyInstance, { prisma, mailer, webOrigin, a
     return withTenant(prisma, tenantId, async (tx) => {
       const m = await tx.membership.findFirst({ where: { tenantId, userId: id } });
       if (!m) throw new HttpError(404, "Usuario no encontrado");
-      if (m.role === "admin" && body.role !== "admin" && (await tx.membership.count({ where: { tenantId, role: "admin" } })) < 2)
+      if (
+        m.role === "admin" &&
+        body.role !== "admin" &&
+        (await tx.membership.count({ where: { tenantId, role: "admin" } })) < 2
+      )
         throw new HttpError(409, "Debe quedar al menos un administrador");
       await tx.membership.update({ where: { id: m.id }, data: { role: body.role } });
-      await tx.auditLog.create({ data: { tenantId, actorId: userId, action: "user.role_changed", target: body.role } });
+      await tx.auditLog.create({
+        data: { tenantId, actorId: userId, action: "user.role_changed", target: body.role },
+      });
       return { id, role: body.role };
     });
   });
@@ -80,7 +126,10 @@ export function adminRoutes(app: FastifyInstance, { prisma, mailer, webOrigin, a
     await withTenant(prisma, tenantId, async (tx) => {
       const m = await tx.membership.findFirst({ where: { tenantId, userId: id } });
       if (!m) throw new HttpError(404, "Usuario no encontrado");
-      if (m.role === "admin" && (await tx.membership.count({ where: { tenantId, role: "admin" } })) < 2)
+      if (
+        m.role === "admin" &&
+        (await tx.membership.count({ where: { tenantId, role: "admin" } })) < 2
+      )
         throw new HttpError(409, "Debe quedar al menos un administrador");
       await tx.membership.delete({ where: { id: m.id } });
       await tx.auditLog.create({ data: { tenantId, actorId: userId, action: "user.removed" } });

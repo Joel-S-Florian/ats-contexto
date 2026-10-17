@@ -11,7 +11,11 @@ const tcp =
   () =>
     new Promise((resolve, reject) => {
       const { hostname, port, protocol } = new URL(url);
-      const sock = net.connect({ host: hostname, port: Number(port) || (protocol === "redis:" ? 6379 : 5432), timeout: 1500 });
+      const sock = net.connect({
+        host: hostname,
+        port: Number(port) || (protocol === "redis:" ? 6379 : 5432),
+        timeout: 1500,
+      });
       sock.once("connect", () => (sock.destroy(), resolve()));
       sock.once("timeout", () => (sock.destroy(), reject(new Error("timeout"))));
       sock.once("error", reject);

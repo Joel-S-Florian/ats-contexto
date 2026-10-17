@@ -1,0 +1,67 @@
+/* Componentes base de formulario y botones (ver docs/06-diseno-ui-ux.md) */
+.field {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition:
+    border-color var(--dur-ui) ease,
+    box-shadow var(--dur-ui) ease;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.btn-primary,
+.btn-ghost,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-ui) ease,
+    opacity var(--dur-ui) ease;
+}
+.btn-primary:active,
+.btn-ghost:active,
+.btn-danger:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.btn-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.btn-primary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--accent-hover);
+  }
+  .btn-ghost:hover {
+    background: var(--surface-2);
+  }
+}

@@ -1,15 +1,10 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, LayoutDashboard, Settings, Users, Moon, Sun } from "lucide-react";
+import { Briefcase, Building2, LayoutDashboard, LogOut, Moon, Sun, UserCog } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const items = [
-  { href: "/", label: "Resumen", icon: LayoutDashboard },
-  { href: "/vacantes", label: "Vacantes", icon: Briefcase },
-  { href: "/candidatos", label: "Candidatos", icon: Users },
-  { href: "/configuracion", label: "Configuración", icon: Settings },
-];
+import { useAuth } from "@/components/app-shell";
+import { roleLabels } from "@/lib/api";
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -38,6 +33,13 @@ function ThemeToggle() {
 
 export function Sidebar() {
   const path = usePathname();
+  const { me, logout } = useAuth();
+  const items = [
+    { href: "/", label: "Resumen", icon: LayoutDashboard, show: true },
+    { href: "/empresas", label: "Empresas", icon: Building2, show: me.isSuperAdmin },
+    { href: "/usuarios", label: "Usuarios", icon: UserCog, show: me.role === "admin" },
+  ].filter((i) => i.show);
+
   return (
     <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface p-4 md:flex">
       <div className="mb-8 flex items-center gap-2 px-2 pt-1">
@@ -62,9 +64,23 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="flex items-center justify-between border-t border-border px-1 pt-3">
-        <span className="text-xs text-muted">Empresa Demo</span>
-        <ThemeToggle />
+      <div className="border-t border-border pt-3">
+        <div className="mb-2 px-1">
+          <p className="truncate text-sm font-medium">{me.name}</p>
+          <p className="truncate text-xs text-muted">
+            {me.isSuperAdmin ? "Operador de la plataforma" : me.role ? roleLabels[me.role] : ""}
+          </p>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={logout}
+            className="press flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted hover:bg-surface-2 hover:text-fg"
+          >
+            <LogOut size={16} />
+            Cerrar sesión
+          </button>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );

@@ -4,7 +4,13 @@ import { existsSync } from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
 
 export async function startEmbedded(dataDir: string, port = 5433) {
-  const pg = new EmbeddedPostgres({ databaseDir: dataDir, user: "ats", password: "ats", port, persistent: true });
+  const pg = new EmbeddedPostgres({
+    databaseDir: dataDir,
+    user: "ats",
+    password: "ats",
+    port,
+    persistent: true,
+  });
   if (!existsSync(`${dataDir}/PG_VERSION`)) await pg.initialise();
   await pg.start();
   return {
@@ -20,5 +26,7 @@ async function stopServer(pg: EmbeddedPostgres) {
   const pid = (pg as unknown as { process?: { pid?: number } }).process?.pid;
   if (process.platform !== "win32" || !pid) return pg.stop();
   const taskkill = `${process.env.SystemRoot ?? "C:\\Windows"}\\System32\\taskkill.exe`;
-  await new Promise<void>((resolve) => execFile(taskkill, ["/pid", String(pid), "/f", "/t"], () => resolve()));
+  await new Promise<void>((resolve) =>
+    execFile(taskkill, ["/pid", String(pid), "/f", "/t"], () => resolve()),
+  );
 }

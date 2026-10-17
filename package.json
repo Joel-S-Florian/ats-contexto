@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "db:dev": "pnpm --filter @ats/db db:dev",
     "prepare": "husky"
   },
   "devDependencies": {

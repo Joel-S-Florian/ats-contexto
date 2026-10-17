@@ -5,7 +5,13 @@ import { consoleMailer } from "./mailer.js";
 
 // /health no toca la base: el prisma se sustituye por un valor vacío.
 const make = (checks: Parameters<typeof buildApp>[0]["checks"]) =>
-  buildApp({ webOrigin: "http://localhost:3000", checks, logger: false, prisma: {} as PrismaClient, mailer: consoleMailer });
+  buildApp({
+    webOrigin: "http://localhost:3000",
+    checks,
+    logger: false,
+    prisma: {} as PrismaClient,
+    mailer: consoleMailer,
+  });
 
 describe("GET /health", () => {
   it("200 cuando todo responde", async () => {

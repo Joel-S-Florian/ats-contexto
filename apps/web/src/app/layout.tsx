@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
+import { AppShell } from "@/components/app-shell";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -17,10 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="min-w-0 flex-1 px-4 py-6 md:px-10 md:py-10">{children}</main>
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

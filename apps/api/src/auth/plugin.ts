@@ -29,7 +29,10 @@ export class HttpError extends Error {
   }
 }
 
-export async function resolveSession(prisma: PrismaClient, token: string | undefined): Promise<AuthCtx | undefined> {
+export async function resolveSession(
+  prisma: PrismaClient,
+  token: string | undefined,
+): Promise<AuthCtx | undefined> {
   if (!token) return undefined;
   return withPlatform(prisma, async (tx) => {
     const session = await tx.session.findUnique({
@@ -38,7 +41,12 @@ export async function resolveSession(prisma: PrismaClient, token: string | undef
     });
     if (!session || session.expiresAt < new Date()) return undefined;
     const m = session.user.memberships[0];
-    return { userId: session.userId, isSuperAdmin: session.user.isSuperAdmin, tenantId: m?.tenantId, role: m?.role };
+    return {
+      userId: session.userId,
+      isSuperAdmin: session.user.isSuperAdmin,
+      tenantId: m?.tenantId,
+      role: m?.role,
+    };
   });
 }
 

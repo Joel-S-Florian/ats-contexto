@@ -7,8 +7,11 @@ import { hashPassword } from "./auth/crypto.js";
 
 const PW = "contrasena-larga-1";
 const mails: { to: string; text: string }[] = [];
-const mailer = { send: async (to: string, _s: string, text: string) => void mails.push({ to, text }) };
-const tokenFrom = (to: string) => new URL(mails.findLast((m) => m.to === to)!.text).searchParams.get("token")!;
+const mailer = {
+  send: async (to: string, _s: string, text: string) => void mails.push({ to, text }),
+};
+const tokenFrom = (to: string) =>
+  new URL(mails.findLast((m) => m.to === to)!.text).searchParams.get("token")!;
 
 let stop: () => Promise<void>;
 let prisma: ReturnType<typeof createPrisma>;
@@ -28,12 +31,20 @@ async function addUser(email: string, role: Role | null, tenantId?: string, isSu
 }
 
 async function login(email: string, password = PW) {
-  const res = await app.inject({ method: "POST", url: "/auth/login", payload: { email, password } });
+  const res = await app.inject({
+    method: "POST",
+    url: "/auth/login",
+    payload: { email, password },
+  });
   const cookie = res.cookies.find((c) => c.name === "sid");
   return { res, cookie: cookie ? `sid=${cookie.value}` : "" };
 }
-const call = (cookie: string, method: "GET" | "POST" | "PATCH" | "DELETE", url: string, payload?: object) =>
-  app.inject({ method, url, payload, headers: { cookie } });
+const call = (
+  cookie: string,
+  method: "GET" | "POST" | "PATCH" | "DELETE",
+  url: string,
+  payload?: object,
+) => app.inject({ method, url, payload, headers: { cookie } });
 
 beforeAll(async () => {
   const e = await startEmbedded(join(tmpdir(), `ats-pg-api-${process.pid}`), 5445);
@@ -41,7 +52,14 @@ beforeAll(async () => {
   await e.createDb("t");
   await migrateAndGrant(e.adminUrl("t"));
   prisma = createPrisma(e.appUrl("t"));
-  app = buildApp({ webOrigin: "http://localhost:3000", checks: {}, logger: false, prisma, mailer, loginRateLimit: 1000 });
+  app = buildApp({
+    webOrigin: "http://localhost:3000",
+    checks: {},
+    logger: false,
+    prisma,
+    mailer,
+    loginRateLimit: 1000,
+  });
   await withPlatform(prisma, async (tx) => {
     tenantA = (await tx.tenant.create({ data: { name: "A", slug: "a" } })).id;
     tenantB = (await tx.tenant.create({ data: { name: "B", slug: "b" } })).id;
@@ -85,12 +103,23 @@ describe("autorización por rol", () => {
   it("reclutador no gestiona usuarios", async () => {
     const { cookie } = await login("rec-a@x.com");
     expect((await call(cookie, "GET", "/users")).statusCode).toBe(403);
-    expect((await call(cookie, "POST", "/users/invitations", { email: "n@x.com", role: "recruiter" })).statusCode).toBe(403);
+    expect(
+      (await call(cookie, "POST", "/users/invitations", { email: "n@x.com", role: "recruiter" }))
+        .statusCode,
+    ).toBe(403);
   });
   it("ni admin ni reclutador gestionan tenants", async () => {
     for (const u of ["admin-a@x.com", "rec-a@x.com"]) {
       const { cookie } = await login(u);
-      expect((await call(cookie, "POST", "/admin/tenants", { name: "C", slug: "cc", adminEmail: "c@x.com" })).statusCode).toBe(403);
+      expect(
+        (
+          await call(cookie, "POST", "/admin/tenants", {
+            name: "C",
+            slug: "cc",
+            adminEmail: "c@x.com",
+          })
+        ).statusCode,
+      ).toBe(403);
       expect((await call(cookie, "GET", "/admin/tenants")).statusCode).toBe(403);
     }
   });
@@ -108,32 +137,62 @@ describe("aislamiento entre tenants", () => {
   });
   it("no puede cambiar ni eliminar usuarios de otro tenant", async () => {
     const { cookie } = await login("admin-a@x.com");
-    expect((await call(cookie, "PATCH", `/users/${ids["admin-b@x.com"]}`, { role: "recruiter" })).statusCode).toBe(404);
+    expect(
+      (await call(cookie, "PATCH", `/users/${ids["admin-b@x.com"]}`, { role: "recruiter" }))
+        .statusCode,
+    ).toBe(404);
     expect((await call(cookie, "DELETE", `/users/${ids["admin-b@x.com"]}`)).statusCode).toBe(404);
   });
   it("no puede quitar al último administrador", async () => {
     const { cookie } = await login("admin-b@x.com");
     expect((await call(cookie, "DELETE", `/users/${ids["admin-b@x.com"]}`)).statusCode).toBe(409);
-    expect((await call(cookie, "PATCH", `/users/${ids["admin-b@x.com"]}`, { role: "recruiter" })).statusCode).toBe(409);
+    expect(
+      (await call(cookie, "PATCH", `/users/${ids["admin-b@x.com"]}`, { role: "recruiter" }))
+        .statusCode,
+    ).toBe(409);
   });
 });
 
 describe("alta de tenant e invitaciones", () => {
   it("super admin crea tenant, el admin acepta la invitación y entra", async () => {
     const root = (await login("root@x.com")).cookie;
-    const created = await call(root, "POST", "/admin/tenants", { name: "Nueva", slug: "nueva", adminEmail: "dueno@x.com" });
+    const created = await call(root, "POST", "/admin/tenants", {
+      name: "Nueva",
+      slug: "nueva",
+      adminEmail: "dueno@x.com",
+    });
     expect(created.statusCode).toBe(201);
     const token = tokenFrom("dueno@x.com");
-    const accept = await app.inject({ method: "POST", url: "/auth/invitations/accept", payload: { token, name: "Dueno", password: PW } });
+    const accept = await app.inject({
+      method: "POST",
+      url: "/auth/invitations/accept",
+      payload: { token, name: "Dueno", password: PW },
+    });
     expect(accept.statusCode).toBe(204);
-    expect((await login("dueno@x.com")).res.json()).toMatchObject({ role: "admin", tenantId: created.json().id });
-    const again = await app.inject({ method: "POST", url: "/auth/invitations/accept", payload: { token, name: "X", password: PW } });
+    expect((await login("dueno@x.com")).res.json()).toMatchObject({
+      role: "admin",
+      tenantId: created.json().id,
+    });
+    const again = await app.inject({
+      method: "POST",
+      url: "/auth/invitations/accept",
+      payload: { token, name: "X", password: PW },
+    });
     expect(again.statusCode).toBe(400);
   });
   it("el admin invita a un reclutador y queda auditado", async () => {
     const { cookie } = await login("admin-a@x.com");
-    expect((await call(cookie, "POST", "/users/invitations", { email: "nuevo@x.com", role: "recruiter" })).statusCode).toBe(201);
-    const logs = await withPlatform(prisma, (tx) => tx.auditLog.findMany({ where: { tenantId: tenantA, action: "user.invited" } }));
+    expect(
+      (
+        await call(cookie, "POST", "/users/invitations", {
+          email: "nuevo@x.com",
+          role: "recruiter",
+        })
+      ).statusCode,
+    ).toBe(201);
+    const logs = await withPlatform(prisma, (tx) =>
+      tx.auditLog.findMany({ where: { tenantId: tenantA, action: "user.invited" } }),
+    );
     expect(logs).toHaveLength(1);
   });
 });
@@ -141,18 +200,38 @@ describe("alta de tenant e invitaciones", () => {
 describe("recuperación de contraseña", () => {
   it("restablece con enlace de un solo uso y cierra sesiones", async () => {
     const { cookie } = await login("rec-a@x.com");
-    expect((await app.inject({ method: "POST", url: "/auth/password/forgot", payload: { email: "rec-a@x.com" } })).statusCode).toBe(204);
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/auth/password/forgot",
+          payload: { email: "rec-a@x.com" },
+        })
+      ).statusCode,
+    ).toBe(204);
     const token = tokenFrom("rec-a@x.com");
-    const reset = await app.inject({ method: "POST", url: "/auth/password/reset", payload: { token, password: "otra-contrasena-2" } });
+    const reset = await app.inject({
+      method: "POST",
+      url: "/auth/password/reset",
+      payload: { token, password: "otra-contrasena-2" },
+    });
     expect(reset.statusCode).toBe(204);
     expect((await call(cookie, "GET", "/auth/me")).statusCode).toBe(401);
     expect((await login("rec-a@x.com", "otra-contrasena-2")).res.statusCode).toBe(200);
-    const reuse = await app.inject({ method: "POST", url: "/auth/password/reset", payload: { token, password: "tercera-contrasena-3" } });
+    const reuse = await app.inject({
+      method: "POST",
+      url: "/auth/password/reset",
+      payload: { token, password: "tercera-contrasena-3" },
+    });
     expect(reuse.statusCode).toBe(400);
   });
   it("no revela si el correo existe", async () => {
     const before = mails.length;
-    const res = await app.inject({ method: "POST", url: "/auth/password/forgot", payload: { email: "fantasma@x.com" } });
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/password/forgot",
+      payload: { email: "fantasma@x.com" },
+    });
     expect(res.statusCode).toBe(204);
     expect(mails.length).toBe(before);
   });

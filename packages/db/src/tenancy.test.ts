@@ -43,7 +43,9 @@ describe("RLS", () => {
   it("no se puede leer ni modificar el tenant ajeno", async () => {
     const t = await withTenant(prisma, a, (tx) => tx.tenant.findMany());
     expect(t.map((x) => x.slug)).toEqual(["a"]);
-    const r = await withTenant(prisma, a, (tx) => tx.tenant.updateMany({ where: { id: b }, data: { name: "hack" } }));
+    const r = await withTenant(prisma, a, (tx) =>
+      tx.tenant.updateMany({ where: { id: b }, data: { name: "hack" } }),
+    );
     expect(r.count).toBe(0);
   });
 });

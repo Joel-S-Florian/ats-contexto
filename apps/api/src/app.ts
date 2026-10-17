@@ -20,16 +20,31 @@ export interface AppDeps {
   loginRateLimit?: number;
 }
 
-export function buildApp({ webOrigin, checks, prisma, mailer, logger = true, loginRateLimit = 10 }: AppDeps) {
+export function buildApp({
+  webOrigin,
+  checks,
+  prisma,
+  mailer,
+  logger = true,
+  loginRateLimit = 10,
+}: AppDeps) {
   const app = Fastify({ logger: logger ? loggerOptions : false });
-  app.register(cors, { origin: webOrigin, credentials: true, methods: ["GET", "POST", "PATCH", "DELETE"] });
+  app.register(cors, {
+    origin: webOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+  });
   app.register(cookie);
   app.register(rateLimit, { global: false });
 
   app.setErrorHandler((err: Error, _req, reply) => {
-    if (err instanceof ZodError) return reply.code(400).send({ error: "Datos inválidos", issues: err.issues.map((i) => i.message) });
+    if (err instanceof ZodError)
+      return reply
+        .code(400)
+        .send({ error: "Datos inválidos", issues: err.issues.map((i) => i.message) });
     if (err instanceof HttpError) return reply.code(err.statusCode).send({ error: err.message });
-    if ((err as { statusCode?: number }).statusCode === 429) return reply.code(429).send({ error: "Demasiados intentos, espera un momento" });
+    if ((err as { statusCode?: number }).statusCode === 429)
+      return reply.code(429).send({ error: "Demasiados intentos, espera un momento" });
     app.log.error({ err: err.message }, "error no controlado");
     return reply.code(500).send({ error: "Error interno" });
   });

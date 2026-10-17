@@ -13,7 +13,9 @@ export async function migrateAndGrant(adminUrl: string, appPassword = "ats_app")
   const c = new pg.Client({ connectionString: adminUrl });
   await c.connect();
   try {
-    for (const dir of readdirSync(migrationsDir).filter((d) => /^\d/.test(d)).sort()) {
+    for (const dir of readdirSync(migrationsDir)
+      .filter((d) => /^\d/.test(d))
+      .sort()) {
       await c.query(readFileSync(join(migrationsDir, dir, "migration.sql"), "utf8"));
     }
     await c.query(`DO $$ BEGIN
