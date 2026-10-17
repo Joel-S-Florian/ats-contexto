@@ -4,7 +4,7 @@ export const css = `
 :host { all: initial; display: block; }
 * { box-sizing: border-box; }
 .w {
-  --accent: var(--ats-accent, #4f46e5);
+  --accent: var(--ats-accent, #5846e6);
   --accent-soft: color-mix(in srgb, var(--accent) 10%, white);
   --text: #101828; --muted: #667085; --border: #e4e7ec; --surface: #fff; --bg: #f7f8fa;
   --danger: #c0322b; --danger-soft: #fdecea; --success: #12875a; --success-soft: #e7f6ef;

@@ -9,6 +9,7 @@
   padding: 0.55rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 400;
+  box-shadow: var(--shadow-sm);
   transition:
     border-color var(--dur-ui) ease,
     box-shadow var(--dur-ui) ease;
@@ -40,8 +41,11 @@
   transform: scale(0.97);
 }
 .btn-primary {
-  background: var(--accent);
+  background: var(--gradient);
   color: var(--accent-contrast);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 1px 2px rgb(30 27 75 / 0.25);
 }
 .btn-ghost {
   border: 1px solid var(--border);
@@ -59,7 +63,10 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover {
-    background: var(--accent-hover);
+    filter: brightness(1.07);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      var(--shadow-glow);
   }
   .btn-ghost:hover {
     background: var(--surface-2);

@@ -7,5 +7,9 @@
   "scripts": {
     "typecheck": "tsc -p .",
     "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@ats/shared": "workspace:*",
+    "zod": "^4.6.7"
   }
 }

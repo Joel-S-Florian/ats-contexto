@@ -18,6 +18,7 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --radius-card: var(--radius-lg);
+  --shadow-card: var(--shadow-sm);
 }
 
 html {
@@ -27,10 +28,26 @@ html[data-theme="dark"] {
   color-scheme: dark;
 }
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(
+      1200px 500px at 85% -10%,
+      color-mix(in srgb, var(--accent) 9%, transparent),
+      transparent 60%
+    ),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-inter), var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
+}
+h1,
+h2 {
+  letter-spacing: -0.02em;
+}
+::selection {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -103,6 +120,70 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .rise,
   .skeleton::after {
+    animation: none;
+  }
+}
+
+/* Elevacion de tarjetas y marca */
+.rounded-card {
+  transition:
+    box-shadow var(--dur-ui) ease,
+    border-color var(--dur-ui) ease;
+}
+.brand-mark {
+  background: var(--gradient);
+  box-shadow: var(--shadow-glow);
+  color: #fff;
+}
+.glass {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+.text-gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Navegacion: indicador lateral que entra con resorte suave */
+.nav-link {
+  position: relative;
+}
+.nav-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--gradient);
+  animation: bar var(--dur-enter) var(--ease-out) both;
+  transform-origin: center;
+}
+@keyframes bar {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* KPI */
+.kpi-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.divider-fade {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-link[aria-current="page"]::before {
     animation: none;
   }
 }

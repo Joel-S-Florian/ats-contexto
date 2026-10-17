@@ -309,7 +309,14 @@ importers:
         specifier: ^30.1.3
         version: 30.1.3
 
-  packages/ai: {}
+  packages/ai:
+    dependencies:
+      '@ats/shared':
+        specifier: workspace:*
+        version: link:../shared
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/db:
     dependencies:
