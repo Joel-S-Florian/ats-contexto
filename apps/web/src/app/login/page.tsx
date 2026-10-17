@@ -1,29 +1,41 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Briefcase, Loader2, LogIn } from "lucide-react";
+import { AlertCircle, Briefcase, Loader2, LogIn, Zap } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
+
+// Solo desarrollo: cuentas del seed (packages/db/src/seed.ts). Next elimina este bloque en el build de produccion.
+const QUICK =
+  process.env.NODE_ENV !== "production"
+    ? [
+        { label: "Administrador", email: "admin@demo.test" },
+        { label: "Reclutador", email: "recruiter@demo.test" },
+        { label: "Responsable de área", email: "area_manager@demo.test" },
+        { label: "Operador (super admin)", email: "root@demo.test" },
+      ]
+    : [];
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
+  async function signIn(email: string, password: string) {
     setLoading(true);
     setError(null);
     try {
-      await api("/auth/login", {
-        method: "POST",
-        body: { email: form.get("email"), password: form.get("password") },
-      });
+      await api("/auth/login", { method: "POST", body: { email, password } });
       router.replace("/");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "No se pudo conectar con el servidor");
       setLoading(false);
     }
+  }
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    void signIn(String(form.get("email")), String(form.get("password")));
   }
 
   return (
@@ -77,6 +89,30 @@ export default function LoginPage() {
             Entrar
           </button>
         </form>
+        {QUICK.length > 0 && (
+          <div
+            className="rise mt-4 rounded-card border border-dashed border-border p-4"
+            style={{ "--i": 2 } as React.CSSProperties}
+          >
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted">
+              <Zap size={14} />
+              Acceso rápido de desarrollo
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {QUICK.map((q) => (
+                <button
+                  key={q.email}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => signIn(q.email, "demo-demo-1234")}
+                  className="btn-ghost !px-2 !py-2 text-xs"
+                >
+                  {q.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
