@@ -108,6 +108,16 @@ export async function seed(prisma: PrismaClient) {
       const pipeline = await ensureDefaultPipeline(tx, tenant.id);
       // Solo la empresa de demostración trae vacantes publicadas; "norte" queda vacía para probar aislamiento.
       if (slug !== "demo") continue;
+      // Clave publica fija de desarrollo para el sitio de pruebas (apps/demo-site). Nunca en produccion.
+      await tx.apiKey.create({
+        data: {
+          tenantId: tenant.id,
+          kind: "public",
+          label: "Sitio de pruebas",
+          publicKey: "pk_demo_local_0001",
+          allowedOrigins: ["http://localhost:3100"],
+        },
+      });
       for (const d of demoVacancies) {
         await tx.vacancy.create({
           data: {

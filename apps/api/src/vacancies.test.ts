@@ -221,7 +221,10 @@ describe("API pública /public/v1/jobs", () => {
     bId = await publish(adminB, { title: "Vacante de B" });
   });
 
-  const get = (qs: string) => t.app.inject(`/public/v1/jobs?${qs}`);
+  const get = (qs: string) =>
+    t.app.inject({ url: `/public/v1/jobs?${qs}`, headers: { "x-public-key": t.keys.a } });
+  const detail = (url: string, key = t.keys.a) =>
+    t.app.inject({ url, headers: { "x-public-key": key } });
   const titles = (res: { json: () => { items: { title: string }[] } }) =>
     res
       .json()
@@ -229,42 +232,43 @@ describe("API pública /public/v1/jobs", () => {
       .sort();
 
   it("solo lista vacantes publicadas del tenant, sin borradores ni de otras empresas", async () => {
-    const res = await get("tenant=a");
+    const res = await get("");
     expect(res.statusCode).toBe(200);
     expect(titles(res)).toEqual(["Contador", "Diseñador UX"]);
     expect(res.json().company).toBe("Empresa A");
     expect(JSON.stringify(res.json())).not.toContain("Vacante de B");
   });
   it("filtra por texto (título y skills), ubicación, modalidad, tipo, nivel y departamento", async () => {
-    expect(titles(await get("tenant=a&q=figma"))).toEqual(["Diseñador UX"]);
-    expect(titles(await get("tenant=a&q=contad"))).toEqual(["Contador"]);
-    expect(titles(await get("tenant=a&location=santiago"))).toEqual(["Contador"]);
-    expect(titles(await get("tenant=a&mode=remote"))).toEqual(["Diseñador UX"]);
-    expect(titles(await get("tenant=a&type=part_time"))).toEqual(["Contador"]);
-    expect(titles(await get("tenant=a&level=junior"))).toEqual(["Diseñador UX"]);
-    expect(titles(await get("tenant=a&department=finanzas"))).toEqual(["Contador"]);
-    expect(titles(await get("tenant=a&since=2999-01-01"))).toEqual([]);
+    expect(titles(await get("q=figma"))).toEqual(["Diseñador UX"]);
+    expect(titles(await get("q=contad"))).toEqual(["Contador"]);
+    expect(titles(await get("location=santiago"))).toEqual(["Contador"]);
+    expect(titles(await get("mode=remote"))).toEqual(["Diseñador UX"]);
+    expect(titles(await get("type=part_time"))).toEqual(["Contador"]);
+    expect(titles(await get("level=junior"))).toEqual(["Diseñador UX"]);
+    expect(titles(await get("department=finanzas"))).toEqual(["Contador"]);
+    expect(titles(await get("since=2999-01-01"))).toEqual([]);
   });
   it("pagina y valida parámetros", async () => {
-    const p1 = (await get("tenant=a&pageSize=1&page=1")).json();
+    const p1 = (await get("pageSize=1&page=1")).json();
     expect(p1).toMatchObject({ total: 2, pageSize: 1 });
     expect(p1.items).toHaveLength(1);
-    expect((await get("tenant=a&mode=nave")).statusCode).toBe(400);
-    expect((await get("tenant=inexistente")).statusCode).toBe(404);
+    expect((await get("mode=nave")).statusCode).toBe(400);
+    expect((await t.app.inject("/public/v1/jobs")).statusCode).toBe(401);
+    expect((await detail("/public/v1/jobs", "pk_nope")).statusCode).toBe(401);
   });
   it("no filtra datos internos y respeta el salario oculto", async () => {
-    const body = JSON.stringify((await get("tenant=a")).json());
+    const body = JSON.stringify((await get("")).json());
     for (const k of ["ownerId", "evaluator", "knockout", "scoring", "pipelineId", "tenantId"])
       expect(body).not.toContain(k);
-    const items = (await get("tenant=a")).json().items as { title: string; salaryMin?: number }[];
+    const items = (await get("")).json().items as { title: string; salaryMin?: number }[];
     expect(items.find((i) => i.title === "Diseñador UX")?.salaryMin).toBe(60000);
     expect(items.find((i) => i.title === "Contador")).not.toHaveProperty("salaryMin");
   });
   it("detalle y JSON-LD solo de vacantes publicadas del tenant indicado", async () => {
-    expect((await t.app.inject(`/public/v1/jobs/${remoteId}?tenant=a`)).statusCode).toBe(200);
-    expect((await t.app.inject(`/public/v1/jobs/${remoteId}?tenant=b`)).statusCode).toBe(404);
-    expect((await t.app.inject(`/public/v1/jobs/${bId}?tenant=a`)).statusCode).toBe(404);
-    const ld = await t.app.inject(`/public/v1/jobs/${remoteId}/jsonld?tenant=a`);
+    expect((await detail(`/public/v1/jobs/${remoteId}`)).statusCode).toBe(200);
+    expect((await detail(`/public/v1/jobs/${remoteId}`, t.keys.b)).statusCode).toBe(404);
+    expect((await detail(`/public/v1/jobs/${bId}`)).statusCode).toBe(404);
+    const ld = await detail(`/public/v1/jobs/${remoteId}/jsonld`);
     expect(ld.headers["content-type"]).toMatch(/application\/ld\+json/);
     expect(ld.json()).toMatchObject({
       "@type": "JobPosting",
@@ -276,16 +280,31 @@ describe("API pública /public/v1/jobs", () => {
   });
   it("una vacante pausada o vencida desaparece de la búsqueda", async () => {
     await t.call(recA, "POST", `/vacancies/${remoteId}/status`, { status: "paused" });
-    expect(titles(await get("tenant=a&q=figma"))).toEqual([]);
-    expect((await t.app.inject(`/public/v1/jobs/${remoteId}?tenant=a`)).statusCode).toBe(404);
+    expect(titles(await get("q=figma"))).toEqual([]);
+    expect((await detail(`/public/v1/jobs/${remoteId}`)).statusCode).toBe(404);
   });
-  it("CORS abierto solo en la API pública, sin credenciales", async () => {
-    const pub = await t.app.inject({
-      url: "/public/v1/jobs?tenant=a",
-      headers: { origin: "https://cliente.com" },
+  it("CORS: solo se refleja un origen autorizado por alguna clave activa", async () => {
+    const ok = await t.app.inject({
+      url: "/public/v1/jobs",
+      headers: { origin: t.origins.a, "x-public-key": t.keys.a },
     });
-    expect(pub.headers["access-control-allow-origin"]).toBe("*");
-    expect(pub.headers["access-control-allow-credentials"]).toBeUndefined();
+    expect(ok.headers["access-control-allow-origin"]).toBe(t.origins.a);
+    expect(ok.headers["access-control-allow-credentials"]).toBeUndefined();
+    const evil = await t.app.inject({
+      url: "/public/v1/jobs",
+      headers: { origin: "https://evil.com", "x-public-key": t.keys.a },
+    });
+    expect(evil.headers["access-control-allow-origin"]).toBeUndefined();
+    expect(evil.statusCode).toBe(403);
+    // la clave de A no sirve desde el origen de B
+    expect(
+      (
+        await t.app.inject({
+          url: "/public/v1/jobs",
+          headers: { origin: t.origins.b, "x-public-key": t.keys.a },
+        })
+      ).statusCode,
+    ).toBe(403);
     const priv = await t.app.inject({ url: "/vacancies", headers: { origin: "https://evil.com" } });
     expect(priv.headers["access-control-allow-origin"]).not.toBe("https://evil.com");
   });

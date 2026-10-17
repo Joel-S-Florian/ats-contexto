@@ -105,7 +105,7 @@ export const vacancyPatchSchema = z.record(z.string(), z.unknown());
 
 /** Filtros de la búsqueda pública (docs/01-producto.md 4.2). */
 export const jobSearchSchema = z.object({
-  tenant: z.string().min(1),
+  key: z.string().optional(),
   q: z.string().trim().max(100).optional(),
   location: z.string().trim().max(80).optional(),
   mode: z.enum(workModes).optional(),

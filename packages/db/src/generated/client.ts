@@ -104,3 +104,33 @@ export type VacancySkill = Prisma.VacancySkillModel;
  *
  */
 export type VacancyEvaluator = Prisma.VacancyEvaluatorModel;
+/**
+ * Model ApiKey
+ *
+ */
+export type ApiKey = Prisma.ApiKeyModel;
+/**
+ * Model Candidate
+ *
+ */
+export type Candidate = Prisma.CandidateModel;
+/**
+ * Model Application
+ *
+ */
+export type Application = Prisma.ApplicationModel;
+/**
+ * Model ApplicationStageHistory
+ *
+ */
+export type ApplicationStageHistory = Prisma.ApplicationStageHistoryModel;
+/**
+ * Model Document
+ *
+ */
+export type Document = Prisma.DocumentModel;
+/**
+ * Model ConsentRecord
+ *
+ */
+export type ConsentRecord = Prisma.ConsentRecordModel;

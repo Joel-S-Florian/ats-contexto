@@ -53,8 +53,11 @@ describe("RLS", () => {
   it("el seed crea dos tenants aislados con vacantes solo en la empresa demo", async () => {
     await seed(prisma);
     await seed(prisma); // idempotente
-    const ids = await withPlatform(prisma, (tx) => tx.tenant.findMany({ where: { slug: { in: ["demo", "norte"] } } }));
-    const count = (slug: string) => withTenant(prisma, ids.find((t) => t.slug === slug)!.id, (tx) => tx.vacancy.count());
+    const ids = await withPlatform(prisma, (tx) =>
+      tx.tenant.findMany({ where: { slug: { in: ["demo", "norte"] } } }),
+    );
+    const count = (slug: string) =>
+      withTenant(prisma, ids.find((t) => t.slug === slug)!.id, (tx) => tx.vacancy.count());
     expect(await count("demo")).toBe(5);
     expect(await count("norte")).toBe(0);
   });

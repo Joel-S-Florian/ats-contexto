@@ -3,6 +3,8 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
 import { ZodError } from "zod";
+import multipart from "@fastify/multipart";
+import { MAX_CV_BYTES } from "@ats/shared";
 import type { PrismaClient } from "@ats/db";
 import { loggerOptions } from "./logger.js";
 import { HttpError } from "./auth/plugin.js";
@@ -11,6 +13,14 @@ import { adminRoutes } from "./routes/admin.js";
 import { pipelineRoutes } from "./routes/pipelines.js";
 import { vacancyRoutes } from "./routes/vacancies.js";
 import { publicRoutes } from "./routes/public.js";
+import { apiKeyRoutes, panelApplicationRoutes } from "./routes/panel-applications.js";
+import { publicApplicationRoutes } from "./routes/applications-public.js";
+import { originAllowed } from "./services/keys.js";
+import { createIngestHandler } from "./services/ingest.js";
+import { devCaptcha, type CaptchaVerifier } from "./ports/captcha.js";
+import { memoryQueue, type JobQueue } from "./ports/queue.js";
+import { eicarScanner, type VirusScanner } from "./ports/scanner.js";
+import { localBlobStore, type BlobStore } from "./ports/storage.js";
 import type { Mailer } from "./mailer.js";
 
 export type HealthCheck = () => Promise<void>;
@@ -21,6 +31,11 @@ export interface AppDeps {
   mailer: Mailer;
   logger?: boolean;
   loginRateLimit?: number;
+  publicRateLimit?: number;
+  store?: BlobStore;
+  scanner?: VirusScanner;
+  captcha?: CaptchaVerifier;
+  queue?: JobQueue;
 }
 
 export function buildApp({
@@ -30,23 +45,39 @@ export function buildApp({
   mailer,
   logger = true,
   loginRateLimit = 10,
+  publicRateLimit = 10,
+  store = localBlobStore(".data/files"),
+  scanner = eicarScanner,
+  captcha = devCaptcha,
+  queue = memoryQueue(createIngestHandler({ prisma, store, mailer })),
 }: AppDeps) {
   const app = Fastify({ logger: logger ? loggerOptions : false });
   app.register(cors, {
-    // Datos publicos (solo lectura, sin credenciales) para cualquier origen; el resto, solo el panel.
-    delegator: (req, cb) =>
-      cb(
-        null,
-        req.url.startsWith("/public/")
-          ? { origin: "*" }
-          : {
-              origin: webOrigin,
-              credentials: true,
-              methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-            },
-      ),
+    // Widget: se refleja el origen solo si alguna clave publica activa lo permite. Panel: solo webOrigin con credenciales.
+    delegator: (req, cb) => {
+      if (!req.url.startsWith("/public/")) {
+        return cb(null, {
+          origin: webOrigin,
+          credentials: true,
+          methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        });
+      }
+      const origin = req.headers.origin;
+      const base = {
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["content-type", "x-public-key"],
+      };
+      if (!origin) return cb(null, { ...base, origin: false });
+      originAllowed(prisma, origin).then(
+        (ok) => cb(null, { ...base, origin: ok ? origin : false }),
+        (err) => cb(err, { ...base, origin: false }),
+      );
+    },
   });
   app.register(cookie);
+  app.register(multipart, {
+    limits: { fileSize: MAX_CV_BYTES, files: 1, fields: 30, fieldSize: 10_000 },
+  });
   app.register(rateLimit, { global: false });
 
   app.setErrorHandler((err: Error, _req, reply) => {
@@ -57,6 +88,12 @@ export function buildApp({
     if (err instanceof HttpError) return reply.code(err.statusCode).send({ error: err.message });
     if ((err as { statusCode?: number }).statusCode === 429)
       return reply.code(429).send({ error: "Demasiados intentos, espera un momento" });
+    const code = (err as { code?: string }).code;
+    if (code === "FST_REQ_FILE_TOO_LARGE")
+      return reply.code(413).send({ error: "El CV supera el tamaño máximo de 5 MB" });
+    const status = (err as { statusCode?: number }).statusCode;
+    if (status && status >= 400 && status < 500)
+      return reply.code(status).send({ error: "Solicitud inválida" });
     app.log.error({ err: err.message }, "error no controlado");
     return reply.code(500).send({ error: "Error interno" });
   });
@@ -84,7 +121,24 @@ export function buildApp({
     pipelineRoutes(scope, { prisma, authenticate });
     vacancyRoutes(scope, { prisma, authenticate });
     publicRoutes(scope, { prisma });
+    publicApplicationRoutes(scope, {
+      prisma,
+      store,
+      scanner,
+      captcha,
+      queue: () => queue,
+      rateLimit: publicRateLimit,
+    });
+    apiKeyRoutes(scope, { prisma, authenticate });
+    panelApplicationRoutes(scope, { prisma, authenticate });
   });
 
+  app.decorate("queue", queue);
   return app;
+}
+
+declare module "fastify" {
+  interface FastifyInstance {
+    queue: JobQueue;
+  }
 }

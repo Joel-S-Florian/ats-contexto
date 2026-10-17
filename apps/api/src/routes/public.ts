@@ -1,17 +1,9 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { withPlatform, withTenant, type Prisma, type PrismaClient } from "@ats/db";
+import { withTenant, type Prisma, type PrismaClient } from "@ats/db";
 import { jobSearchSchema } from "@ats/shared";
 import { HttpError } from "../auth/plugin.js";
-
-// shortcut: el tenant se resuelve por `tenant=<slug>`; en la Fase 3 pasa a la clave publica (ApiKey) con origenes permitidos.
-async function resolveTenant(prisma: PrismaClient, slug: string) {
-  const tenant = await withPlatform(prisma, (tx) =>
-    tx.tenant.findFirst({ where: { slug, status: "active" } }),
-  );
-  if (!tenant) throw new HttpError(404, "Empresa no encontrada");
-  return tenant;
-}
+import { resolvePublicKey } from "../services/keys.js";
 
 const publishedNow = (tenantId: string): Prisma.VacancyWhereInput => ({
   tenantId,
@@ -68,7 +60,7 @@ const schemaOrgType = {
 export function publicRoutes(app: FastifyInstance, { prisma }: { prisma: PrismaClient }) {
   app.get("/public/v1/jobs", async (req) => {
     const q = jobSearchSchema.parse(req.query);
-    const tenant = await resolveTenant(prisma, q.tenant);
+    const tenant = await resolvePublicKey(prisma, req);
     const and: Prisma.VacancyWhereInput[] = [];
     if (q.q) {
       const contains = { contains: q.q, mode: "insensitive" as const };
@@ -110,10 +102,9 @@ export function publicRoutes(app: FastifyInstance, { prisma }: { prisma: PrismaC
     });
   });
 
-  const detail = async (req: { params: unknown; query: unknown }) => {
+  const detail = async (req: FastifyRequest) => {
     const { id } = z.object({ id: z.string().uuid() }).parse(req.params);
-    const { tenant: slug } = z.object({ tenant: z.string().min(1) }).parse(req.query);
-    const tenant = await resolveTenant(prisma, slug);
+    const tenant = await resolvePublicKey(prisma, req);
     const v = await withTenant(prisma, tenant.id, (tx) =>
       tx.vacancy.findFirst({ where: { id, ...publishedNow(tenant.id) }, select: publicSelect }),
     );

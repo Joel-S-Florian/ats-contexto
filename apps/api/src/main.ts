@@ -3,6 +3,9 @@ import { createPrisma } from "@ats/db";
 import { apiEnvSchema, parseEnv } from "@ats/shared";
 import { buildApp, type HealthCheck } from "./app.js";
 import { consoleMailer } from "./mailer.js";
+import { devCaptcha, turnstileVerifier } from "./ports/captcha.js";
+import { clamdScanner, eicarScanner } from "./ports/scanner.js";
+import { localBlobStore } from "./ports/storage.js";
 
 const env = parseEnv(apiEnvSchema, process.env);
 
@@ -28,6 +31,10 @@ const app = buildApp({
   webOrigin: env.WEB_ORIGIN,
   prisma,
   mailer: consoleMailer,
+  store: localBlobStore(env.FILE_STORAGE_DIR),
+  captcha:
+    env.CAPTCHA_PROVIDER === "turnstile" ? turnstileVerifier(env.TURNSTILE_SECRET!) : devCaptcha,
+  scanner: env.AV_PROVIDER === "clamav" ? clamdScanner(env.CLAMD_HOST) : eicarScanner,
   checks: {
     database: async () => void (await prisma.$queryRaw`select 1`),
     redis: tcp(env.REDIS_URL),

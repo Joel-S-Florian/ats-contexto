@@ -88,3 +88,47 @@ export const StageType = {
 } as const;
 
 export type StageType = (typeof StageType)[keyof typeof StageType];
+
+export const ApiKeyKind = {
+  public: "public",
+  secret: "secret",
+} as const;
+
+export type ApiKeyKind = (typeof ApiKeyKind)[keyof typeof ApiKeyKind];
+
+export const ApplicationStatus = {
+  received: "received",
+  screening: "screening",
+  shortlisted: "shortlisted",
+  in_review: "in_review",
+  low_fit: "low_fit",
+  knocked_out: "knocked_out",
+  interview: "interview",
+  assessment: "assessment",
+  selection: "selection",
+  selected: "selected",
+  not_selected: "not_selected",
+  on_hold: "on_hold",
+  hired: "hired",
+  withdrawn: "withdrawn",
+} as const;
+
+export type ApplicationStatus = (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
+
+export const ProcessingStatus = {
+  pending: "pending",
+  extracting: "extracting",
+  ready: "ready",
+  unreadable: "unreadable",
+  failed: "failed",
+} as const;
+
+export type ProcessingStatus = (typeof ProcessingStatus)[keyof typeof ProcessingStatus];
+
+export const ScanStatus = {
+  pending: "pending",
+  clean: "clean",
+  infected: "infected",
+} as const;
+
+export type ScanStatus = (typeof ScanStatus)[keyof typeof ScanStatus];

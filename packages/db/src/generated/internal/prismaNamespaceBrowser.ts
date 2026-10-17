@@ -60,6 +60,12 @@ export const ModelName = {
   Vacancy: "Vacancy",
   VacancySkill: "VacancySkill",
   VacancyEvaluator: "VacancyEvaluator",
+  ApiKey: "ApiKey",
+  Candidate: "Candidate",
+  Application: "Application",
+  ApplicationStageHistory: "ApplicationStageHistory",
+  Document: "Document",
+  ConsentRecord: "ConsentRecord",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -241,6 +247,104 @@ export const VacancyEvaluatorScalarFieldEnum = {
 
 export type VacancyEvaluatorScalarFieldEnum =
   (typeof VacancyEvaluatorScalarFieldEnum)[keyof typeof VacancyEvaluatorScalarFieldEnum];
+
+export const ApiKeyScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  kind: "kind",
+  label: "label",
+  publicKey: "publicKey",
+  secretHash: "secretHash",
+  allowedOrigins: "allowedOrigins",
+  revokedAt: "revokedAt",
+  createdAt: "createdAt",
+} as const;
+
+export type ApiKeyScalarFieldEnum =
+  (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum];
+
+export const CandidateScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  email: "email",
+  fullName: "fullName",
+  phone: "phone",
+  location: "location",
+  educationLevel: "educationLevel",
+  yearsExperience: "yearsExperience",
+  skills: "skills",
+  languages: "languages",
+  preferredMode: "preferredMode",
+  availability: "availability",
+  portfolioUrl: "portfolioUrl",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type CandidateScalarFieldEnum =
+  (typeof CandidateScalarFieldEnum)[keyof typeof CandidateScalarFieldEnum];
+
+export const ApplicationScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  candidateId: "candidateId",
+  vacancyId: "vacancyId",
+  trackingId: "trackingId",
+  status: "status",
+  processing: "processing",
+  source: "source",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type ApplicationScalarFieldEnum =
+  (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum];
+
+export const ApplicationStageHistoryScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  fromStatus: "fromStatus",
+  toStatus: "toStatus",
+  actorId: "actorId",
+  automatic: "automatic",
+  reason: "reason",
+  createdAt: "createdAt",
+} as const;
+
+export type ApplicationStageHistoryScalarFieldEnum =
+  (typeof ApplicationStageHistoryScalarFieldEnum)[keyof typeof ApplicationStageHistoryScalarFieldEnum];
+
+export const DocumentScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  storageKey: "storageKey",
+  originalName: "originalName",
+  mimeType: "mimeType",
+  sizeBytes: "sizeBytes",
+  sha256: "sha256",
+  scanStatus: "scanStatus",
+  extractedText: "extractedText",
+  extractStatus: "extractStatus",
+  createdAt: "createdAt",
+} as const;
+
+export type DocumentScalarFieldEnum =
+  (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum];
+
+export const ConsentRecordScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  candidateId: "candidateId",
+  applicationId: "applicationId",
+  noticeVersion: "noticeVersion",
+  ipTruncated: "ipTruncated",
+  acceptedAt: "acceptedAt",
+} as const;
+
+export type ConsentRecordScalarFieldEnum =
+  (typeof ConsentRecordScalarFieldEnum)[keyof typeof ConsentRecordScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

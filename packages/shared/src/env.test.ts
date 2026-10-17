@@ -22,4 +22,17 @@ describe("parseEnv", () => {
     expect(() => parseEnv(apiEnvSchema, bad)).toThrow(/SESSION_SECRET/);
     expect(() => parseEnv(apiEnvSchema, bad)).not.toThrow(/corto/);
   });
+  it("en produccion exige captcha y antivirus reales", () => {
+    expect(() => parseEnv(apiEnvSchema, { ...valid, NODE_ENV: "production" })).toThrow(
+      /CAPTCHA_PROVIDER/,
+    );
+    const ok = {
+      ...valid,
+      NODE_ENV: "production",
+      CAPTCHA_PROVIDER: "turnstile",
+      TURNSTILE_SECRET: "s",
+      AV_PROVIDER: "clamav",
+    };
+    expect(parseEnv(apiEnvSchema, ok).AV_PROVIDER).toBe("clamav");
+  });
 });

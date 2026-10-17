@@ -255,3 +255,151 @@ model VacancyEvaluator {
   @@index([tenantId])
   @@map("vacancy_evaluators")
 }
+
+enum ApiKeyKind {
+  public
+  secret
+}
+
+enum ApplicationStatus {
+  received
+  screening
+  shortlisted
+  in_review
+  low_fit
+  knocked_out
+  interview
+  assessment
+  selection
+  selected
+  not_selected
+  on_hold
+  hired
+  withdrawn
+}
+
+// Estado de procesamiento asincrono (docs/02 seccion 4). analysis_failed nunca descarta: va a revision manual.
+enum ProcessingStatus {
+  pending
+  extracting
+  ready
+  unreadable
+  failed
+}
+
+enum ScanStatus {
+  pending
+  clean
+  infected
+}
+
+// Clave publica (pk_, identifica al tenant en el widget) o secreta (sk_, solo se guarda el hash).
+model ApiKey {
+  id             String     @id @default(uuid()) @db.Uuid
+  tenantId       String     @map("tenant_id") @db.Uuid
+  kind           ApiKeyKind
+  label          String
+  publicKey      String?    @unique @map("public_key")
+  secretHash     String?    @unique @map("secret_hash")
+  allowedOrigins String[]   @map("allowed_origins")
+  revokedAt      DateTime?  @map("revoked_at")
+  createdAt      DateTime   @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("api_keys")
+}
+
+model Candidate {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @map("tenant_id") @db.Uuid
+  email           String
+  fullName        String          @map("full_name")
+  phone           String
+  location        String
+  educationLevel  String          @map("education_level")
+  yearsExperience Int             @map("years_experience")
+  skills          String[]
+  languages       String[]
+  preferredMode   WorkMode?       @map("preferred_mode")
+  availability    String?
+  portfolioUrl    String?         @map("portfolio_url")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  applications    Application[]
+  consents        ConsentRecord[]
+
+  @@unique([tenantId, email])
+  @@map("candidates")
+}
+
+// vacancyId nulo = bolsa general de talento.
+model Application {
+  id          String                    @id @default(uuid()) @db.Uuid
+  tenantId    String                    @map("tenant_id") @db.Uuid
+  candidateId String                    @map("candidate_id") @db.Uuid
+  vacancyId   String?                   @map("vacancy_id") @db.Uuid
+  trackingId  String                    @unique @map("tracking_id")
+  status      ApplicationStatus         @default(received)
+  processing  ProcessingStatus          @default(pending)
+  source      String                    @default("widget")
+  createdAt   DateTime                  @default(now()) @map("created_at")
+  updatedAt   DateTime                  @updatedAt @map("updated_at")
+  candidate   Candidate                 @relation(fields: [candidateId], references: [id])
+  documents   Document[]
+  history     ApplicationStageHistory[]
+  consents    ConsentRecord[]
+
+  @@index([tenantId, vacancyId])
+  @@index([tenantId, candidateId])
+  @@map("applications")
+}
+
+model ApplicationStageHistory {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @map("tenant_id") @db.Uuid
+  applicationId String             @map("application_id") @db.Uuid
+  fromStatus    ApplicationStatus? @map("from_status")
+  toStatus      ApplicationStatus  @map("to_status")
+  actorId       String?            @map("actor_id") @db.Uuid
+  automatic     Boolean            @default(false)
+  reason        String
+  createdAt     DateTime           @default(now()) @map("created_at")
+  application   Application        @relation(fields: [applicationId], references: [id])
+
+  @@index([tenantId, applicationId])
+  @@map("application_stage_history")
+}
+
+model Document {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @map("tenant_id") @db.Uuid
+  applicationId String           @map("application_id") @db.Uuid
+  storageKey    String           @map("storage_key")
+  originalName  String           @map("original_name")
+  mimeType      String           @map("mime_type")
+  sizeBytes     Int              @map("size_bytes")
+  sha256        String
+  scanStatus    ScanStatus       @default(pending) @map("scan_status")
+  extractedText String?          @map("extracted_text")
+  extractStatus ProcessingStatus @default(pending) @map("extract_status")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  application   Application      @relation(fields: [applicationId], references: [id])
+
+  @@index([tenantId, applicationId])
+  @@map("documents")
+}
+
+model ConsentRecord {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @map("tenant_id") @db.Uuid
+  candidateId   String      @map("candidate_id") @db.Uuid
+  applicationId String      @map("application_id") @db.Uuid
+  noticeVersion String      @map("notice_version")
+  ipTruncated   String?     @map("ip_truncated")
+  acceptedAt    DateTime    @default(now()) @map("accepted_at")
+  candidate     Candidate   @relation(fields: [candidateId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@index([tenantId, candidateId])
+  @@map("consent_records")
+}

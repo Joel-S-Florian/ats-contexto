@@ -1,8 +1,10 @@
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createPrisma, migrateAndGrant, startEmbedded, withPlatform, type Role } from "@ats/db";
 import { buildApp } from "./app.js";
 import { hashPassword } from "./auth/crypto.js";
+import { localBlobStore } from "./ports/storage.js";
 
 export const PW = "contrasena-larga-1";
 
@@ -16,19 +18,47 @@ export async function setupTestApp(port: number) {
   const mailer = {
     send: async (to: string, _s: string, text: string) => void mails.push({ to, text }),
   };
-  const app = buildApp({
+  const baseDeps = {
+    store: localBlobStore(mkdtempSync(join(tmpdir(), "ats-files-"))),
     webOrigin: "http://localhost:3000",
     checks: {},
     logger: false,
     prisma,
     mailer,
     loginRateLimit: 1000,
-  });
+    publicRateLimit: 1000,
+  };
+  const app = buildApp(baseDeps);
+  const build = (over: Partial<Parameters<typeof buildApp>[0]>) =>
+    buildApp({ ...baseDeps, ...over });
   const ids: Record<string, string> = {};
   const tenants = await withPlatform(prisma, async (tx) => ({
     a: (await tx.tenant.create({ data: { name: "Empresa A", slug: "a" } })).id,
     b: (await tx.tenant.create({ data: { name: "Empresa B", slug: "b" } })).id,
   }));
+
+  const origins = { a: "https://empleo-a.test", b: "https://empleo-b.test" };
+  const keys = { a: "pk_test_a", b: "pk_test_b" };
+  await withPlatform(prisma, async (tx) => {
+    await tx.apiKey.create({
+      data: {
+        tenantId: tenants.a,
+        kind: "public",
+        label: "A",
+        publicKey: keys.a,
+        allowedOrigins: [origins.a],
+      },
+    });
+    await tx.apiKey.create({
+      data: {
+        tenantId: tenants.b,
+        kind: "public",
+        label: "B",
+        publicKey: keys.b,
+        allowedOrigins: [origins.b],
+      },
+    });
+  });
 
   async function addUser(
     email: string,
@@ -65,7 +95,10 @@ export async function setupTestApp(port: number) {
     prisma,
     mails,
     ids,
+    build,
     tenants,
+    keys,
+    origins,
     addUser,
     login,
     call,
