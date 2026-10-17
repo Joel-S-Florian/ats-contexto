@@ -79,3 +79,28 @@ export type Invitation = Prisma.InvitationModel;
  *
  */
 export type AuditLog = Prisma.AuditLogModel;
+/**
+ * Model Pipeline
+ *
+ */
+export type Pipeline = Prisma.PipelineModel;
+/**
+ * Model PipelineStage
+ *
+ */
+export type PipelineStage = Prisma.PipelineStageModel;
+/**
+ * Model Vacancy
+ *
+ */
+export type Vacancy = Prisma.VacancyModel;
+/**
+ * Model VacancySkill
+ *
+ */
+export type VacancySkill = Prisma.VacancySkillModel;
+/**
+ * Model VacancyEvaluator
+ *
+ */
+export type VacancyEvaluator = Prisma.VacancyEvaluatorModel;

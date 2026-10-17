@@ -22,3 +22,69 @@ export const TenantStatus = {
 } as const;
 
 export type TenantStatus = (typeof TenantStatus)[keyof typeof TenantStatus];
+
+export const VacancyStatus = {
+  draft: "draft",
+  published: "published",
+  paused: "paused",
+  closed: "closed",
+} as const;
+
+export type VacancyStatus = (typeof VacancyStatus)[keyof typeof VacancyStatus];
+
+export const JobCategory = {
+  general: "general",
+  technical: "technical",
+  operational: "operational",
+  administrative: "administrative",
+  managerial: "managerial",
+  junior: "junior",
+} as const;
+
+export type JobCategory = (typeof JobCategory)[keyof typeof JobCategory];
+
+export const ExperienceLevel = {
+  internship: "internship",
+  junior: "junior",
+  semi_senior: "semi_senior",
+  senior: "senior",
+  managerial: "managerial",
+} as const;
+
+export type ExperienceLevel = (typeof ExperienceLevel)[keyof typeof ExperienceLevel];
+
+export const EmploymentType = {
+  full_time: "full_time",
+  part_time: "part_time",
+  contract: "contract",
+  temporary: "temporary",
+  internship: "internship",
+} as const;
+
+export type EmploymentType = (typeof EmploymentType)[keyof typeof EmploymentType];
+
+export const WorkMode = {
+  onsite: "onsite",
+  hybrid: "hybrid",
+  remote: "remote",
+} as const;
+
+export type WorkMode = (typeof WorkMode)[keyof typeof WorkMode];
+
+export const SkillKind = {
+  required: "required",
+  desirable: "desirable",
+} as const;
+
+export type SkillKind = (typeof SkillKind)[keyof typeof SkillKind];
+
+export const StageType = {
+  screening: "screening",
+  interview: "interview",
+  assessment: "assessment",
+  selection: "selection",
+  hiring: "hiring",
+  custom: "custom",
+} as const;
+
+export type StageType = (typeof StageType)[keyof typeof StageType];

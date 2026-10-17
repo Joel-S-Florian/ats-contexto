@@ -5,6 +5,8 @@ export const permissions = {
   "tenants:manage": [],
   "users:manage": ["admin"],
   "vacancies:write": ["admin", "recruiter"],
+  "vacancies:read": ["admin", "recruiter", "area_manager"],
+  "pipelines:manage": ["admin"],
   "candidates:read": ["admin", "recruiter", "area_manager"],
 } as const satisfies Record<string, readonly Role[]>;
 

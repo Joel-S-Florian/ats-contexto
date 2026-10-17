@@ -8,6 +8,9 @@ import { loggerOptions } from "./logger.js";
 import { HttpError } from "./auth/plugin.js";
 import { authRoutes } from "./routes/auth.js";
 import { adminRoutes } from "./routes/admin.js";
+import { pipelineRoutes } from "./routes/pipelines.js";
+import { vacancyRoutes } from "./routes/vacancies.js";
+import { publicRoutes } from "./routes/public.js";
 import type { Mailer } from "./mailer.js";
 
 export type HealthCheck = () => Promise<void>;
@@ -30,9 +33,18 @@ export function buildApp({
 }: AppDeps) {
   const app = Fastify({ logger: logger ? loggerOptions : false });
   app.register(cors, {
-    origin: webOrigin,
-    credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    // Datos publicos (solo lectura, sin credenciales) para cualquier origen; el resto, solo el panel.
+    delegator: (req, cb) =>
+      cb(
+        null,
+        req.url.startsWith("/public/")
+          ? { origin: "*" }
+          : {
+              origin: webOrigin,
+              credentials: true,
+              methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+            },
+      ),
   });
   app.register(cookie);
   app.register(rateLimit, { global: false });
@@ -69,6 +81,9 @@ export function buildApp({
   app.register(async (scope) => {
     const authenticate = authRoutes(scope, { prisma, mailer, webOrigin, loginRateLimit });
     adminRoutes(scope, { prisma, mailer, webOrigin, authenticate });
+    pipelineRoutes(scope, { prisma, authenticate });
+    vacancyRoutes(scope, { prisma, authenticate });
+    publicRoutes(scope, { prisma });
   });
 
   return app;

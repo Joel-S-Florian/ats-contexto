@@ -33,12 +33,12 @@ model Tenant {
 
 // Usuario global (el correo es unico en la plataforma). Pertenece a tenants via Membership.
 model User {
-  id           String       @id @default(uuid()) @db.Uuid
-  email        String       @unique
+  id           String          @id @default(uuid()) @db.Uuid
+  email        String          @unique
   name         String
-  passwordHash String       @map("password_hash")
-  isSuperAdmin Boolean      @default(false) @map("is_super_admin")
-  createdAt    DateTime     @default(now()) @map("created_at")
+  passwordHash String          @map("password_hash")
+  isSuperAdmin Boolean         @default(false) @map("is_super_admin")
+  createdAt    DateTime        @default(now()) @map("created_at")
   memberships  Membership[]
   sessions     Session[]
   resets       PasswordReset[]
@@ -71,12 +71,12 @@ model Session {
 }
 
 model PasswordReset {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  tokenHash String   @unique @map("token_hash")
-  expiresAt DateTime @map("expires_at")
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   @@map("password_resets")
 }
@@ -105,4 +105,153 @@ model AuditLog {
 
   @@index([tenantId, createdAt])
   @@map("audit_logs")
+}
+
+enum VacancyStatus {
+  draft
+  published
+  paused
+  closed
+}
+
+enum JobCategory {
+  general
+  technical
+  operational
+  administrative
+  managerial
+  junior
+}
+
+enum ExperienceLevel {
+  internship
+  junior
+  semi_senior
+  senior
+  managerial
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+  contract
+  temporary
+  internship
+}
+
+enum WorkMode {
+  onsite
+  hybrid
+  remote
+}
+
+enum SkillKind {
+  required
+  desirable
+}
+
+enum StageType {
+  screening
+  interview
+  assessment
+  selection
+  hiring
+  custom
+}
+
+model Pipeline {
+  id        String          @id @default(uuid()) @db.Uuid
+  tenantId  String          @map("tenant_id") @db.Uuid
+  name      String
+  isDefault Boolean         @default(false) @map("is_default")
+  createdAt DateTime        @default(now()) @map("created_at")
+  stages    PipelineStage[]
+  vacancies Vacancy[]
+
+  @@index([tenantId])
+  @@map("pipelines")
+}
+
+model PipelineStage {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  pipelineId String    @map("pipeline_id") @db.Uuid
+  name       String
+  type       StageType
+  position   Int
+  enabled    Boolean   @default(true)
+  // Configuracion propia de la etapa y regla de transicion (manual | umbral | resultado de examen).
+  config     Json      @default("{}")
+  transition Json      @default("{\"mode\":\"manual\"}")
+  pipeline   Pipeline  @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+
+  @@unique([pipelineId, position])
+  @@index([tenantId])
+  @@map("pipeline_stages")
+}
+
+model Vacancy {
+  id                    String             @id @default(uuid()) @db.Uuid
+  tenantId              String             @map("tenant_id") @db.Uuid
+  title                 String
+  department            String
+  summary               String
+  responsibilities      String             @default("")
+  benefits              String             @default("")
+  requirementsRequired  String             @default("") @map("requirements_required")
+  requirementsDesirable String             @default("") @map("requirements_desirable")
+  category              JobCategory        @default(general)
+  level                 ExperienceLevel
+  minYears              Int                @default(0) @map("min_years")
+  minEducation          String?            @map("min_education")
+  languages             String[]
+  employmentType        EmploymentType     @map("employment_type")
+  workMode              WorkMode           @map("work_mode")
+  province              String
+  municipality          String?
+  salaryMin             Int?               @map("salary_min")
+  salaryMax             Int?               @map("salary_max")
+  showSalary            Boolean            @default(false) @map("show_salary")
+  openings              Int                @default(1)
+  status                VacancyStatus      @default(draft)
+  publishedAt           DateTime?          @map("published_at")
+  closesAt              DateTime?          @map("closes_at")
+  pipelineId            String             @map("pipeline_id") @db.Uuid
+  ownerId               String?            @map("owner_id") @db.Uuid
+  knockoutRules         Json               @default("[]") @map("knockout_rules")
+  scoringOverrides      Json?              @map("scoring_overrides")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+  pipeline              Pipeline           @relation(fields: [pipelineId], references: [id])
+  skills                VacancySkill[]
+  evaluators            VacancyEvaluator[]
+
+  @@index([tenantId, status])
+  @@map("vacancies")
+}
+
+model VacancySkill {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @map("tenant_id") @db.Uuid
+  vacancyId String    @map("vacancy_id") @db.Uuid
+  name      String
+  kind      SkillKind
+  vacancy   Vacancy   @relation(fields: [vacancyId], references: [id], onDelete: Cascade)
+
+  @@unique([vacancyId, name])
+  @@index([tenantId])
+  @@map("vacancy_skills")
+}
+
+// Personas asignadas a una vacante (responsable de area, evaluadores). Deja listo el comite futuro.
+model VacancyEvaluator {
+  id        String  @id @default(uuid()) @db.Uuid
+  tenantId  String  @map("tenant_id") @db.Uuid
+  vacancyId String  @map("vacancy_id") @db.Uuid
+  userId    String  @map("user_id") @db.Uuid
+  vacancy   Vacancy @relation(fields: [vacancyId], references: [id], onDelete: Cascade)
+
+  @@unique([vacancyId, userId])
+  @@index([tenantId])
+  @@map("vacancy_evaluators")
 }

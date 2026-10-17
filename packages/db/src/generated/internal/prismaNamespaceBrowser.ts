@@ -55,6 +55,11 @@ export const ModelName = {
   PasswordReset: "PasswordReset",
   Invitation: "Invitation",
   AuditLog: "AuditLog",
+  Pipeline: "Pipeline",
+  PipelineStage: "PipelineStage",
+  Vacancy: "Vacancy",
+  VacancySkill: "VacancySkill",
+  VacancyEvaluator: "VacancyEvaluator",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -153,12 +158,110 @@ export const AuditLogScalarFieldEnum = {
 export type AuditLogScalarFieldEnum =
   (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum];
 
+export const PipelineScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  name: "name",
+  isDefault: "isDefault",
+  createdAt: "createdAt",
+} as const;
+
+export type PipelineScalarFieldEnum =
+  (typeof PipelineScalarFieldEnum)[keyof typeof PipelineScalarFieldEnum];
+
+export const PipelineStageScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  pipelineId: "pipelineId",
+  name: "name",
+  type: "type",
+  position: "position",
+  enabled: "enabled",
+  config: "config",
+  transition: "transition",
+} as const;
+
+export type PipelineStageScalarFieldEnum =
+  (typeof PipelineStageScalarFieldEnum)[keyof typeof PipelineStageScalarFieldEnum];
+
+export const VacancyScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  title: "title",
+  department: "department",
+  summary: "summary",
+  responsibilities: "responsibilities",
+  benefits: "benefits",
+  requirementsRequired: "requirementsRequired",
+  requirementsDesirable: "requirementsDesirable",
+  category: "category",
+  level: "level",
+  minYears: "minYears",
+  minEducation: "minEducation",
+  languages: "languages",
+  employmentType: "employmentType",
+  workMode: "workMode",
+  province: "province",
+  municipality: "municipality",
+  salaryMin: "salaryMin",
+  salaryMax: "salaryMax",
+  showSalary: "showSalary",
+  openings: "openings",
+  status: "status",
+  publishedAt: "publishedAt",
+  closesAt: "closesAt",
+  pipelineId: "pipelineId",
+  ownerId: "ownerId",
+  knockoutRules: "knockoutRules",
+  scoringOverrides: "scoringOverrides",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type VacancyScalarFieldEnum =
+  (typeof VacancyScalarFieldEnum)[keyof typeof VacancyScalarFieldEnum];
+
+export const VacancySkillScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  vacancyId: "vacancyId",
+  name: "name",
+  kind: "kind",
+} as const;
+
+export type VacancySkillScalarFieldEnum =
+  (typeof VacancySkillScalarFieldEnum)[keyof typeof VacancySkillScalarFieldEnum];
+
+export const VacancyEvaluatorScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  vacancyId: "vacancyId",
+  userId: "userId",
+} as const;
+
+export type VacancyEvaluatorScalarFieldEnum =
+  (typeof VacancyEvaluatorScalarFieldEnum)[keyof typeof VacancyEvaluatorScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
 } as const;
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull,
+} as const;
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+} as const;
+
+export type NullableJsonNullValueInput =
+  (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
 
 export const QueryMode = {
   default: "default",
@@ -173,3 +276,11 @@ export const NullsOrder = {
 } as const;
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull,
+} as const;
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
