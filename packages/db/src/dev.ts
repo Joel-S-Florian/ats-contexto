@@ -8,10 +8,10 @@ const dir = join(process.cwd(), ".data", "pg");
 const e = await startEmbedded(dir, 5433);
 try {
   await e.createDb("ats");
-  await migrateAndGrant(e.adminUrl("ats"));
 } catch {
-  // la base ya existe de una ejecucion anterior: las migraciones solo se aplican la primera vez
+  // la base ya existe de una ejecucion anterior
 }
+await migrateAndGrant(e.adminUrl("ats")); // idempotente: aplica solo las migraciones pendientes
 const prisma = createPrisma(e.appUrl("ats"));
 await seed(prisma);
 console.log(`DATABASE_URL=${e.appUrl("ats")}`);

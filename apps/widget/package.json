@@ -7,9 +7,13 @@
     "dev": "esbuild src/index.ts --bundle --format=iife --outfile=dist/widget.js --watch",
     "build": "esbuild src/index.ts --bundle --minify --format=iife --outfile=dist/widget.js",
     "typecheck": "tsc -p .",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.1.3"
+  },
+  "dependencies": {
+    "@ats/shared": "workspace:*"
   }
 }

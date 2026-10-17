@@ -15,16 +15,8 @@ export const noticeText = {
   ],
 };
 
-export const educationLevels = [
-  "Secundaria",
-  "Técnico",
-  "Grado universitario",
-  "Postgrado",
-  "Maestría",
-  "Doctorado",
-] as const;
-
-export const MAX_CV_BYTES = 5 * 1024 * 1024;
+import { educationLevels } from "./labels";
+export { educationLevels, MAX_CV_BYTES } from "./labels";
 
 const text = (max: number) => z.string().trim().max(max);
 const list = z
