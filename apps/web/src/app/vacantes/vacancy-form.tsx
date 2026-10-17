@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Pause, Play, Save, XCircle } from "lucide-react";
+import { Loader2, Pause, Play, Save, Workflow, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { employmentTypes, experienceLevels, jobCategories, labels, workModes } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
@@ -211,7 +212,17 @@ export function VacancyEditor({ id }: { id?: string }) {
       <PageHeader
         title={id ? form.title || "Vacante" : "Nueva vacante"}
         subtitle={id ? undefined : "Se guarda como borrador; publícala cuando esté lista."}
-        action={id && <Badge tone={statusTone[status]}>{labels.status[status]}</Badge>}
+        action={
+          id && (
+            <div className="flex items-center gap-2">
+              <Link href={`/vacantes/${id}/embudo`} className="btn-ghost">
+                <Workflow size={16} />
+                Ver embudo
+              </Link>
+              <Badge tone={statusTone[status]}>{labels.status[status]}</Badge>
+            </div>
+          )
+        }
       />
       <fieldset disabled={!canWrite || closed} className="space-y-5">
         <Section title="Datos del puesto" i={1}>

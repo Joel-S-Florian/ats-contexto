@@ -61,3 +61,69 @@ export const publicStatusLabels: Record<string, string> = {
   in_review: "En revisión",
   finished: "Proceso finalizado",
 };
+
+// ---- Estados de una postulación (docs/02 sección 4) ----
+export const applicationStatuses = [
+  "received",
+  "screening",
+  "shortlisted",
+  "in_review",
+  "low_fit",
+  "knocked_out",
+  "interview",
+  "assessment",
+  "selection",
+  "selected",
+  "not_selected",
+  "on_hold",
+  "hired",
+  "withdrawn",
+] as const;
+export type ApplicationStatus = (typeof applicationStatuses)[number];
+
+export const statusLabels: Record<ApplicationStatus, string> = {
+  received: "Recibida",
+  screening: "En preselección",
+  shortlisted: "Preseleccionada",
+  in_review: "En revisión",
+  low_fit: "Baja compatibilidad",
+  knocked_out: "No cumple requisitos",
+  interview: "Entrevista",
+  assessment: "Evaluación",
+  selection: "Selección",
+  selected: "Seleccionada",
+  not_selected: "No seleccionada",
+  on_hold: "En espera",
+  hired: "Contratada",
+  withdrawn: "Retirada",
+};
+
+/** Descartes: siempre visibles, con motivo, y reversibles. Mover a uno exige un motivo escrito. */
+export const discardStatuses: ApplicationStatus[] = ["low_fit", "knocked_out", "not_selected", "withdrawn"];
+
+/** `hired` solo se alcanza confirmando la contratación (Fase 8), nunca arrastrando una tarjeta. */
+export const manualStatuses = applicationStatuses.filter((s) => s !== "hired" && s !== "received");
+
+/** Etapa del embudo (tipo de PipelineStage) que corresponde a cada estado; null = fuera del flujo principal. */
+export const statusStage: Record<ApplicationStatus, "screening" | "interview" | "assessment" | "selection" | "hiring" | null> = {
+  received: "screening",
+  screening: "screening",
+  shortlisted: "screening",
+  in_review: "screening",
+  low_fit: null,
+  knocked_out: null,
+  interview: "interview",
+  assessment: "assessment",
+  selection: "selection",
+  selected: "selection",
+  not_selected: null,
+  on_hold: null,
+  hired: "hiring",
+  withdrawn: null,
+};
+
+export const moveInputSchema = z.object({
+  status: z.enum(manualStatuses as [ApplicationStatus, ...ApplicationStatus[]]),
+  reason: z.string().trim().max(500).optional(),
+});
+export const noteInputSchema = z.object({ body: z.string().trim().min(1, "Escribe la nota").max(2000) });

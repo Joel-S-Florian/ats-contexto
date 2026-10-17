@@ -1,64 +1,24 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { FileText, Inbox, Loader2, MapPin, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Inbox, MapPin, Search } from "lucide-react";
 import { toast } from "sonner";
+import { statusLabels, type ApplicationStatus } from "@ats/shared";
+import { CandidateDrawer } from "@/components/candidate-drawer";
+import { ScoreChip } from "@/components/screening";
 import { Badge, EmptyState, PageHeader } from "@/components/ui";
-import { ScoreChip, ScreeningCard, type Screening } from "@/components/screening";
 import { api, ApiError } from "@/lib/api";
 
 interface Row {
-  screening: { overall: number | null; recommendation: string; mode: string } | null;
   id: string;
-  status: string;
+  status: ApplicationStatus;
   processing: string;
   createdAt: string;
   vacancyId: string | null;
   vacancyTitle: string | null;
+  screening: { overall: number | null; recommendation: string; mode: string } | null;
   candidate: { fullName: string; email: string; location: string; yearsExperience: number };
 }
-interface Detail {
-  screening: Screening | null;
-  id: string;
-  status: string;
-  processing: string;
-  vacancy: { title: string } | null;
-  candidate: {
-    fullName: string;
-    email: string;
-    phone: string;
-    location: string;
-    educationLevel: string;
-    yearsExperience: number;
-    skills: string[];
-    languages: string[];
-    portfolioUrl: string | null;
-  };
-  documents: {
-    id: string;
-    originalName: string;
-    extractStatus: string;
-    extractedText: string | null;
-  }[];
-  history: {
-    id: string;
-    toStatus: string;
-    reason: string;
-    automatic: boolean;
-    createdAt: string;
-  }[];
-  consents: { noticeVersion: string; acceptedAt: string }[];
-}
 
-const statusLabel: Record<string, string> = {
-  received: "Recibida",
-  in_review: "En revisión",
-  shortlisted: "Preseleccionada",
-  low_fit: "Baja compatibilidad",
-  knocked_out: "No cumple requisitos",
-  screening: "Preselección",
-  interview: "Entrevista",
-  hired: "Contratada",
-};
 const processingLabel: Record<
   string,
   { text: string; tone: "neutral" | "success" | "warning" | "danger" }
@@ -72,50 +32,45 @@ const processingLabel: Record<
 const fmt = (d: string) =>
   new Date(d).toLocaleString("es-DO", { dateStyle: "medium", timeStyle: "short" });
 
+type Tab = "all" | "vacancy" | "general" | "knocked_out" | "low_fit";
+const tabs: [Tab, string][] = [
+  ["all", "Todas"],
+  ["vacancy", "A una vacante"],
+  ["general", "Bolsa general"],
+  ["knocked_out", "No cumple requisitos"],
+  ["low_fit", "Baja compatibilidad"],
+];
+
 export default function CandidatesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
-  const [scope, setScope] = useState<"all" | "vacancy" | "general">("all");
-  const [open, setOpen] = useState<Detail | null>(null);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("all");
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState<"recent" | "score">("recent");
+  const [open, setOpen] = useState<string | null>(null);
 
-  useEffect(() => {
-    api<Row[]>(`/applications${scope === "all" ? "" : `?scope=${scope}`}`)
+  const load = useCallback(() => {
+    const scope = tab === "vacancy" || tab === "general" ? `?scope=${tab}` : "";
+    return api<Row[]>(`/applications${scope}`)
       .then(setRows)
       .catch((e: ApiError) => toast.error(e.message));
-  }, [scope]);
+  }, [tab]);
+  useEffect(() => void load(), [load]);
 
-  const tabs = useMemo(
-    () =>
-      [
-        ["all", "Todas"],
-        ["vacancy", "A una vacante"],
-        ["general", "Bolsa general"],
-      ] as const,
-    [],
-  );
-
-  async function rescreen(id: string) {
-    setLoadingId(id);
-    try {
-      await api(`/applications/${id}/screen`, { method: "POST" });
-      toast.success("Preselección actualizada");
-      setOpen(await api<Detail>(`/applications/${id}`));
-      setRows(await api<Row[]>(`/applications${scope === "all" ? "" : `?scope=${scope}`}`));
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Error inesperado");
-    }
-    setLoadingId(null);
-  }
-
-  async function view(id: string) {
-    setLoadingId(id);
-    try {
-      setOpen(await api<Detail>(`/applications/${id}`));
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Error inesperado");
-    }
-    setLoadingId(null);
-  }
+  const visible = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    let list = (rows ?? []).filter((r) =>
+      tab === "knocked_out" || tab === "low_fit" ? r.status === tab : true,
+    );
+    if (needle)
+      list = list.filter((r) =>
+        [r.candidate.fullName, r.candidate.email, r.vacancyTitle ?? ""].some((s) =>
+          s.toLowerCase().includes(needle),
+        ),
+      );
+    if (sort === "score")
+      list = [...list].sort((a, b) => (b.screening?.overall ?? -1) - (a.screening?.overall ?? -1));
+    return list;
+  }, [rows, tab, q, sort]);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -123,22 +78,54 @@ export default function CandidatesPage() {
         title="Candidatos"
         subtitle="Postulaciones recibidas desde el widget de tu página de empleo."
       />
-      <div className="rise mb-4 flex gap-1.5" role="tablist">
-        {tabs.map(([v, l]) => (
-          <button
-            key={v}
-            role="tab"
-            aria-selected={scope === v}
-            onClick={() => {
-              setRows(null);
-              setScope(v);
-            }}
-            className={`press rounded-lg px-3 py-1.5 text-sm font-medium ${scope === v ? "bg-accent-soft text-accent" : "text-muted hover:bg-surface-2 hover:text-fg"}`}
+      <div className="rise mb-4 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-1.5" role="tablist">
+          {tabs.map(([v, l]) => (
+            <button
+              key={v}
+              role="tab"
+              aria-selected={tab === v}
+              onClick={() => {
+                setRows(null);
+                setTab(v);
+              }}
+              className={`press rounded-lg px-3 py-1.5 text-sm font-medium ${tab === v ? "bg-accent-soft text-accent" : "text-muted hover:bg-surface-2 hover:text-fg"}`}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
+        <div className="ml-auto flex gap-2">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar"
+              aria-label="Buscar candidatos"
+              className="field w-44 !py-1.5 !pl-8"
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as "recent" | "score")}
+            aria-label="Ordenar"
+            className="field w-auto !py-1.5"
           >
-            {l}
-          </button>
-        ))}
+            <option value="recent">Más recientes</option>
+            <option value="score">Mayor puntaje</option>
+          </select>
+        </div>
       </div>
+
+      {(tab === "knocked_out" || tab === "low_fit") && (
+        <p className="rise mb-3 text-sm text-muted">
+          {tab === "knocked_out"
+            ? "Personas que no cumplen un filtro eliminatorio."
+            : "Personas con puntaje bajo."}{" "}
+          Nada se borra: abre una ficha para ver el motivo y revertir la decisión.
+        </p>
+      )}
 
       <section className="rounded-card border border-border bg-surface shadow-sm">
         {!rows ? (
@@ -146,24 +133,24 @@ export default function CandidatesPage() {
             <div className="skeleton h-14" />
             <div className="skeleton h-14" />
           </div>
-        ) : rows.length === 0 ? (
+        ) : visible.length === 0 ? (
           <EmptyState
             icon={<Inbox size={20} />}
-            title="Aún no hay postulaciones"
-            hint="Aparecerán aquí cuando alguien postule desde el widget."
+            title="No hay postulaciones aquí"
+            hint="Aparecerán cuando alguien postule desde el widget."
           />
         ) : (
           <ul>
-            {rows.map((r, i) => {
+            {visible.map((r, i) => {
               const p = processingLabel[r.processing] ?? processingLabel.pending!;
               return (
                 <li
                   key={r.id}
-                  style={{ "--i": i } as React.CSSProperties}
+                  style={{ "--i": Math.min(i, 12) } as React.CSSProperties}
                   className="rise border-b border-border last:border-0"
                 >
                   <button
-                    onClick={() => view(r.id)}
+                    onClick={() => setOpen(r.id)}
                     className="press flex w-full flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-surface-2"
                   >
                     <div className="min-w-0 flex-1">
@@ -178,12 +165,17 @@ export default function CandidatesPage() {
                         <span>{fmt(r.createdAt)}</span>
                       </p>
                     </div>
-                    {loadingId === r.id && (
-                      <Loader2 size={16} className="animate-spin text-muted" />
-                    )}
                     <ScoreChip s={r.screening} />
                     <Badge tone={p.tone}>{p.text}</Badge>
-                    <Badge tone="accent">{statusLabel[r.status] ?? r.status}</Badge>
+                    <Badge
+                      tone={
+                        ["knocked_out", "low_fit", "not_selected", "withdrawn"].includes(r.status)
+                          ? "danger"
+                          : "accent"
+                      }
+                    >
+                      {statusLabels[r.status] ?? r.status}
+                    </Badge>
                   </button>
                 </li>
               );
@@ -192,121 +184,7 @@ export default function CandidatesPage() {
         )}
       </section>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-20 flex justify-end bg-black/30"
-          onClick={() => setOpen(null)}
-        >
-          <aside
-            onClick={(e) => e.stopPropagation()}
-            className="rise h-full w-full max-w-xl overflow-y-auto border-l border-border bg-surface p-6 shadow-md"
-            role="dialog"
-            aria-label="Detalle de la postulación"
-          >
-            <div className="mb-5 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">{open.candidate.fullName}</h2>
-                <p className="text-sm text-muted">{open.vacancy?.title ?? "Bolsa general"}</p>
-              </div>
-              <button aria-label="Cerrar" onClick={() => setOpen(null)} className="btn-ghost !p-2">
-                <X size={16} />
-              </button>
-            </div>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-              {(
-                [
-                  ["Correo", open.candidate.email],
-                  ["Teléfono", open.candidate.phone],
-                  ["Ubicación", open.candidate.location],
-                  ["Educación", open.candidate.educationLevel],
-                  ["Experiencia", `${open.candidate.yearsExperience} años`],
-                  ["Idiomas", open.candidate.languages.join(", ") || "-"],
-                ] as const
-              ).map(([k, v]) => (
-                <div key={k}>
-                  <dt className="text-xs text-muted">{k}</dt>
-                  <dd className="break-words font-medium">{v}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {open.candidate.skills.map((s) => (
-                <Badge key={s} tone="accent">
-                  {s}
-                </Badge>
-              ))}
-            </div>
-
-            {!open.screening && open.vacancy && (
-              <button
-                onClick={() => rescreen(open.id)}
-                disabled={loadingId === open.id}
-                className="btn-primary mt-6"
-              >
-                {loadingId === open.id && <Loader2 size={16} className="animate-spin" />}Evaluar
-                ahora
-              </button>
-            )}
-            {open.screening && (
-              <div className="mt-6">
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold">Preselección</h3>
-                  <button
-                    onClick={() => rescreen(open.id)}
-                    disabled={loadingId === open.id}
-                    className="btn-ghost !px-2.5 !py-1 text-xs"
-                  >
-                    Volver a evaluar
-                  </button>
-                </div>
-                <ScreeningCard s={open.screening} />
-              </div>
-            )}
-
-            <h3 className="mb-2 mt-6 flex items-center gap-2 text-sm font-semibold">
-              <FileText size={16} className="text-muted" />
-              Texto extraído del CV
-            </h3>
-            {open.documents.map((d) => (
-              <div key={d.id} className="rounded-lg border border-border bg-bg p-3">
-                <p className="mb-2 text-xs text-muted">{d.originalName}</p>
-                {d.extractedText ? (
-                  // Es dato no confiable: se muestra como texto plano, nunca como HTML.
-                  <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-words text-sm">
-                    {d.extractedText}
-                  </pre>
-                ) : (
-                  <p className="text-sm text-warning">
-                    No se pudo extraer texto de este archivo. Requiere revisión manual.
-                  </p>
-                )}
-              </div>
-            ))}
-
-            <h3 className="mb-2 mt-6 text-sm font-semibold">Historial</h3>
-            <ol className="space-y-2 border-l border-border pl-4">
-              {open.history.map((h) => (
-                <li key={h.id} className="text-sm">
-                  <p className="font-medium">
-                    {statusLabel[h.toStatus] ?? h.toStatus}
-                    {h.automatic && (
-                      <span className="ml-2 text-xs font-normal text-muted">automático</span>
-                    )}
-                  </p>
-                  <p className="text-muted">{h.reason}</p>
-                  <p className="text-xs text-muted">{fmt(h.createdAt)}</p>
-                </li>
-              ))}
-            </ol>
-            {open.consents[0] && (
-              <p className="mt-6 text-xs text-muted">
-                Aviso de datos aceptado (versión {open.consents[0].noticeVersion}) el{" "}
-                {fmt(open.consents[0].acceptedAt)}.
-              </p>
-            )}
-          </aside>
-        </div>
-      )}
+      {open && <CandidateDrawer id={open} onClose={() => setOpen(null)} onChanged={load} />}
     </div>
   );
 }

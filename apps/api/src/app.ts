@@ -13,6 +13,8 @@ import { adminRoutes } from "./routes/admin.js";
 import { pipelineRoutes } from "./routes/pipelines.js";
 import { vacancyRoutes } from "./routes/vacancies.js";
 import { publicRoutes } from "./routes/public.js";
+import { candidateRoutes } from "./routes/candidates.js";
+import { randomBytes } from "node:crypto";
 import { apiKeyRoutes, panelApplicationRoutes } from "./routes/panel-applications.js";
 import { publicApplicationRoutes } from "./routes/applications-public.js";
 import { originAllowed } from "./services/keys.js";
@@ -43,6 +45,8 @@ export interface AppDeps {
   captcha?: CaptchaVerifier;
   queue?: JobQueue;
   ai?: Partial<AiConfig>;
+  /** Secreto para firmar URLs de descarga (SESSION_SECRET en produccion). */
+  signingSecret?: string;
   screening?: ScreeningService;
 }
 
@@ -58,12 +62,13 @@ export function buildApp({
   scanner = eicarScanner,
   captcha = devCaptcha,
   ai,
+  signingSecret = randomBytes(32).toString("hex"),
   screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
   queue = memoryQueue(
     createIngestHandler({ prisma, store, mailer, screen: (a, t) => screening.screen(a, t) }),
   ),
 }: AppDeps) {
-  const app = Fastify({ logger: logger ? loggerOptions : false });
+  const app = Fastify({ logger: logger ? loggerOptions : false, maxParamLength: 1000 });
   app.register(cors, {
     // Widget: se refleja el origen solo si alguna clave publica activa lo permite. Panel: solo webOrigin con credenciales.
     delegator: (req, cb) => {
@@ -142,6 +147,7 @@ export function buildApp({
       rateLimit: publicRateLimit,
     });
     apiKeyRoutes(scope, { prisma, authenticate });
+    candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret });
     panelApplicationRoutes(scope, { prisma, authenticate, screening });
   });
 

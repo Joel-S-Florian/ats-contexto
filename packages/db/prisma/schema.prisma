@@ -350,6 +350,7 @@ model Application {
   documents   Document[]
   history     ApplicationStageHistory[]
   consents    ConsentRecord[]
+  notes       ApplicationNote[]
 
   @@index([tenantId, vacancyId])
   @@index([tenantId, candidateId])
@@ -468,4 +469,18 @@ model UsageCounter {
 
   @@unique([tenantId, month])
   @@map("usage_counters")
+}
+
+// Notas internas de RRHH y de responsables de area sobre una postulacion.
+model ApplicationNote {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @map("tenant_id") @db.Uuid
+  applicationId String      @map("application_id") @db.Uuid
+  authorId      String      @map("author_id") @db.Uuid
+  body          String
+  createdAt     DateTime    @default(now()) @map("created_at")
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@index([tenantId, applicationId, createdAt])
+  @@map("application_notes")
 }

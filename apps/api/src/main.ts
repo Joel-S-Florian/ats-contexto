@@ -59,6 +59,7 @@ const app = buildApp({
     priceOutMicrosPerM: env.AI_PRICE_OUT_MICROS_PER_M,
   },
   store: localBlobStore(env.FILE_STORAGE_DIR),
+  signingSecret: env.SESSION_SECRET,
   captcha:
     env.CAPTCHA_PROVIDER === "turnstile" ? turnstileVerifier(env.TURNSTILE_SECRET!) : devCaptcha,
   scanner: env.AV_PROVIDER === "clamav" ? clamdScanner(env.CLAMD_HOST) : eicarScanner,

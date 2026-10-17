@@ -201,3 +201,23 @@ h2 {
     animation: none !important;
   }
 }
+
+/* Panel lateral: entra desde la derecha (patrón de cajón, curva fuerte de salida) */
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.drawer {
+  animation: drawer-in 260ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer {
+    animation: none;
+  }
+}
