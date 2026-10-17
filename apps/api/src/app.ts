@@ -30,6 +30,7 @@ import {
   type ScreeningService,
 } from "./services/screening.js";
 import type { Mailer } from "./mailer.js";
+import { assessmentRoutes } from "./routes/assessments.js";
 import { communicationRoutes } from "./routes/communication.js";
 import { noCalendar, type CalendarProvider } from "./ports/calendar.js";
 import { createEmailService } from "./services/email.js";
@@ -54,6 +55,9 @@ export interface AppDeps {
   signingSecret?: string;
   screening?: ScreeningService;
   calendar?: CalendarProvider;
+  /** Reloj inyectable: las pruebas controlan el tiempo del examen. */
+  clock?: () => Date;
+  examRateLimit?: number;
 }
 
 export function buildApp({
@@ -70,6 +74,8 @@ export function buildApp({
   ai,
   signingSecret = randomBytes(32).toString("hex"),
   calendar = noCalendar,
+  clock = () => new Date(),
+  examRateLimit = 60,
   email = createEmailService({ prisma, mailer }),
   screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
   queue = memoryQueue(
@@ -158,6 +164,7 @@ export function buildApp({
     apiKeyRoutes(scope, { prisma, authenticate });
     candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret, notifications });
     communicationRoutes(scope, { prisma, authenticate, email, calendar });
+    assessmentRoutes(scope, { prisma, authenticate, email, webOrigin, clock, examRateLimit });
     panelApplicationRoutes(scope, { prisma, authenticate, screening });
   });
 

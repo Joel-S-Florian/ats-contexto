@@ -9,6 +9,7 @@ export const permissions = {
   "pipelines:manage": ["admin"],
   "applications:move": ["admin", "recruiter"],
   "interviews:manage": ["admin", "recruiter"],
+  "assessments:manage": ["admin", "recruiter"],
   "templates:read": ["admin", "recruiter"],
   "templates:manage": ["admin"],
   "notes:write": ["admin", "recruiter", "area_manager"],

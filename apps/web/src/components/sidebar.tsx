@@ -12,6 +12,7 @@ import {
   Workflow,
   Inbox,
   KeyRound,
+  ClipboardCheck,
   Mail,
   Settings,
 } from "lucide-react";
@@ -57,6 +58,12 @@ export function Sidebar() {
       href: "/plantillas",
       label: "Plantillas",
       icon: Mail,
+      show: me.role === "admin" || me.role === "recruiter",
+    },
+    {
+      href: "/evaluaciones",
+      label: "Evaluaciones",
+      icon: ClipboardCheck,
       show: me.role === "admin" || me.role === "recruiter",
     },
     { href: "/configuracion", label: "Configuración", icon: Settings, show: me.role === "admin" },

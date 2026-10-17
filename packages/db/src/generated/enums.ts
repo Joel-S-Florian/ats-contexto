@@ -162,3 +162,20 @@ export const InterviewStatus = {
 } as const;
 
 export type InterviewStatus = (typeof InterviewStatus)[keyof typeof InterviewStatus];
+
+export const QuestionType = {
+  multiple_choice: "multiple_choice",
+  true_false: "true_false",
+  short_answer: "short_answer",
+} as const;
+
+export type QuestionType = (typeof QuestionType)[keyof typeof QuestionType];
+
+export const AttemptStatus = {
+  invited: "invited",
+  in_progress: "in_progress",
+  submitted: "submitted",
+  expired: "expired",
+} as const;
+
+export type AttemptStatus = (typeof AttemptStatus)[keyof typeof AttemptStatus];

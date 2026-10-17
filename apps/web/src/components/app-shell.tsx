@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [me, setMe] = useState<Me | null>(null);
   const [checked, setChecked] = useState(false);
-  const isPublic = PUBLIC_PATHS.includes(path);
+  const isPublic = PUBLIC_PATHS.includes(path) || path.startsWith("/examen/");
 
   useEffect(() => {
     api<Me>("/auth/me")
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (checked && !me && !isPublic) router.replace("/login");
-    if (checked && me && isPublic) router.replace("/");
+    if (checked && me && path === "/login") router.replace("/");
   }, [checked, me, isPublic, router]);
 
   const logout = async () => {

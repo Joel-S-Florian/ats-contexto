@@ -179,3 +179,28 @@ export type Interview = Prisma.InterviewModel;
  *
  */
 export type Communication = Prisma.CommunicationModel;
+/**
+ * Model AssessmentTemplate
+ *
+ */
+export type AssessmentTemplate = Prisma.AssessmentTemplateModel;
+/**
+ * Model AssessmentModule
+ *
+ */
+export type AssessmentModule = Prisma.AssessmentModuleModel;
+/**
+ * Model Question
+ *
+ */
+export type Question = Prisma.QuestionModel;
+/**
+ * Model AssessmentAttempt
+ *
+ */
+export type AssessmentAttempt = Prisma.AssessmentAttemptModel;
+/**
+ * Model ExternalAssessmentRecord
+ *
+ */
+export type ExternalAssessmentRecord = Prisma.ExternalAssessmentRecordModel;

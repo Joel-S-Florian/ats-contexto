@@ -221,3 +221,14 @@ h2 {
     animation: none;
   }
 }
+
+@keyframes pulse-soft {
+  50% {
+    opacity: 0.55;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="pulse-soft"] {
+    animation: none !important;
+  }
+}

@@ -586,3 +586,109 @@ model Communication {
   @@index([tenantId, applicationId, createdAt])
   @@map("communications")
 }
+
+enum QuestionType {
+  multiple_choice
+  true_false
+  short_answer
+}
+
+enum AttemptStatus {
+  invited
+  in_progress
+  submitted
+  expired
+}
+
+// Examen generalista (docs/01 4.6): plantilla -> modulos -> preguntas. RRHH redacta las preguntas.
+model AssessmentTemplate {
+  id           String             @id @default(uuid()) @db.Uuid
+  tenantId     String             @map("tenant_id") @db.Uuid
+  name         String
+  description  String             @default("")
+  timeLimitMin Int                @map("time_limit_min")
+  passingScore Int                @default(60) @map("passing_score")
+  createdBy    String             @map("created_by") @db.Uuid
+  createdAt    DateTime           @default(now()) @map("created_at")
+  modules      AssessmentModule[]
+
+  @@index([tenantId])
+  @@map("assessment_templates")
+}
+
+model AssessmentModule {
+  id         String             @id @default(uuid()) @db.Uuid
+  tenantId   String             @map("tenant_id") @db.Uuid
+  templateId String             @map("template_id") @db.Uuid
+  title      String
+  position   Int
+  template   AssessmentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  questions  Question[]
+
+  @@index([tenantId, templateId])
+  @@map("assessment_modules")
+}
+
+model Question {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @map("tenant_id") @db.Uuid
+  moduleId      String           @map("module_id") @db.Uuid
+  position      Int
+  type          QuestionType
+  prompt        String
+  options       Json             @default("[]")
+  // multiple_choice: indice de la opcion correcta; true_false: boolean; short_answer: sin clave (revision manual).
+  correctAnswer Json?            @map("correct_answer")
+  points        Int              @default(1)
+  module        AssessmentModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, moduleId])
+  @@map("questions")
+}
+
+// Intento de un candidato. El enlace es de un solo uso: solo se guarda el hash del token. El temporizador es del servidor.
+model AssessmentAttempt {
+  id            String        @id @default(uuid()) @db.Uuid
+  tenantId      String        @map("tenant_id") @db.Uuid
+  applicationId String        @map("application_id") @db.Uuid
+  templateId    String        @map("template_id") @db.Uuid
+  tokenHash     String        @unique @map("token_hash")
+  status        AttemptStatus @default(invited)
+  expiresAt     DateTime      @map("expires_at")
+  startedAt     DateTime?     @map("started_at")
+  deadlineAt    DateTime?     @map("deadline_at")
+  submittedAt   DateTime?     @map("submitted_at")
+  timedOut      Boolean       @default(false) @map("timed_out")
+  // Copia de las preguntas al iniciar (con la clave): editar la plantilla despues no altera un intento en curso.
+  snapshot      Json?
+  answers       Json          @default("{}")
+  autoPoints    Int?          @map("auto_points")
+  manualPoints  Json          @default("{}") @map("manual_points")
+  totalPoints   Int?          @map("total_points")
+  needsReview   Boolean       @default(false) @map("needs_review")
+  finalScore    Int?          @map("final_score")
+  createdBy     String        @map("created_by") @db.Uuid
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  @@index([tenantId, applicationId])
+  @@map("assessment_attempts")
+}
+
+// Evaluacion propia de la empresa (tecnica, de campo...): la plataforma solo registra el proceso y el resultado.
+model ExternalAssessmentRecord {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  applicationId String   @map("application_id") @db.Uuid
+  description   String
+  performedAt   DateTime @map("performed_at")
+  method        String
+  evaluators    String[]
+  result        String
+  score         Int?
+  observations  String   @default("")
+  createdBy     String   @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, applicationId])
+  @@map("external_assessment_records")
+}

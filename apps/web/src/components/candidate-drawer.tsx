@@ -4,6 +4,7 @@ import { Download, FileText, Loader2, MessageSquarePlus, Undo2, X } from "lucide
 import { toast } from "sonner";
 import { discardStatuses, manualStatuses, statusLabels, type ApplicationStatus } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
+import { AssessmentPanel } from "@/components/assessment-panel";
 import { InterviewPanel } from "@/components/interview-panel";
 import { ScreeningCard, type Screening } from "@/components/screening";
 import { Badge } from "@/components/ui";
@@ -302,6 +303,15 @@ export function CandidateDrawer({
             ))}
 
             <InterviewPanel
+              applicationId={id}
+              canManage={canMove}
+              onChanged={() => {
+                void load();
+                onChanged();
+              }}
+            />
+
+            <AssessmentPanel
               applicationId={id}
               canManage={canMove}
               onChanged={() => {

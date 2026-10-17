@@ -75,6 +75,11 @@ export const ModelName = {
   ScheduledEmail: "ScheduledEmail",
   Interview: "Interview",
   Communication: "Communication",
+  AssessmentTemplate: "AssessmentTemplate",
+  AssessmentModule: "AssessmentModule",
+  Question: "Question",
+  AssessmentAttempt: "AssessmentAttempt",
+  ExternalAssessmentRecord: "ExternalAssessmentRecord",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -501,6 +506,90 @@ export const CommunicationScalarFieldEnum = {
 
 export type CommunicationScalarFieldEnum =
   (typeof CommunicationScalarFieldEnum)[keyof typeof CommunicationScalarFieldEnum];
+
+export const AssessmentTemplateScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  name: "name",
+  description: "description",
+  timeLimitMin: "timeLimitMin",
+  passingScore: "passingScore",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type AssessmentTemplateScalarFieldEnum =
+  (typeof AssessmentTemplateScalarFieldEnum)[keyof typeof AssessmentTemplateScalarFieldEnum];
+
+export const AssessmentModuleScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  templateId: "templateId",
+  title: "title",
+  position: "position",
+} as const;
+
+export type AssessmentModuleScalarFieldEnum =
+  (typeof AssessmentModuleScalarFieldEnum)[keyof typeof AssessmentModuleScalarFieldEnum];
+
+export const QuestionScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  moduleId: "moduleId",
+  position: "position",
+  type: "type",
+  prompt: "prompt",
+  options: "options",
+  correctAnswer: "correctAnswer",
+  points: "points",
+} as const;
+
+export type QuestionScalarFieldEnum =
+  (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum];
+
+export const AssessmentAttemptScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  templateId: "templateId",
+  tokenHash: "tokenHash",
+  status: "status",
+  expiresAt: "expiresAt",
+  startedAt: "startedAt",
+  deadlineAt: "deadlineAt",
+  submittedAt: "submittedAt",
+  timedOut: "timedOut",
+  snapshot: "snapshot",
+  answers: "answers",
+  autoPoints: "autoPoints",
+  manualPoints: "manualPoints",
+  totalPoints: "totalPoints",
+  needsReview: "needsReview",
+  finalScore: "finalScore",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type AssessmentAttemptScalarFieldEnum =
+  (typeof AssessmentAttemptScalarFieldEnum)[keyof typeof AssessmentAttemptScalarFieldEnum];
+
+export const ExternalAssessmentRecordScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  description: "description",
+  performedAt: "performedAt",
+  method: "method",
+  evaluators: "evaluators",
+  result: "result",
+  score: "score",
+  observations: "observations",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type ExternalAssessmentRecordScalarFieldEnum =
+  (typeof ExternalAssessmentRecordScalarFieldEnum)[keyof typeof ExternalAssessmentRecordScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

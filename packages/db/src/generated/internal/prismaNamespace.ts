@@ -417,6 +417,11 @@ export const ModelName = {
   ScheduledEmail: "ScheduledEmail",
   Interview: "Interview",
   Communication: "Communication",
+  AssessmentTemplate: "AssessmentTemplate",
+  AssessmentModule: "AssessmentModule",
+  Question: "Question",
+  AssessmentAttempt: "AssessmentAttempt",
+  ExternalAssessmentRecord: "ExternalAssessmentRecord",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -463,7 +468,12 @@ export type TypeMap<
       | "emailLog"
       | "scheduledEmail"
       | "interview"
-      | "communication";
+      | "communication"
+      | "assessmentTemplate"
+      | "assessmentModule"
+      | "question"
+      | "assessmentAttempt"
+      | "externalAssessmentRecord";
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -2478,6 +2488,382 @@ export type TypeMap<
         };
       };
     };
+    AssessmentTemplate: {
+      payload: Prisma.$AssessmentTemplatePayload<ExtArgs>;
+      fields: Prisma.AssessmentTemplateFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AssessmentTemplateFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AssessmentTemplateFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        findFirst: {
+          args: Prisma.AssessmentTemplateFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AssessmentTemplateFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        findMany: {
+          args: Prisma.AssessmentTemplateFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>[];
+        };
+        create: {
+          args: Prisma.AssessmentTemplateCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        createMany: {
+          args: Prisma.AssessmentTemplateCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AssessmentTemplateCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>[];
+        };
+        delete: {
+          args: Prisma.AssessmentTemplateDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        update: {
+          args: Prisma.AssessmentTemplateUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        deleteMany: {
+          args: Prisma.AssessmentTemplateDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AssessmentTemplateUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AssessmentTemplateUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>[];
+        };
+        upsert: {
+          args: Prisma.AssessmentTemplateUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentTemplatePayload>;
+        };
+        aggregate: {
+          args: Prisma.AssessmentTemplateAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAssessmentTemplate>;
+        };
+        groupBy: {
+          args: Prisma.AssessmentTemplateGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AssessmentTemplateGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AssessmentTemplateCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.AssessmentTemplateCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
+    AssessmentModule: {
+      payload: Prisma.$AssessmentModulePayload<ExtArgs>;
+      fields: Prisma.AssessmentModuleFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AssessmentModuleFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AssessmentModuleFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        findFirst: {
+          args: Prisma.AssessmentModuleFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AssessmentModuleFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        findMany: {
+          args: Prisma.AssessmentModuleFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>[];
+        };
+        create: {
+          args: Prisma.AssessmentModuleCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        createMany: {
+          args: Prisma.AssessmentModuleCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AssessmentModuleCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>[];
+        };
+        delete: {
+          args: Prisma.AssessmentModuleDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        update: {
+          args: Prisma.AssessmentModuleUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        deleteMany: {
+          args: Prisma.AssessmentModuleDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AssessmentModuleUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AssessmentModuleUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>[];
+        };
+        upsert: {
+          args: Prisma.AssessmentModuleUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentModulePayload>;
+        };
+        aggregate: {
+          args: Prisma.AssessmentModuleAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAssessmentModule>;
+        };
+        groupBy: {
+          args: Prisma.AssessmentModuleGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AssessmentModuleGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AssessmentModuleCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.AssessmentModuleCountAggregateOutputType> | number;
+        };
+      };
+    };
+    Question: {
+      payload: Prisma.$QuestionPayload<ExtArgs>;
+      fields: Prisma.QuestionFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.QuestionFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.QuestionFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        findFirst: {
+          args: Prisma.QuestionFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.QuestionFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        findMany: {
+          args: Prisma.QuestionFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>[];
+        };
+        create: {
+          args: Prisma.QuestionCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        createMany: {
+          args: Prisma.QuestionCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.QuestionCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>[];
+        };
+        delete: {
+          args: Prisma.QuestionDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        update: {
+          args: Prisma.QuestionUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        deleteMany: {
+          args: Prisma.QuestionDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.QuestionUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.QuestionUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>[];
+        };
+        upsert: {
+          args: Prisma.QuestionUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestionPayload>;
+        };
+        aggregate: {
+          args: Prisma.QuestionAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQuestion>;
+        };
+        groupBy: {
+          args: Prisma.QuestionGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.QuestionGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.QuestionCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.QuestionCountAggregateOutputType> | number;
+        };
+      };
+    };
+    AssessmentAttempt: {
+      payload: Prisma.$AssessmentAttemptPayload<ExtArgs>;
+      fields: Prisma.AssessmentAttemptFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AssessmentAttemptFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AssessmentAttemptFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        findFirst: {
+          args: Prisma.AssessmentAttemptFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AssessmentAttemptFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        findMany: {
+          args: Prisma.AssessmentAttemptFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>[];
+        };
+        create: {
+          args: Prisma.AssessmentAttemptCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        createMany: {
+          args: Prisma.AssessmentAttemptCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AssessmentAttemptCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>[];
+        };
+        delete: {
+          args: Prisma.AssessmentAttemptDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        update: {
+          args: Prisma.AssessmentAttemptUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        deleteMany: {
+          args: Prisma.AssessmentAttemptDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AssessmentAttemptUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AssessmentAttemptUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>[];
+        };
+        upsert: {
+          args: Prisma.AssessmentAttemptUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AssessmentAttemptPayload>;
+        };
+        aggregate: {
+          args: Prisma.AssessmentAttemptAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAssessmentAttempt>;
+        };
+        groupBy: {
+          args: Prisma.AssessmentAttemptGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AssessmentAttemptGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AssessmentAttemptCountArgs<ExtArgs>;
+          result:
+            runtime.Types.Utils.Optional<Prisma.AssessmentAttemptCountAggregateOutputType> | number;
+        };
+      };
+    };
+    ExternalAssessmentRecord: {
+      payload: Prisma.$ExternalAssessmentRecordPayload<ExtArgs>;
+      fields: Prisma.ExternalAssessmentRecordFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.ExternalAssessmentRecordFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.ExternalAssessmentRecordFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        findFirst: {
+          args: Prisma.ExternalAssessmentRecordFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.ExternalAssessmentRecordFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        findMany: {
+          args: Prisma.ExternalAssessmentRecordFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>[];
+        };
+        create: {
+          args: Prisma.ExternalAssessmentRecordCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        createMany: {
+          args: Prisma.ExternalAssessmentRecordCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.ExternalAssessmentRecordCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>[];
+        };
+        delete: {
+          args: Prisma.ExternalAssessmentRecordDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        update: {
+          args: Prisma.ExternalAssessmentRecordUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        deleteMany: {
+          args: Prisma.ExternalAssessmentRecordDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.ExternalAssessmentRecordUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.ExternalAssessmentRecordUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>[];
+        };
+        upsert: {
+          args: Prisma.ExternalAssessmentRecordUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExternalAssessmentRecordPayload>;
+        };
+        aggregate: {
+          args: Prisma.ExternalAssessmentRecordAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExternalAssessmentRecord>;
+        };
+        groupBy: {
+          args: Prisma.ExternalAssessmentRecordGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.ExternalAssessmentRecordGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.ExternalAssessmentRecordCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.ExternalAssessmentRecordCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -2926,6 +3312,90 @@ export const CommunicationScalarFieldEnum = {
 export type CommunicationScalarFieldEnum =
   (typeof CommunicationScalarFieldEnum)[keyof typeof CommunicationScalarFieldEnum];
 
+export const AssessmentTemplateScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  name: "name",
+  description: "description",
+  timeLimitMin: "timeLimitMin",
+  passingScore: "passingScore",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type AssessmentTemplateScalarFieldEnum =
+  (typeof AssessmentTemplateScalarFieldEnum)[keyof typeof AssessmentTemplateScalarFieldEnum];
+
+export const AssessmentModuleScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  templateId: "templateId",
+  title: "title",
+  position: "position",
+} as const;
+
+export type AssessmentModuleScalarFieldEnum =
+  (typeof AssessmentModuleScalarFieldEnum)[keyof typeof AssessmentModuleScalarFieldEnum];
+
+export const QuestionScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  moduleId: "moduleId",
+  position: "position",
+  type: "type",
+  prompt: "prompt",
+  options: "options",
+  correctAnswer: "correctAnswer",
+  points: "points",
+} as const;
+
+export type QuestionScalarFieldEnum =
+  (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum];
+
+export const AssessmentAttemptScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  templateId: "templateId",
+  tokenHash: "tokenHash",
+  status: "status",
+  expiresAt: "expiresAt",
+  startedAt: "startedAt",
+  deadlineAt: "deadlineAt",
+  submittedAt: "submittedAt",
+  timedOut: "timedOut",
+  snapshot: "snapshot",
+  answers: "answers",
+  autoPoints: "autoPoints",
+  manualPoints: "manualPoints",
+  totalPoints: "totalPoints",
+  needsReview: "needsReview",
+  finalScore: "finalScore",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type AssessmentAttemptScalarFieldEnum =
+  (typeof AssessmentAttemptScalarFieldEnum)[keyof typeof AssessmentAttemptScalarFieldEnum];
+
+export const ExternalAssessmentRecordScalarFieldEnum = {
+  id: "id",
+  tenantId: "tenantId",
+  applicationId: "applicationId",
+  description: "description",
+  performedAt: "performedAt",
+  method: "method",
+  evaluators: "evaluators",
+  result: "result",
+  score: "score",
+  observations: "observations",
+  createdBy: "createdBy",
+  createdAt: "createdAt",
+} as const;
+
+export type ExternalAssessmentRecordScalarFieldEnum =
+  (typeof ExternalAssessmentRecordScalarFieldEnum)[keyof typeof ExternalAssessmentRecordScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -3276,6 +3746,38 @@ export type ListEnumInterviewStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 >;
 
 /**
+ * Reference to a field of type 'QuestionType'
+ */
+export type EnumQuestionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "QuestionType"
+>;
+
+/**
+ * Reference to a field of type 'QuestionType[]'
+ */
+export type ListEnumQuestionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "QuestionType[]"
+>;
+
+/**
+ * Reference to a field of type 'AttemptStatus'
+ */
+export type EnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "AttemptStatus"
+>;
+
+/**
+ * Reference to a field of type 'AttemptStatus[]'
+ */
+export type ListEnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  "AttemptStatus[]"
+>;
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Float">;
@@ -3469,6 +3971,11 @@ export type GlobalOmitConfig = {
   scheduledEmail?: Prisma.ScheduledEmailOmit;
   interview?: Prisma.InterviewOmit;
   communication?: Prisma.CommunicationOmit;
+  assessmentTemplate?: Prisma.AssessmentTemplateOmit;
+  assessmentModule?: Prisma.AssessmentModuleOmit;
+  question?: Prisma.QuestionOmit;
+  assessmentAttempt?: Prisma.AssessmentAttemptOmit;
+  externalAssessmentRecord?: Prisma.ExternalAssessmentRecordOmit;
 };
 
 /* Types for Logging */
