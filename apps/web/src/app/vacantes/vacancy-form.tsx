@@ -5,6 +5,7 @@ import { Loader2, Pause, Play, Save, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { employmentTypes, experienceLevels, jobCategories, labels, workModes } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
+import { Suggestions } from "@/components/suggestions";
 import { Badge, Field, PageHeader, TagInput, statusTone } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 
@@ -443,6 +444,8 @@ export function VacancyEditor({ id }: { id?: string }) {
           )}
         </Section>
       </fieldset>
+
+      {id && canWrite && !closed && <Suggestions vacancyId={id} />}
 
       {canWrite && !closed && (
         <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-end gap-2 rounded-card border border-border bg-surface/90 p-3 shadow-md backdrop-blur">

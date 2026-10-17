@@ -3,9 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { FileText, Inbox, Loader2, MapPin, X } from "lucide-react";
 import { toast } from "sonner";
 import { Badge, EmptyState, PageHeader } from "@/components/ui";
+import { ScoreChip, ScreeningCard, type Screening } from "@/components/screening";
 import { api, ApiError } from "@/lib/api";
 
 interface Row {
+  screening: { overall: number | null; recommendation: string; mode: string } | null;
   id: string;
   status: string;
   processing: string;
@@ -15,6 +17,7 @@ interface Row {
   candidate: { fullName: string; email: string; location: string; yearsExperience: number };
 }
 interface Detail {
+  screening: Screening | null;
   id: string;
   status: string;
   processing: string;
@@ -49,6 +52,9 @@ interface Detail {
 const statusLabel: Record<string, string> = {
   received: "Recibida",
   in_review: "En revisión",
+  shortlisted: "Preseleccionada",
+  low_fit: "Baja compatibilidad",
+  knocked_out: "No cumple requisitos",
   screening: "Preselección",
   interview: "Entrevista",
   hired: "Contratada",
@@ -87,6 +93,19 @@ export default function CandidatesPage() {
       ] as const,
     [],
   );
+
+  async function rescreen(id: string) {
+    setLoadingId(id);
+    try {
+      await api(`/applications/${id}/screen`, { method: "POST" });
+      toast.success("Preselección actualizada");
+      setOpen(await api<Detail>(`/applications/${id}`));
+      setRows(await api<Row[]>(`/applications${scope === "all" ? "" : `?scope=${scope}`}`));
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Error inesperado");
+    }
+    setLoadingId(null);
+  }
 
   async function view(id: string) {
     setLoadingId(id);
@@ -162,6 +181,7 @@ export default function CandidatesPage() {
                     {loadingId === r.id && (
                       <Loader2 size={16} className="animate-spin text-muted" />
                     )}
+                    <ScoreChip s={r.screening} />
                     <Badge tone={p.tone}>{p.text}</Badge>
                     <Badge tone="accent">{statusLabel[r.status] ?? r.status}</Badge>
                   </button>
@@ -216,6 +236,32 @@ export default function CandidatesPage() {
                 </Badge>
               ))}
             </div>
+
+            {!open.screening && open.vacancy && (
+              <button
+                onClick={() => rescreen(open.id)}
+                disabled={loadingId === open.id}
+                className="btn-primary mt-6"
+              >
+                {loadingId === open.id && <Loader2 size={16} className="animate-spin" />}Evaluar
+                ahora
+              </button>
+            )}
+            {open.screening && (
+              <div className="mt-6">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold">Preselección</h3>
+                  <button
+                    onClick={() => rescreen(open.id)}
+                    disabled={loadingId === open.id}
+                    className="btn-ghost !px-2.5 !py-1 text-xs"
+                  >
+                    Volver a evaluar
+                  </button>
+                </div>
+                <ScreeningCard s={open.screening} />
+              </div>
+            )}
 
             <h3 className="mb-2 mt-6 flex items-center gap-2 text-sm font-semibold">
               <FileText size={16} className="text-muted" />

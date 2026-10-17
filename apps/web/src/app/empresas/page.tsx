@@ -5,11 +5,62 @@ import { toast } from "sonner";
 import { useAuth } from "@/components/app-shell";
 import { api, ApiError } from "@/lib/api";
 
+function AiPlan({ t, onSaved }: { t: Tenant; onSaved: () => void }) {
+  const [mode, setMode] = useState(t.screeningMode);
+  const [quota, setQuota] = useState(t.aiMonthlyQuota);
+  const [saving, setSaving] = useState(false);
+  const dirty = mode !== t.screeningMode || quota !== t.aiMonthlyQuota;
+  async function save() {
+    setSaving(true);
+    try {
+      await api(`/admin/tenants/${t.id}/screening`, {
+        method: "PATCH",
+        body: { mode, aiMonthlyQuota: quota },
+      });
+      toast.success("Plan de preselección actualizado");
+      onSaved();
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Error inesperado");
+    }
+    setSaving(false);
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <select
+        aria-label="Modo de preselección"
+        value={mode}
+        onChange={(e) => setMode(e.target.value as Tenant["screeningMode"])}
+        className="field w-auto !py-1.5"
+      >
+        <option value="rules">Reglas (sin IA)</option>
+        <option value="ai">IA</option>
+      </select>
+      <input
+        aria-label="Cuota mensual de análisis"
+        type="number"
+        min={0}
+        value={quota}
+        disabled={mode === "rules"}
+        onChange={(e) => setQuota(Number(e.target.value))}
+        className="field w-24 !py-1.5"
+        title="Cuota mensual de análisis con IA"
+      />
+      {dirty && (
+        <button onClick={save} disabled={saving} className="btn-primary !px-3 !py-1.5">
+          {saving ? <Loader2 size={14} className="animate-spin" /> : "Guardar"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 interface Tenant {
   id: string;
   name: string;
   slug: string;
   status: "active" | "suspended";
+  screeningMode: "rules" | "ai";
+  aiMonthlyQuota: number;
 }
 
 const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
@@ -111,6 +162,7 @@ export default function TenantsPage() {
                   <p className="text-sm font-medium">{t.name}</p>
                   <p className="text-xs text-muted">{t.slug}</p>
                 </div>
+                <AiPlan t={t} onSaved={load} />
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${t.status === "active" ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}
                 >

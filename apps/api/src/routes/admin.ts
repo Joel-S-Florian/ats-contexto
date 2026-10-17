@@ -72,7 +72,14 @@ export function adminRoutes(
   app.get("/admin/tenants", { preHandler: [authenticate, requireSuperAdmin] }, () =>
     withPlatform(prisma, (tx) =>
       tx.tenant.findMany({
-        select: { id: true, name: true, slug: true, status: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          status: true,
+          screeningMode: true,
+          aiMonthlyQuota: true,
+        },
         orderBy: { createdAt: "desc" },
       }),
     ),

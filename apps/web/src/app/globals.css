@@ -187,3 +187,17 @@ h2 {
     animation: none;
   }
 }
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="bar-grow"] {
+    animation: none !important;
+  }
+}

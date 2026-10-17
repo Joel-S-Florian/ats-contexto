@@ -37,3 +37,10 @@ Reglas:
 ## Componentes base (Fase 0)
 
 Barra lateral con navegación y cambio de tema, tarjeta de estado con skeleton, tarjetas de etapa con elevación en hover. Se amplía por fase: botones, formularios, tablas, toasts (Sonner), tablero de embudo.
+
+## Revisión visual (Fase 4)
+
+- Paleta indigo-violeta con degradado de marca (`--gradient`), superficies con matiz frío y sombras en capas; el modo oscuro usa los mismos roles de color con más luminosidad en el acento.
+- Profundidad: barra lateral translúcida (`.glass`), fondo con resplandor suave, botón primario con brillo interior y halo al pasar el cursor.
+- Movimiento nuevo: anillo de puntaje que se dibuja (`stroke-dashoffset`), barras de dimensión que crecen escalonadas, contadores del resumen con `CountUp`, indicador lateral de navegación. Todo se desactiva con `prefers-reduced-motion`.
+- El puntaje siempre muestra su "por qué": dimensiones, justificaciones, evidencia y banderas de riesgo (texto plano, nunca HTML).
