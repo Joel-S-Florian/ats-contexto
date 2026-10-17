@@ -14,6 +14,7 @@
     "db:dev": "tsx src/dev.ts"
   },
   "dependencies": {
+    "@ats/shared": "workspace:*",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "argon2": "^0.45.1",

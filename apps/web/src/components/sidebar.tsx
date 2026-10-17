@@ -1,7 +1,16 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, Building2, LayoutDashboard, LogOut, Moon, Sun, UserCog } from "lucide-react";
+import {
+  Briefcase,
+  Building2,
+  LayoutDashboard,
+  LogOut,
+  Moon,
+  Sun,
+  UserCog,
+  Workflow,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/app-shell";
 import { roleLabels } from "@/lib/api";
@@ -36,6 +45,8 @@ export function Sidebar() {
   const { me, logout } = useAuth();
   const items = [
     { href: "/", label: "Resumen", icon: LayoutDashboard, show: true },
+    { href: "/vacantes", label: "Vacantes", icon: Briefcase, show: Boolean(me.role) },
+    { href: "/embudos", label: "Embudos", icon: Workflow, show: Boolean(me.role) },
     { href: "/empresas", label: "Empresas", icon: Building2, show: me.isSuperAdmin },
     { href: "/usuarios", label: "Usuarios", icon: UserCog, show: me.role === "admin" },
   ].filter((i) => i.show);

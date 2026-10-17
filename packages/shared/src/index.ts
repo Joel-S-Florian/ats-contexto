@@ -1,3 +1,3 @@
-export * from "./env.js";
-export * from "./vacancy.js";
-export * from "./pipeline.js";
+export * from "./env";
+export * from "./vacancy";
+export * from "./pipeline";

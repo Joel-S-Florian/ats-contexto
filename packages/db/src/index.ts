@@ -4,6 +4,7 @@ import { PrismaClient } from "./generated/client.js";
 export * from "./generated/client.js";
 export { startEmbedded } from "./embedded.js";
 export { migrateAndGrant } from "./setup.js";
+export { createPipeline, ensureDefaultPipeline } from "./pipelines.js";
 
 export function createPrisma(connectionString: string) {
   return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });

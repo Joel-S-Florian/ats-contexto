@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createPrisma, migrateAndGrant, startEmbedded, withPlatform, withTenant } from "./index.js";
+import { seed } from "./seed.js";
 
 let stop: () => Promise<void>;
 let prisma: ReturnType<typeof createPrisma>;
@@ -47,5 +48,14 @@ describe("RLS", () => {
       tx.tenant.updateMany({ where: { id: b }, data: { name: "hack" } }),
     );
     expect(r.count).toBe(0);
+  });
+
+  it("el seed crea dos tenants aislados con vacantes solo en la empresa demo", async () => {
+    await seed(prisma);
+    await seed(prisma); // idempotente
+    const ids = await withPlatform(prisma, (tx) => tx.tenant.findMany({ where: { slug: { in: ["demo", "norte"] } } }));
+    const count = (slug: string) => withTenant(prisma, ids.find((t) => t.slug === slug)!.id, (tx) => tx.vacancy.count());
+    expect(await count("demo")).toBe(5);
+    expect(await count("norte")).toBe(0);
   });
 });
