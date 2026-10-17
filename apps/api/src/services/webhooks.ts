@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Agent } from "undici";
+import { Agent, fetch as undiciFetch } from "undici";
 import { withPlatform, withTenant, type Prisma, type PrismaClient, type Tx } from "@ats/db";
 import { WEBHOOK_SCHEMA_VERSION, signWebhook, type WebhookEnvelope } from "@ats/shared/webhook";
 import { decryptSecret } from "./secrets.js";
@@ -27,12 +27,20 @@ export interface WebhookDeps {
   timeoutMs?: number;
 }
 
+/**
+ * Cliente HTTP de los webhooks: valida la IP en el momento de conectar (anti DNS rebinding). Usa el `fetch` del propio paquete
+ * undici porque el `fetch` global trae otra versión y rechaza el Agent.
+ */
+export function createSafeFetch(ssrf: SsrfOptions): typeof fetch {
+  const agent = new Agent({ connect: { lookup: safeLookup(ssrf) as never } });
+  return ((url: string, init: RequestInit) =>
+    undiciFetch(url, { ...init, dispatcher: agent } as never)) as unknown as typeof fetch;
+}
+
 export function createWebhookService(deps: WebhookDeps) {
   const { prisma, appSecret, ssrf } = deps;
   const clock = deps.clock ?? (() => new Date());
-  const agent = new Agent({ connect: { lookup: safeLookup(ssrf) as never } });
-  const doFetch: typeof fetch =
-    deps.fetch ?? ((url, init) => fetch(url, { ...init, dispatcher: agent } as RequestInit));
+  const doFetch: typeof fetch = deps.fetch ?? createSafeFetch(ssrf);
 
   /** Registra una entrega pendiente por cada endpoint activo suscrito al evento. Se llama dentro de la transacción del hecho. */
   async function emit(tx: Tx, tenantId: string, event: string, data: unknown) {
