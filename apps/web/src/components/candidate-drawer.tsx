@@ -4,6 +4,7 @@ import { Download, FileText, Loader2, MessageSquarePlus, Undo2, X } from "lucide
 import { toast } from "sonner";
 import { discardStatuses, manualStatuses, statusLabels, type ApplicationStatus } from "@ats/shared";
 import { useAuth } from "@/components/app-shell";
+import { InterviewPanel } from "@/components/interview-panel";
 import { ScreeningCard, type Screening } from "@/components/screening";
 import { Badge } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
@@ -299,6 +300,15 @@ export function CandidateDrawer({
                 )}
               </div>
             ))}
+
+            <InterviewPanel
+              applicationId={id}
+              canManage={canMove}
+              onChanged={() => {
+                void load();
+                onChanged();
+              }}
+            />
 
             <h3 className="mb-2 mt-6 text-sm font-semibold">Notas</h3>
             <form

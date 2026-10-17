@@ -19,16 +19,18 @@ enum TenantStatus {
 }
 
 model Tenant {
-  id             String        @id @default(uuid()) @db.Uuid
-  name           String
-  slug           String        @unique
-  status         TenantStatus  @default(active)
-  screeningMode  ScreeningMode @default(rules) @map("screening_mode")
-  aiMonthlyQuota Int           @default(0) @map("ai_monthly_quota")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  memberships    Membership[]
-  invitations    Invitation[]
-  auditLogs      AuditLog[]
+  id                  String          @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String          @unique
+  status              TenantStatus    @default(active)
+  screeningMode       ScreeningMode   @default(rules) @map("screening_mode")
+  aiMonthlyQuota      Int             @default(0) @map("ai_monthly_quota")
+  rejectionNotice     RejectionNotice @default(manual) @map("rejection_notice")
+  rejectionDelayHours Int             @default(24) @map("rejection_delay_hours")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  memberships         Membership[]
+  invitations         Invitation[]
+  auditLogs           AuditLog[]
 
   @@map("tenants")
 }
@@ -483,4 +485,104 @@ model ApplicationNote {
 
   @@index([tenantId, applicationId, createdAt])
   @@map("application_notes")
+}
+
+enum RejectionNotice {
+  manual
+  auto_delay
+  none
+}
+
+enum InterviewMode {
+  onsite
+  virtual
+}
+
+enum InterviewStatus {
+  scheduled
+  cancelled
+  completed
+}
+
+// Plantillas de correo por tipo de mensaje, con variables {{nombre}}, {{vacante}}, etc. y vista previa.
+model EmailTemplate {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  key       String
+  name      String
+  subject   String
+  body      String
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([tenantId, key])
+  @@map("email_templates")
+}
+
+// Registro de envios. No guarda el cuerpo (puede traer datos personales): solo quien, que plantilla y el resultado.
+model EmailLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  applicationId String?  @map("application_id") @db.Uuid
+  toEmail       String   @map("to_email")
+  templateKey   String   @map("template_key")
+  subject       String
+  status        String
+  error         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, applicationId, createdAt])
+  @@map("email_logs")
+}
+
+// Correos diferidos (aviso de rechazo con retraso). Se cancelan si el descarte se revierte.
+model ScheduledEmail {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  applicationId String    @map("application_id") @db.Uuid
+  templateKey   String    @map("template_key")
+  sendAt        DateTime  @map("send_at")
+  sentAt        DateTime? @map("sent_at")
+  cancelledAt   DateTime? @map("cancelled_at")
+
+  @@index([sendAt])
+  @@index([tenantId, applicationId])
+  @@map("scheduled_emails")
+}
+
+model Interview {
+  id                 String          @id @default(uuid()) @db.Uuid
+  tenantId           String          @map("tenant_id") @db.Uuid
+  applicationId      String          @map("application_id") @db.Uuid
+  scheduledAt        DateTime        @map("scheduled_at")
+  durationMin        Int             @default(45) @map("duration_min")
+  mode               InterviewMode
+  location           String?
+  meetingUrl         String?         @map("meeting_url")
+  platform           String?
+  participantIds     String[]        @map("participant_ids")
+  messageToCandidate String?         @map("message_to_candidate")
+  status             InterviewStatus @default(scheduled)
+  calendarEventId    String?         @map("calendar_event_id")
+  createdBy          String          @map("created_by") @db.Uuid
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  @@index([tenantId, applicationId])
+  @@index([tenantId, scheduledAt])
+  @@map("interviews")
+}
+
+// Llamadas y mensajes manuales con el candidato.
+model Communication {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  applicationId String   @map("application_id") @db.Uuid
+  type          String
+  summary       String
+  authorId      String   @map("author_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, applicationId, createdAt])
+  @@map("communications")
 }

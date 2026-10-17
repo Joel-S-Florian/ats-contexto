@@ -11,6 +11,7 @@ import {
 } from "@ats/shared";
 import { HttpError, requirePermission } from "../auth/plugin.js";
 import type { BlobStore } from "../ports/storage.js";
+import type { NotificationService } from "../services/notifications.js";
 import { signClaim, verifyClaim } from "../services/signed.js";
 
 type Deps = {
@@ -18,6 +19,7 @@ type Deps = {
   authenticate: preHandlerAsyncHookHandler;
   store: BlobStore;
   secret: string;
+  notifications: NotificationService;
 };
 const idParam = z.object({ id: z.string().uuid() });
 export const FILE_URL_TTL_MS = 60_000;
@@ -47,7 +49,7 @@ export async function visibleApplication(
 
 export function candidateRoutes(
   app: FastifyInstance,
-  { prisma, authenticate, store, secret }: Deps,
+  { prisma, authenticate, store, secret, notifications }: Deps,
 ) {
   // Mover manualmente: RRHH puede llevar a cualquier persona a cualquier etapa; cada cambio queda en el historial.
   app.post("/applications/:id/move", { preHandler: authenticate }, async (req) => {
@@ -79,6 +81,8 @@ export function candidateRoutes(
           );
       }
       await tx.application.update({ where: { id }, data: { status: body.status } });
+      if (body.status === "not_selected") await notifications.onNotSelected(tx, tenantId, id);
+      else if (a.status === "not_selected") await notifications.cancelPending(tx, tenantId, id);
       await tx.applicationStageHistory.create({
         data: {
           tenantId,
@@ -107,6 +111,7 @@ export function candidateRoutes(
       if (!discardStatuses.includes(a.status as ApplicationStatus))
         throw new HttpError(409, "La postulación no está descartada.");
       await tx.application.update({ where: { id }, data: { status: "in_review" } });
+      await notifications.cancelPending(tx, tenantId, id); // si el aviso de rechazo estaba programado, ya no corresponde
       await tx.applicationStageHistory.create({
         data: {
           tenantId,

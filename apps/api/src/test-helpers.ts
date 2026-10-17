@@ -14,9 +14,23 @@ export async function setupTestApp(port: number) {
   await e.createDb("t");
   await migrateAndGrant(e.adminUrl("t"));
   const prisma = createPrisma(e.appUrl("t"));
-  const mails: { to: string; text: string }[] = [];
+  const mails: {
+    to: string;
+    subject: string;
+    text: string;
+    html?: string;
+    attachments?: { filename: string; content: string; contentType: string }[];
+  }[] = [];
   const mailer = {
-    send: async (to: string, _s: string, text: string) => void mails.push({ to, text }),
+    send: async (
+      to: string,
+      subject: string,
+      text: string,
+      opts?: {
+        html?: string;
+        attachments?: { filename: string; content: string; contentType: string }[];
+      },
+    ) => void mails.push({ to, subject, text, ...opts }),
   };
   const baseDeps = {
     store: localBlobStore(mkdtempSync(join(tmpdir(), "ats-files-"))),

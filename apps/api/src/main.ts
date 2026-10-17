@@ -2,7 +2,8 @@ import net from "node:net";
 import { createPrisma } from "@ats/db";
 import { apiEnvSchema, parseEnv } from "@ats/shared";
 import { buildApp, type HealthCheck } from "./app.js";
-import { consoleMailer } from "./mailer.js";
+import { consoleMailer, smtpMailer } from "./mailer.js";
+import { googleCalendar, noCalendar } from "./ports/calendar.js";
 import { devCaptcha, turnstileVerifier } from "./ports/captcha.js";
 import { clamdScanner, eicarScanner } from "./ports/scanner.js";
 import { localBlobStore } from "./ports/storage.js";
@@ -50,7 +51,15 @@ const aiProvider: AIProvider | null = {
 const app = buildApp({
   webOrigin: env.WEB_ORIGIN,
   prisma,
-  mailer: consoleMailer,
+  mailer: env.EMAIL_PROVIDER === "smtp" ? smtpMailer(env.SMTP_URL, env.MAIL_FROM) : consoleMailer,
+  calendar:
+    env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET && env.GOOGLE_REFRESH_TOKEN
+      ? googleCalendar({
+          clientId: env.GOOGLE_CLIENT_ID,
+          clientSecret: env.GOOGLE_CLIENT_SECRET,
+          refreshToken: env.GOOGLE_REFRESH_TOKEN,
+        })
+      : noCalendar,
   ai: {
     provider: aiProvider,
     globalDailyCap: env.AI_GLOBAL_DAILY_CAP,
@@ -68,4 +77,6 @@ const app = buildApp({
     redis: tcp(env.REDIS_URL),
   },
 });
+// Avisos de rechazo diferidos: revisa los vencidos cada minuto. shortcut: temporizador en proceso; con varias instancias va a una cola (BullMQ).
+setInterval(() => void app.notifications.processDue().catch(() => undefined), 60_000).unref();
 await app.listen({ port: env.API_PORT, host: env.API_HOST });

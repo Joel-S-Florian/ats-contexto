@@ -12,6 +12,8 @@ import {
   Workflow,
   Inbox,
   KeyRound,
+  Mail,
+  Settings,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/app-shell";
@@ -51,6 +53,13 @@ export function Sidebar() {
     { href: "/embudos", label: "Embudos", icon: Workflow, show: Boolean(me.role) },
     { href: "/candidatos", label: "Candidatos", icon: Inbox, show: Boolean(me.role) },
     { href: "/claves", label: "Widget y claves", icon: KeyRound, show: me.role === "admin" },
+    {
+      href: "/plantillas",
+      label: "Plantillas",
+      icon: Mail,
+      show: me.role === "admin" || me.role === "recruiter",
+    },
+    { href: "/configuracion", label: "Configuración", icon: Settings, show: me.role === "admin" },
     { href: "/empresas", label: "Empresas", icon: Building2, show: me.isSuperAdmin },
     { href: "/usuarios", label: "Usuarios", icon: UserCog, show: me.role === "admin" },
   ].filter((i) => i.show);

@@ -99,13 +99,21 @@ export const statusLabels: Record<ApplicationStatus, string> = {
 };
 
 /** Descartes: siempre visibles, con motivo, y reversibles. Mover a uno exige un motivo escrito. */
-export const discardStatuses: ApplicationStatus[] = ["low_fit", "knocked_out", "not_selected", "withdrawn"];
+export const discardStatuses: ApplicationStatus[] = [
+  "low_fit",
+  "knocked_out",
+  "not_selected",
+  "withdrawn",
+];
 
 /** `hired` solo se alcanza confirmando la contratación (Fase 8), nunca arrastrando una tarjeta. */
 export const manualStatuses = applicationStatuses.filter((s) => s !== "hired" && s !== "received");
 
 /** Etapa del embudo (tipo de PipelineStage) que corresponde a cada estado; null = fuera del flujo principal. */
-export const statusStage: Record<ApplicationStatus, "screening" | "interview" | "assessment" | "selection" | "hiring" | null> = {
+export const statusStage: Record<
+  ApplicationStatus,
+  "screening" | "interview" | "assessment" | "selection" | "hiring" | null
+> = {
   received: "screening",
   screening: "screening",
   shortlisted: "screening",
@@ -126,4 +134,6 @@ export const moveInputSchema = z.object({
   status: z.enum(manualStatuses as [ApplicationStatus, ...ApplicationStatus[]]),
   reason: z.string().trim().max(500).optional(),
 });
-export const noteInputSchema = z.object({ body: z.string().trim().min(1, "Escribe la nota").max(2000) });
+export const noteInputSchema = z.object({
+  body: z.string().trim().min(1, "Escribe la nota").max(2000),
+});

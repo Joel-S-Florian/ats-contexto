@@ -1,5 +1,5 @@
 import { withTenant, type PrismaClient } from "@ats/db";
-import type { Mailer } from "../mailer.js";
+import type { EmailService } from "./email.js";
 import type { BlobStore } from "../ports/storage.js";
 import type { JobHandler } from "../ports/queue.js";
 import { extractCvText, isReadable } from "./files.js";
@@ -11,10 +11,10 @@ import { extractCvText, isReadable } from "./files.js";
 export function createIngestHandler(deps: {
   prisma: PrismaClient;
   store: BlobStore;
-  mailer: Mailer;
+  email: EmailService;
   screen?: (applicationId: string, tenantId: string) => Promise<unknown>;
 }): JobHandler {
-  const { prisma, store, mailer, screen } = deps;
+  const { prisma, store, email, screen } = deps;
   return async ({ applicationId, tenantId }) => {
     const info = await withTenant(prisma, tenantId, async (tx) => {
       await tx.application.update({
@@ -65,16 +65,7 @@ export function createIngestHandler(deps: {
     // Preselección automática (Fase 4). Un fallo aquí no pierde la postulación: queda recibida y visible.
     if (outcome === "ready" && screen) await screen(applicationId, tenantId).catch(() => undefined);
 
-    const target = await withTenant(prisma, tenantId, (tx) =>
-      tx.application.findFirstOrThrow({
-        where: { id: applicationId, tenantId },
-        include: { candidate: true },
-      }),
-    );
-    await mailer.send(
-      target.candidate.email,
-      "Recibimos tu postulación",
-      `Hola ${target.candidate.fullName.split(" ")[0]}, recibimos tu postulación. Código de seguimiento: ${target.trackingId}`,
-    );
+    // Confirmación al candidato con la plantilla de la empresa; un fallo de correo queda en EmailLog y no interrumpe.
+    await email.send({ tenantId, applicationId, key: "application_received" });
   };
 }

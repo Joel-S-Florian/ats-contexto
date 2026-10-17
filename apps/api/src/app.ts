@@ -30,6 +30,10 @@ import {
   type ScreeningService,
 } from "./services/screening.js";
 import type { Mailer } from "./mailer.js";
+import { communicationRoutes } from "./routes/communication.js";
+import { noCalendar, type CalendarProvider } from "./ports/calendar.js";
+import { createEmailService } from "./services/email.js";
+import { createNotificationService, type NotificationService } from "./services/notifications.js";
 
 export type HealthCheck = () => Promise<void>;
 export interface AppDeps {
@@ -44,10 +48,12 @@ export interface AppDeps {
   scanner?: VirusScanner;
   captcha?: CaptchaVerifier;
   queue?: JobQueue;
+  email?: ReturnType<typeof createEmailService>;
   ai?: Partial<AiConfig>;
   /** Secreto para firmar URLs de descarga (SESSION_SECRET en produccion). */
   signingSecret?: string;
   screening?: ScreeningService;
+  calendar?: CalendarProvider;
 }
 
 export function buildApp({
@@ -63,11 +69,14 @@ export function buildApp({
   captcha = devCaptcha,
   ai,
   signingSecret = randomBytes(32).toString("hex"),
+  calendar = noCalendar,
+  email = createEmailService({ prisma, mailer }),
   screening = createScreeningService({ prisma, ai: { ...defaultAiConfig, ...ai } }),
   queue = memoryQueue(
-    createIngestHandler({ prisma, store, mailer, screen: (a, t) => screening.screen(a, t) }),
+    createIngestHandler({ prisma, store, email, screen: (a, t) => screening.screen(a, t) }),
   ),
 }: AppDeps) {
+  const notifications = createNotificationService({ prisma, email });
   const app = Fastify({ logger: logger ? loggerOptions : false, maxParamLength: 1000 });
   app.register(cors, {
     // Widget: se refleja el origen solo si alguna clave publica activa lo permite. Panel: solo webOrigin con credenciales.
@@ -147,16 +156,19 @@ export function buildApp({
       rateLimit: publicRateLimit,
     });
     apiKeyRoutes(scope, { prisma, authenticate });
-    candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret });
+    candidateRoutes(scope, { prisma, authenticate, store, secret: signingSecret, notifications });
+    communicationRoutes(scope, { prisma, authenticate, email, calendar });
     panelApplicationRoutes(scope, { prisma, authenticate, screening });
   });
 
   app.decorate("queue", queue);
+  app.decorate("notifications", notifications);
   return app;
 }
 
 declare module "fastify" {
   interface FastifyInstance {
     queue: JobQueue;
+    notifications: NotificationService;
   }
 }
